@@ -1,6 +1,6 @@
 # PRD V0：文字版底特律式互动叙事游戏框架
 
-版本：V0.7
+版本：V0.6
 日期：2026-07-08  
 文档目标：定义第一版本文字游戏本身的框架、具体形态、用户 UI/UX  
 保留文档：`PRD_AI文字冒险游戏.md` 继续保留，作为后续 AI 创作 Agent 和长期路线参考  
@@ -1027,7 +1027,6 @@ V0 失败时，测试用户会说：
 - 生成内容：`/home/samsong/Desktop/game_writer/generated/missing_phone_v0/game.json`
 - 生成脚本：`/home/samsong/Desktop/game_writer/scripts/generate_game.py`
 - 校验脚本：`/home/samsong/Desktop/game_writer/scripts/validate_game.py`
-- 内容 QA 脚本：`/home/samsong/Desktop/game_writer/scripts/content_qa_report.py`
 - 冒烟游玩脚本：`/home/samsong/Desktop/game_writer/scripts/smoke_playthrough.py`
 
 它已经覆盖本 PRD 的关键体验闭环：
@@ -1054,7 +1053,6 @@ V0 失败时，测试用户会说：
 - 内容规模达到 3 章 x 每章 3 个主场景，共 9 个主场景。
 - 隐藏关系变量的叙事回声：`relationships.chen.trust`、`relationships.chen.suspicion`、`relationships.lin.bond` 会在后续场景中触发条件文本。
 - 生成产物的结构校验。
-- 自动内容 QA 检查：关键场景必须有明显 observe 入口，`hidden_optional` 不能解锁章节/全局后果 choice，choice 必须有描述和后果文案。
 - 基础测试入口：`/home/samsong/Desktop/game_writer/tests/test_demo_contract.py`
 - 内部测试记录模板：`/home/samsong/Desktop/game_writer/doc/testing/internal_playtest_record_template.md`
 - 内部测试批次模板：`/home/samsong/Desktop/game_writer/examples/playtests/internal_playtest_batch_template.json`
@@ -1074,7 +1072,6 @@ V0 失败时，测试用户会说：
 - 第一章轻教学已有基础实现，但还没有通过内部用户测试证明玩家能稳定理解“文字可展开”和“观察会长出行动”。
 - 已建立内部测试记录模板和批次汇总脚本，但尚未实际完成 5 到 8 名内部用户测试，因此第 14 节量化指标尚未验证。
 - 保存/恢复已支持单机本地状态，但还没有多存档、云端同步、版本迁移或异常恢复 UI。
-- 内容 QA 已有基础自动检查，但还不能判断“选择是否真的让人犹豫”或“隐藏线索是否在语义上公平”。
 
 ### 17.3 下一轮产品优先级
 
@@ -1109,7 +1106,7 @@ V0 失败时，测试用户会说：
 - 路径图、结局画像、新手引导形成更强闭环。
 - 保存/重开能力从本地单存档升级到可解释、可恢复、可迁移的产品级存档。
 - 有一轮内部测试数据，证明 observe/choice/路径图确实被用户理解。
-- 有更严格的语义内容 QA，避免隐藏内容变成乱点找按钮。
+- 有更严格的内容 QA，避免隐藏内容变成乱点找按钮。
 
 ### 17.5 V0.1 版本变更记录
 
@@ -1199,19 +1196,3 @@ V0.6 的边界：
 - V0.6 只是具备测试机制，不代表已经完成用户测试。
 - 批次模板里的空值必须由真实观察记录填充；模板本身运行汇总脚本会得到 INVALID。
 - 下一轮产品判断不应继续靠主观感觉，应优先跑 5 到 8 人内部测试。
-
-### 17.11 V0.7 版本变更记录
-
-V0.7 相比 V0.6 的实质变化：
-
-- 旧版 V0.6 PRD 和技术文档已归档到 `/home/samsong/Desktop/game_writer/doc/prd/old version/2026-07-08-102957-278`。
-- 新增 `scripts/content_qa_report.py`，对生成内容做自动内容 QA。
-- QA 硬规则包括：主场景必须有明显 observe 入口、`hidden_optional` 不能解锁章节/全局后果 choice、choice 必须有描述和 outcome、首场景应有轻教学提示。
-- 新增 `tests/test_content_qa.py`，覆盖当前 demo 0 error、隐藏关键入口失败、无明显 observe 入口失败、choice 缺描述/后果失败。
-- README 增加内容 QA 命令入口。
-
-V0.7 的边界：
-
-- 自动 QA 只能挡结构和硬文案错误，不能替代真实玩家对“是否公平”“是否犹豫”“是否想重玩”的判断。
-- 当前 QA 不做 LLM 语义评审，也不判断剧情审美。
-- 下一轮仍应优先跑内部 playtest 或补浏览器自动化测试。

@@ -9,6 +9,7 @@
 - 玩家端：`index.html`、`src/app.js`、`src/styles.css`
 - 生成器：`scripts/generate_game.py`
 - 校验器：`scripts/validate_game.py`
+- 内容 QA：`scripts/content_qa_report.py`
 - 冒烟游玩：`scripts/smoke_playthrough.py`
 - 内部测试汇总：`scripts/summarize_playtest_batch.py`
 - Demo 内容：`generated/missing_phone_v0/game.json`
@@ -26,6 +27,7 @@
 - 隐藏关系变量在后续场景触发叙事回声。
 - 本地刷新恢复进度。
 - 内部 playtest 记录模板和 PRD 第 14 节指标汇总脚本。
+- 自动内容 QA 检查，覆盖隐藏 observe 可发现性和 choice 代价文案硬伤。
 - 冒烟路径穿过 9 个主场景并抵达 `ending_publish`。
 
 ## Quick Start
@@ -49,6 +51,12 @@ python3 scripts/validate_game.py generated/missing_phone_v0/game.json
 
 ```bash
 python3 scripts/smoke_playthrough.py generated/missing_phone_v0/game.json
+```
+
+跑内容 QA：
+
+```bash
+python3 scripts/content_qa_report.py generated/missing_phone_v0/game.json
 ```
 
 跑测试：
