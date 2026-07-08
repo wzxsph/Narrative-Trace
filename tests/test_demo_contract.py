@@ -50,10 +50,10 @@ class DemoContractTest(unittest.TestCase):
     runtime.choose("choice_publish_truth")
     self.assertEqual(runtime.ending_id, "ending_publish")
 
-  def test_v02_demo_shape_is_three_chapters_with_three_scenes_each(self) -> None:
+  def test_v03_demo_shape_is_three_chapters_with_three_scenes_each(self) -> None:
     game = load_game()
     chapters = Counter(scene["chapter"] for scene in game["scenes"])
-    self.assertEqual(game["schema_version"], "game_writer_demo_v0_2")
+    self.assertEqual(game["schema_version"], "game_writer_demo_v0_3")
     self.assertEqual(len(game["scenes"]), 9)
     self.assertEqual(len(chapters), 3)
     self.assertTrue(all(count == 3 for count in chapters.values()))
@@ -87,11 +87,27 @@ class DemoContractTest(unittest.TestCase):
     }
     self.assertTrue(ending_ids <= targets)
 
+  def test_relationship_state_echoes_have_longitudinal_coverage(self) -> None:
+    game = load_game()
+    echo_scenes_by_state: dict[str, set[str]] = {}
+    for scene in game["scenes"]:
+      for echo in scene.get("state_echoes", []):
+        self.assertTrue(echo.get("text"), echo.get("id"))
+        for requirement in echo.get("requirements", []):
+          state = requirement.get("state", "")
+          if state.startswith("relationships."):
+            echo_scenes_by_state.setdefault(state, set()).add(scene["id"])
+
+    self.assertGreaterEqual(len(echo_scenes_by_state.get("relationships.chen.trust", set())), 2)
+    self.assertGreaterEqual(len(echo_scenes_by_state.get("relationships.chen.suspicion", set())), 2)
+    self.assertGreaterEqual(len(echo_scenes_by_state.get("relationships.lin.bond", set())), 2)
+
   def test_static_runtime_includes_save_review_and_portrait_hooks(self) -> None:
     app_js = APP_JS_PATH.read_text(encoding="utf-8")
     self.assertIn("SAVE_KEY", app_js)
     self.assertIn("restoreProgress", app_js)
     self.assertIn("renderChapterReview", app_js)
+    self.assertIn("renderStateEchoes", app_js)
     self.assertIn("buildStateEchoes", app_js)
 
 

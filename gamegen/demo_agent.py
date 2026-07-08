@@ -64,7 +64,7 @@ def apply_llm_polish(game: dict[str, Any], brief: dict[str, Any], client: LLMCli
 def deterministic_demo_game(brief: dict[str, Any]) -> dict[str, Any]:
     project = brief["project"]
     return {
-        "schema_version": "game_writer_demo_v0_2",
+        "schema_version": "game_writer_demo_v0_3",
         "project": {
             "id": project["id"],
             "title": project["title"],
@@ -152,6 +152,7 @@ def make_scene(
     text: str,
     anchors: list[dict[str, Any]],
     choices: list[dict[str, Any]],
+    state_echoes: list[dict[str, Any]] | None = None,
 ) -> dict[str, Any]:
     return {
         "id": scene_id,
@@ -160,6 +161,7 @@ def make_scene(
         "task": task,
         "pressure": pressure,
         "required_for_demo": True,
+        "state_echoes": state_echoes or [],
         "background_blocks": [{"id": f"bg_{scene_id}", "text": text, "observe_anchors": anchors}],
         "choices": choices,
     }
@@ -216,6 +218,20 @@ def make_choice(
         "irreversible": True,
         "consequence_level": consequence_level,
         "outcome": outcome,
+    }
+
+
+def make_echo(
+    echo_id: str,
+    label: str,
+    text: str,
+    requirements: list[dict[str, Any]],
+) -> dict[str, Any]:
+    return {
+        "id": echo_id,
+        "label": label,
+        "text": text,
+        "requirements": requirements,
     }
 
 
@@ -434,6 +450,14 @@ def scene_cloud_console() -> dict[str, Any]:
                 effects=[{"add": {"stance.protect_person": 1}}],
             ),
         ],
+        state_echoes=[
+            make_echo(
+                "echo_cloud_chen_call",
+                "陈的余音",
+                "刚才那通电话还挂在后台记录里。陈没有催你交出手机，只是反复确认你是否还安全。",
+                [{"state": "relationships.chen.trust", "min": 1}],
+            ),
+        ],
     )
 
 
@@ -529,6 +553,20 @@ def scene_contact_trace() -> dict[str, Any]:
                 effects=[{"add": {"stance.protect_person": 1}}],
             ),
         ],
+        state_echoes=[
+            make_echo(
+                "echo_contact_chen_trust",
+                "陈没有挂断",
+                "陈的号码仍停在最近通话第一位。他没有继续追问，像是在给你留下自己判断的空间。",
+                [{"state": "relationships.chen.trust", "min": 1}],
+            ),
+            make_echo(
+                "echo_contact_chen_suspicion",
+                "陈开始收紧",
+                "你质问过那四秒以后，陈的头像旁多了一个未读提示，却没有新消息。他知道你已经越过了安全线。",
+                [{"state": "relationships.chen.suspicion", "min": 2}],
+            ),
+        ],
     )
 
 
@@ -607,6 +645,26 @@ def scene_station_gate() -> dict[str, Any]:
                 "ch02_station_platform",
                 "陈说：“走检修门，别走正门。”他太快给出答案，让你更不安。",
                 effects=[{"add": {"relationships.chen.trust": 1}}, {"add": {"relationships.chen.suspicion": 1}}],
+            ),
+        ],
+        state_echoes=[
+            make_echo(
+                "echo_gate_chen_trust",
+                "陈给过定位",
+                "如果你选择过相信陈，他发来的定位点会和旧员工入口重合。这不是洗白，只是说明他至少没把你引向正门。",
+                [{"state": "relationships.chen.trust", "min": 1}],
+            ),
+            make_echo(
+                "echo_gate_chen_suspicion",
+                "被陈看见的路线",
+                "质问陈之后再来到这里，入口反而显得过于安静。你很难判断这是他的帮助，还是他的布置。",
+                [{"state": "relationships.chen.suspicion", "min": 2}],
+            ),
+            make_echo(
+                "echo_gate_lin_bond",
+                "林的声音同行",
+                "你备份过语音便签后，林的那句“别只救我”会在入口前再次响起，让这里不再只是一个坐标。",
+                [{"state": "relationships.lin.bond", "min": 2}],
             ),
         ],
     )
@@ -705,6 +763,26 @@ def scene_station_platform() -> dict[str, Any]:
                 consequence_level="global",
             ),
         ],
+        state_echoes=[
+            make_echo(
+                "echo_platform_chen_trust",
+                "陈的入口建议",
+                "你若让陈确认过入口，站台上的摄像头角度会显得更像一次刻意放行，而不是偶然故障。",
+                [{"state": "relationships.chen.trust", "min": 1}],
+            ),
+            make_echo(
+                "echo_platform_chen_suspicion",
+                "陈知道你在这里",
+                "你越怀疑陈，站台就越像一间已经被人预留好的审讯室。没有脚步声，反而更像有人在等。",
+                [{"state": "relationships.chen.suspicion", "min": 2}],
+            ),
+            make_echo(
+                "echo_platform_lin_bond",
+                "林不再只是失踪者",
+                "语音便签被你保存后，票根上的字迹不再像证据，而像一个人把最难说出口的话递给你。",
+                [{"state": "relationships.lin.bond", "min": 2}],
+            ),
+        ],
     )
 
 
@@ -785,6 +863,20 @@ def scene_locker_room() -> dict[str, Any]:
                 "ch03_backup_unlock",
                 "两分钟后只出现一句话：如果你已经到这里，别再相信单一证据。",
                 effects=[{"add": {"relationships.lin.bond": 1}}],
+            ),
+        ],
+        state_echoes=[
+            make_echo(
+                "echo_locker_lin_bond",
+                "林的请求变重",
+                "你越早把林当成一个具体的人，维护间里的“别只救我”就越不像提示，越像她在拒绝被单独拯救。",
+                [{"state": "relationships.lin.bond", "min": 2}],
+            ),
+            make_echo(
+                "echo_locker_chen_trust",
+                "陈留下的缝隙",
+                "如果陈曾帮你避开正门，这条维护通道就像他没有明说的第二句话：我不能救她，但可以让你进去。",
+                [{"state": "relationships.chen.trust", "min": 2}],
             ),
         ],
     )
@@ -870,6 +962,20 @@ def scene_backup_unlock() -> dict[str, Any]:
                 consequence_level="global",
             ),
         ],
+        state_echoes=[
+            make_echo(
+                "echo_backup_lin_bond",
+                "备份不是遗物",
+                "如果你已经和林建立了更强关联，备份解密时就不再像打开遗物，而像接过一个仍在发烫的决定。",
+                [{"state": "relationships.lin.bond", "min": 2}],
+            ),
+            make_echo(
+                "echo_backup_chen_suspicion",
+                "陈的沉默压在录音上",
+                "你越早逼近陈，剪辑版本就越像一场还没结束的对话。他的沉默不是空白，而是一种选择。",
+                [{"state": "relationships.chen.suspicion", "min": 2}],
+            ),
+        ],
     )
 
 
@@ -953,6 +1059,26 @@ def scene_witness_thread() -> dict[str, Any]:
                 effects=[{"add": {"pressure.company_alert": 1}}],
             ),
         ],
+        state_echoes=[
+            make_echo(
+                "echo_witness_lin_bond",
+                "林要求你看见别人",
+                "你和林的关联越深，受害者名单就越刺眼：她不是要你替她赢，而是要你别让其他人继续输。",
+                [{"state": "relationships.lin.bond", "min": 2}],
+            ),
+            make_echo(
+                "echo_witness_chen_trust",
+                "陈补上的缺口",
+                "如果陈已经给过你帮助，他在录音里的停顿会显得更具体：那不是勇敢，也不是背叛，是他一直没有付清的代价。",
+                [{"state": "relationships.chen.trust", "min": 2}],
+            ),
+            make_echo(
+                "echo_witness_chen_suspicion",
+                "陈仍在场",
+                "你越怀疑陈，他的停顿越像一次控制现场的手段。现在你必须决定还要不要把解释权交给他。",
+                [{"state": "relationships.chen.suspicion", "min": 2}],
+            ),
+        ],
     )
 
 
@@ -1029,6 +1155,26 @@ def scene_publish_decision() -> dict[str, Any]:
                 consequence_level="ending",
             ),
         ],
+        state_echoes=[
+            make_echo(
+                "echo_publish_lin_bond",
+                "林仍在选择里",
+                "你和林的关联越深，发布页越不像一个按钮，而像一次你替她承担但不能替她消失的判断。",
+                [{"state": "relationships.lin.bond", "min": 2}],
+            ),
+            make_echo(
+                "echo_publish_chen_trust",
+                "陈的补证",
+                "如果陈最后补上了录音缺口，发给陈的草稿会少一点报复感，多一点逼他公开站出来的重量。",
+                [{"state": "relationships.chen.trust", "min": 2}],
+            ),
+            make_echo(
+                "echo_publish_chen_suspicion",
+                "陈仍可能切断你",
+                "你越怀疑陈，发布页里的每一次停顿都像倒计时。把草稿发给他，可能是在给他最后一次切断你的机会。",
+                [{"state": "relationships.chen.suspicion", "min": 2}],
+            ),
+        ],
     )
 
 
@@ -1060,6 +1206,10 @@ def build_state_registry(game: dict[str, Any]) -> dict[str, Any]:
 
     for scene in game["scenes"]:
         scene_id = scene["id"]
+        for echo in scene.get("state_echoes", []):
+            for requirement in echo.get("requirements", []):
+                if requirement.get("state"):
+                    ensure(requirement["state"])["reads"].append(f"{scene_id}.{echo['id']}.requirements")
         for choice in scene.get("choices", []):
             for requirement in choice.get("requirements", []):
                 if requirement.get("state"):

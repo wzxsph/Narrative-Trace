@@ -134,6 +134,7 @@ function renderOutcome() {
 
 function renderStory(scene) {
   dom.storyArea.innerHTML = "";
+  renderStateEchoes(scene);
   scene.background_blocks.forEach((block) => {
     const wrapper = document.createElement("article");
     wrapper.className = "background-block";
@@ -145,6 +146,31 @@ function renderStory(scene) {
     });
     dom.storyArea.appendChild(wrapper);
   });
+}
+
+function renderStateEchoes(scene) {
+  const echoes = (scene.state_echoes || []).filter((echo) =>
+    (echo.requirements || []).every((requirement) => stateMatches(requirement))
+  );
+  if (!echoes.length) {
+    return;
+  }
+  const wrapper = document.createElement("section");
+  wrapper.className = "state-echoes";
+  const title = document.createElement("h2");
+  title.textContent = "此前的回声";
+  wrapper.appendChild(title);
+  echoes.forEach((echo) => {
+    const item = document.createElement("article");
+    item.className = "state-echo";
+    const label = document.createElement("h3");
+    label.textContent = echo.label;
+    const text = document.createElement("p");
+    text.textContent = echo.text;
+    item.append(label, text);
+    wrapper.appendChild(item);
+  });
+  dom.storyArea.appendChild(wrapper);
 }
 
 function renderTextWithAnchors(text, anchors) {

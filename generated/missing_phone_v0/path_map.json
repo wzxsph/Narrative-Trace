@@ -57,6 +57,7 @@
           "unlocks_choices": []
         }
       ],
+      "state_echoes": [],
       "choices": [
         {
           "id": "choice_call_chen",
@@ -134,6 +135,18 @@
           "depth": 1,
           "unlocks_choices": [
             "choice_blind_recording"
+          ]
+        }
+      ],
+      "state_echoes": [
+        {
+          "id": "echo_cloud_chen_call",
+          "label": "陈的余音",
+          "requirements": [
+            {
+              "state": "relationships.chen.trust",
+              "min": 1
+            }
           ]
         }
       ],
@@ -215,6 +228,28 @@
           ]
         }
       ],
+      "state_echoes": [
+        {
+          "id": "echo_contact_chen_trust",
+          "label": "陈没有挂断",
+          "requirements": [
+            {
+              "state": "relationships.chen.trust",
+              "min": 1
+            }
+          ]
+        },
+        {
+          "id": "echo_contact_chen_suspicion",
+          "label": "陈开始收紧",
+          "requirements": [
+            {
+              "state": "relationships.chen.suspicion",
+              "min": 2
+            }
+          ]
+        }
+      ],
       "choices": [
         {
           "id": "choice_leave_for_station",
@@ -284,6 +319,38 @@
           "depth": 1,
           "unlocks_choices": [
             "choice_enter_service_corridor"
+          ]
+        }
+      ],
+      "state_echoes": [
+        {
+          "id": "echo_gate_chen_trust",
+          "label": "陈给过定位",
+          "requirements": [
+            {
+              "state": "relationships.chen.trust",
+              "min": 1
+            }
+          ]
+        },
+        {
+          "id": "echo_gate_chen_suspicion",
+          "label": "被陈看见的路线",
+          "requirements": [
+            {
+              "state": "relationships.chen.suspicion",
+              "min": 2
+            }
+          ]
+        },
+        {
+          "id": "echo_gate_lin_bond",
+          "label": "林的声音同行",
+          "requirements": [
+            {
+              "state": "relationships.lin.bond",
+              "min": 2
+            }
           ]
         }
       ],
@@ -360,6 +427,38 @@
           ]
         }
       ],
+      "state_echoes": [
+        {
+          "id": "echo_platform_chen_trust",
+          "label": "陈的入口建议",
+          "requirements": [
+            {
+              "state": "relationships.chen.trust",
+              "min": 1
+            }
+          ]
+        },
+        {
+          "id": "echo_platform_chen_suspicion",
+          "label": "陈知道你在这里",
+          "requirements": [
+            {
+              "state": "relationships.chen.suspicion",
+              "min": 2
+            }
+          ]
+        },
+        {
+          "id": "echo_platform_lin_bond",
+          "label": "林不再只是失踪者",
+          "requirements": [
+            {
+              "state": "relationships.lin.bond",
+              "min": 2
+            }
+          ]
+        }
+      ],
       "choices": [
         {
           "id": "choice_wait_station",
@@ -432,6 +531,28 @@
           ]
         }
       ],
+      "state_echoes": [
+        {
+          "id": "echo_locker_lin_bond",
+          "label": "林的请求变重",
+          "requirements": [
+            {
+              "state": "relationships.lin.bond",
+              "min": 2
+            }
+          ]
+        },
+        {
+          "id": "echo_locker_chen_trust",
+          "label": "陈留下的缝隙",
+          "requirements": [
+            {
+              "state": "relationships.chen.trust",
+              "min": 2
+            }
+          ]
+        }
+      ],
       "choices": [
         {
           "id": "choice_take_backup_to_safehouse",
@@ -496,6 +617,28 @@
           "depth": 1,
           "unlocks_choices": [
             "choice_archive_first"
+          ]
+        }
+      ],
+      "state_echoes": [
+        {
+          "id": "echo_backup_lin_bond",
+          "label": "备份不是遗物",
+          "requirements": [
+            {
+              "state": "relationships.lin.bond",
+              "min": 2
+            }
+          ]
+        },
+        {
+          "id": "echo_backup_chen_suspicion",
+          "label": "陈的沉默压在录音上",
+          "requirements": [
+            {
+              "state": "relationships.chen.suspicion",
+              "min": 2
+            }
           ]
         }
       ],
@@ -571,6 +714,38 @@
           ]
         }
       ],
+      "state_echoes": [
+        {
+          "id": "echo_witness_lin_bond",
+          "label": "林要求你看见别人",
+          "requirements": [
+            {
+              "state": "relationships.lin.bond",
+              "min": 2
+            }
+          ]
+        },
+        {
+          "id": "echo_witness_chen_trust",
+          "label": "陈补上的缺口",
+          "requirements": [
+            {
+              "state": "relationships.chen.trust",
+              "min": 2
+            }
+          ]
+        },
+        {
+          "id": "echo_witness_chen_suspicion",
+          "label": "陈仍在场",
+          "requirements": [
+            {
+              "state": "relationships.chen.suspicion",
+              "min": 2
+            }
+          ]
+        }
+      ],
       "choices": [
         {
           "id": "choice_prepare_public_packet",
@@ -640,6 +815,38 @@
           "depth": 1,
           "unlocks_choices": [
             "choice_confront_final"
+          ]
+        }
+      ],
+      "state_echoes": [
+        {
+          "id": "echo_publish_lin_bond",
+          "label": "林仍在选择里",
+          "requirements": [
+            {
+              "state": "relationships.lin.bond",
+              "min": 2
+            }
+          ]
+        },
+        {
+          "id": "echo_publish_chen_trust",
+          "label": "陈的补证",
+          "requirements": [
+            {
+              "state": "relationships.chen.trust",
+              "min": 2
+            }
+          ]
+        },
+        {
+          "id": "echo_publish_chen_suspicion",
+          "label": "陈仍可能切断你",
+          "requirements": [
+            {
+              "state": "relationships.chen.suspicion",
+              "min": 2
+            }
           ]
         }
       ],

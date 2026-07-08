@@ -1,6 +1,6 @@
 # Agent Game Generation Technical Design V0
 
-版本：V0.3
+版本：V0.2
 日期：2026-07-08  
 文档类型：技术设计文档  
 文件名规则：英文文件名，便于后续工程引用  
@@ -1161,14 +1161,11 @@ generated/missing_phone_v0/game.json
 - `README.md` 记录生成、校验、测试和本地启动流程。
 - deterministic demo 已扩展为 3 章 x 每章 3 个主场景，共 9 个主场景。
 - 测试已覆盖 V0.2 schema、9 场景结构、每章 3 场景、每场景 observe 解锁 action。
-- `state_echoes` 支持场景根据隐藏状态显示叙事回声。
-- validator、path map、state registry 和测试已覆盖 `state_echoes`。
 
 当前技术状态：
 
 ```text
 Medium-length playable vertical slice with basic runtime resilience: achieved
-Basic relationship echo runtime: achieved
 Production-grade generation pipeline: not achieved
 ```
 
@@ -1188,7 +1185,6 @@ Production-grade generation pipeline: not achieved
 
 - 当前前端已有本地单存档，但没有多存档、版本迁移、损坏存档提示或云端同步。
 - 已有章节结束复盘屏，但还不是完整 flowchart 级路径复盘。
-- 已有基础 `state_echoes` 渲染，但还没有复杂优先级、互斥回声或节奏控制。
 - 缺少移动端真实设备测试。
 - 缺少无障碍键盘导航和屏幕阅读器检查。
 
@@ -1197,7 +1193,6 @@ Production-grade generation pipeline: not achieved
 - 当前 validator 偏结构，较少判断 choice 是否真的有犹豫点。
 - 缺少“隐藏内容是否公平可发现”的自动/人工 QA 表。
 - 结局画像已有前端呈现，但缺少完整性检查。
-- 关系回声已有覆盖测试，但缺少人工 QA 判断文案是否自然、是否过度解释数值。
 - 缺少内部用户测试记录。
 
 ### 21.4 Engineering Hygiene
@@ -1253,22 +1248,3 @@ Production-grade generation pipeline: not achieved
 - 显式 JSON schema。
 - 浏览器自动化测试进入常规 test suite。
 - 真实用户测试与内容节奏数据。
-
-## 25. V0.3 Implementation Delta
-
-本轮 V0.3 的工程变化：
-
-- PRD 和技术文档旧版已归档到 `doc/prd/old version/2026-07-08-100034-256`。
-- `gamegen/demo_agent.py` 新增 `make_echo()` 和场景级 `state_echoes`。
-- `src/app.js` 新增 `renderStateEchoes()`，在场景正文前渲染满足条件的叙事回声。
-- `src/styles.css` 新增关系回声样式。
-- `gamegen/validator.py` 校验 `state_echoes` 的 id、text 和状态读取。
-- `state_registry.json` 记录 `state_echoes` 对隐藏状态的读取。
-- `tests/test_demo_contract.py` 要求 `relationships.chen.trust`、`relationships.chen.suspicion`、`relationships.lin.bond` 至少在两个不同场景中产生回声。
-
-本轮没有解决：
-
-- 章节复盘 flowchart 化。
-- 第一章叙事内轻教学。
-- 关系回声文案的人工 QA 和用户测试。
-- 回声优先级、互斥规则和复杂冲突处理。

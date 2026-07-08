@@ -1,5 +1,5 @@
 {
-  "schema_version": "game_writer_demo_v0_2",
+  "schema_version": "game_writer_demo_v0_3",
   "project": {
     "id": "missing_phone",
     "title": "失踪者的手机",
@@ -52,6 +52,7 @@
       "task": "在远程清除前确认林最后联系的人。",
       "pressure": "远程清除 06:00",
       "required_for_demo": true,
+      "state_echoes": [],
       "background_blocks": [
         {
           "id": "bg_ch01_phone_lock",
@@ -317,6 +318,19 @@
       "task": "阻止手机在路上被清空。",
       "pressure": "远程会话在线",
       "required_for_demo": true,
+      "state_echoes": [
+        {
+          "id": "echo_cloud_chen_call",
+          "label": "陈的余音",
+          "text": "刚才那通电话还挂在后台记录里。陈没有催你交出手机，只是反复确认你是否还安全。",
+          "requirements": [
+            {
+              "state": "relationships.chen.trust",
+              "min": 1
+            }
+          ]
+        }
+      ],
       "background_blocks": [
         {
           "id": "bg_ch01_cloud_console",
@@ -525,6 +539,30 @@
       "task": "确认陈到底是人名、备注，还是陷阱。",
       "pressure": "倒计时稳定",
       "required_for_demo": true,
+      "state_echoes": [
+        {
+          "id": "echo_contact_chen_trust",
+          "label": "陈没有挂断",
+          "text": "陈的号码仍停在最近通话第一位。他没有继续追问，像是在给你留下自己判断的空间。",
+          "requirements": [
+            {
+              "state": "relationships.chen.trust",
+              "min": 1
+            }
+          ]
+        },
+        {
+          "id": "echo_contact_chen_suspicion",
+          "label": "陈开始收紧",
+          "text": "你质问过那四秒以后，陈的头像旁多了一个未读提示，却没有新消息。他知道你已经越过了安全线。",
+          "requirements": [
+            {
+              "state": "relationships.chen.suspicion",
+              "min": 2
+            }
+          ]
+        }
+      ],
       "background_blocks": [
         {
           "id": "bg_ch01_contact_trace",
@@ -737,6 +775,41 @@
       "task": "找到进入废弃站台的低风险路线。",
       "pressure": "站外监控稀疏",
       "required_for_demo": true,
+      "state_echoes": [
+        {
+          "id": "echo_gate_chen_trust",
+          "label": "陈给过定位",
+          "text": "如果你选择过相信陈，他发来的定位点会和旧员工入口重合。这不是洗白，只是说明他至少没把你引向正门。",
+          "requirements": [
+            {
+              "state": "relationships.chen.trust",
+              "min": 1
+            }
+          ]
+        },
+        {
+          "id": "echo_gate_chen_suspicion",
+          "label": "被陈看见的路线",
+          "text": "质问陈之后再来到这里，入口反而显得过于安静。你很难判断这是他的帮助，还是他的布置。",
+          "requirements": [
+            {
+              "state": "relationships.chen.suspicion",
+              "min": 2
+            }
+          ]
+        },
+        {
+          "id": "echo_gate_lin_bond",
+          "label": "林的声音同行",
+          "text": "你备份过语音便签后，林的那句“别只救我”会在入口前再次响起，让这里不再只是一个坐标。",
+          "requirements": [
+            {
+              "state": "relationships.lin.bond",
+              "min": 2
+            }
+          ]
+        }
+      ],
       "background_blocks": [
         {
           "id": "bg_ch02_station_gate",
@@ -918,6 +991,41 @@
       "task": "确认林在站台留下了什么。",
       "pressure": "公司警报升高",
       "required_for_demo": true,
+      "state_echoes": [
+        {
+          "id": "echo_platform_chen_trust",
+          "label": "陈的入口建议",
+          "text": "你若让陈确认过入口，站台上的摄像头角度会显得更像一次刻意放行，而不是偶然故障。",
+          "requirements": [
+            {
+              "state": "relationships.chen.trust",
+              "min": 1
+            }
+          ]
+        },
+        {
+          "id": "echo_platform_chen_suspicion",
+          "label": "陈知道你在这里",
+          "text": "你越怀疑陈，站台就越像一间已经被人预留好的审讯室。没有脚步声，反而更像有人在等。",
+          "requirements": [
+            {
+              "state": "relationships.chen.suspicion",
+              "min": 2
+            }
+          ]
+        },
+        {
+          "id": "echo_platform_lin_bond",
+          "label": "林不再只是失踪者",
+          "text": "语音便签被你保存后，票根上的字迹不再像证据，而像一个人把最难说出口的话递给你。",
+          "requirements": [
+            {
+              "state": "relationships.lin.bond",
+              "min": 2
+            }
+          ]
+        }
+      ],
       "background_blocks": [
         {
           "id": "bg_ch02_station_platform",
@@ -1130,6 +1238,30 @@
       "task": "取走备份，并判断林想保护谁。",
       "pressure": "脚步声接近",
       "required_for_demo": true,
+      "state_echoes": [
+        {
+          "id": "echo_locker_lin_bond",
+          "label": "林的请求变重",
+          "text": "你越早把林当成一个具体的人，维护间里的“别只救我”就越不像提示，越像她在拒绝被单独拯救。",
+          "requirements": [
+            {
+              "state": "relationships.lin.bond",
+              "min": 2
+            }
+          ]
+        },
+        {
+          "id": "echo_locker_chen_trust",
+          "label": "陈留下的缝隙",
+          "text": "如果陈曾帮你避开正门，这条维护通道就像他没有明说的第二句话：我不能救她，但可以让你进去。",
+          "requirements": [
+            {
+              "state": "relationships.chen.trust",
+              "min": 2
+            }
+          ]
+        }
+      ],
       "background_blocks": [
         {
           "id": "bg_ch02_locker_room",
@@ -1311,6 +1443,30 @@
       "task": "还原录音与剪辑之间的差异。",
       "pressure": "最后选择逼近",
       "required_for_demo": true,
+      "state_echoes": [
+        {
+          "id": "echo_backup_lin_bond",
+          "label": "备份不是遗物",
+          "text": "如果你已经和林建立了更强关联，备份解密时就不再像打开遗物，而像接过一个仍在发烫的决定。",
+          "requirements": [
+            {
+              "state": "relationships.lin.bond",
+              "min": 2
+            }
+          ]
+        },
+        {
+          "id": "echo_backup_chen_suspicion",
+          "label": "陈的沉默压在录音上",
+          "text": "你越早逼近陈，剪辑版本就越像一场还没结束的对话。他的沉默不是空白，而是一种选择。",
+          "requirements": [
+            {
+              "state": "relationships.chen.suspicion",
+              "min": 2
+            }
+          ]
+        }
+      ],
       "background_blocks": [
         {
           "id": "bg_ch03_backup_unlock",
@@ -1492,6 +1648,41 @@
       "task": "判断真相公开前必须保留哪些上下文。",
       "pressure": "证人链不完整",
       "required_for_demo": true,
+      "state_echoes": [
+        {
+          "id": "echo_witness_lin_bond",
+          "label": "林要求你看见别人",
+          "text": "你和林的关联越深，受害者名单就越刺眼：她不是要你替她赢，而是要你别让其他人继续输。",
+          "requirements": [
+            {
+              "state": "relationships.lin.bond",
+              "min": 2
+            }
+          ]
+        },
+        {
+          "id": "echo_witness_chen_trust",
+          "label": "陈补上的缺口",
+          "text": "如果陈已经给过你帮助，他在录音里的停顿会显得更具体：那不是勇敢，也不是背叛，是他一直没有付清的代价。",
+          "requirements": [
+            {
+              "state": "relationships.chen.trust",
+              "min": 2
+            }
+          ]
+        },
+        {
+          "id": "echo_witness_chen_suspicion",
+          "label": "陈仍在场",
+          "text": "你越怀疑陈，他的停顿越像一次控制现场的手段。现在你必须决定还要不要把解释权交给他。",
+          "requirements": [
+            {
+              "state": "relationships.chen.suspicion",
+              "min": 2
+            }
+          ]
+        }
+      ],
       "background_blocks": [
         {
           "id": "bg_ch03_witness_thread",
@@ -1688,6 +1879,41 @@
       "task": "决定真相以什么形式进入世界。",
       "pressure": "最后选择",
       "required_for_demo": true,
+      "state_echoes": [
+        {
+          "id": "echo_publish_lin_bond",
+          "label": "林仍在选择里",
+          "text": "你和林的关联越深，发布页越不像一个按钮，而像一次你替她承担但不能替她消失的判断。",
+          "requirements": [
+            {
+              "state": "relationships.lin.bond",
+              "min": 2
+            }
+          ]
+        },
+        {
+          "id": "echo_publish_chen_trust",
+          "label": "陈的补证",
+          "text": "如果陈最后补上了录音缺口，发给陈的草稿会少一点报复感，多一点逼他公开站出来的重量。",
+          "requirements": [
+            {
+              "state": "relationships.chen.trust",
+              "min": 2
+            }
+          ]
+        },
+        {
+          "id": "echo_publish_chen_suspicion",
+          "label": "陈仍可能切断你",
+          "text": "你越怀疑陈，发布页里的每一次停顿都像倒计时。把草稿发给他，可能是在给他最后一次切断你的机会。",
+          "requirements": [
+            {
+              "state": "relationships.chen.suspicion",
+              "min": 2
+            }
+          ]
+        }
+      ],
       "background_blocks": [
         {
           "id": "bg_ch03_publish_decision",

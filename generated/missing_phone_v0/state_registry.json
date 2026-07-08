@@ -7,7 +7,15 @@
         "ch02_station_gate.choice_call_chen_at_gate.effects",
         "ch03_witness_thread.choice_ask_chen_last_time.effects"
       ],
-      "reads": []
+      "reads": [
+        "ch01_cloud_console.echo_cloud_chen_call.requirements",
+        "ch01_contact_trace.echo_contact_chen_trust.requirements",
+        "ch02_station_gate.echo_gate_chen_trust.requirements",
+        "ch02_station_platform.echo_platform_chen_trust.requirements",
+        "ch02_locker_room.echo_locker_chen_trust.requirements",
+        "ch03_witness_thread.echo_witness_chen_trust.requirements",
+        "ch03_publish_decision.echo_publish_chen_trust.requirements"
+      ]
     },
     "clues.station_location": {
       "writes": [
@@ -70,7 +78,14 @@
         "ch03_backup_unlock.choice_send_hash_to_chen.effects",
         "ch03_publish_decision.choice_confront_final.effects"
       ],
-      "reads": []
+      "reads": [
+        "ch01_contact_trace.echo_contact_chen_suspicion.requirements",
+        "ch02_station_gate.echo_gate_chen_suspicion.requirements",
+        "ch02_station_platform.echo_platform_chen_suspicion.requirements",
+        "ch03_backup_unlock.echo_backup_chen_suspicion.requirements",
+        "ch03_witness_thread.echo_witness_chen_suspicion.requirements",
+        "ch03_publish_decision.echo_publish_chen_suspicion.requirements"
+      ]
     },
     "clues.unsent_warning": {
       "writes": [
@@ -146,7 +161,14 @@
         "ch02_locker_room.choice_wait_for_lin_contact.effects",
         "ch02_locker_room.obs_red_bracelet.effects"
       ],
-      "reads": []
+      "reads": [
+        "ch02_station_gate.echo_gate_lin_bond.requirements",
+        "ch02_station_platform.echo_platform_lin_bond.requirements",
+        "ch02_locker_room.echo_locker_lin_bond.requirements",
+        "ch03_backup_unlock.echo_backup_lin_bond.requirements",
+        "ch03_witness_thread.echo_witness_lin_bond.requirements",
+        "ch03_publish_decision.echo_publish_lin_bond.requirements"
+      ]
     },
     "clues.chen_casefile": {
       "writes": [

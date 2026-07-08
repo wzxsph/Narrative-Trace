@@ -39,6 +39,22 @@ def validate_game(game: dict[str, Any]) -> list[ValidationMessage]:
     for scene in scenes:
         scene_id = scene.get("id", "<missing-scene-id>")
         choices = scene.get("choices", [])
+        echo_ids: set[str] = set()
+        for echo in scene.get("state_echoes", []):
+            echo_id = echo.get("id")
+            if not echo_id:
+                messages.append(ValidationMessage("error", scene_id, "State echo missing id"))
+                continue
+            if echo_id in echo_ids:
+                messages.append(ValidationMessage("error", f"{scene_id}.{echo_id}", "Duplicate state echo id in scene"))
+            echo_ids.add(echo_id)
+            if not echo.get("text"):
+                messages.append(ValidationMessage("error", f"{scene_id}.{echo_id}", "State echo missing text"))
+            for requirement in echo.get("requirements", []):
+                ref = requirement.get("state")
+                if ref:
+                    state_reads.add(ref)
+
         if len(choices) < 2:
             messages.append(ValidationMessage("warning", scene_id, "Scene should have at least 2 choices"))
         if len(choices) > 4:
@@ -195,12 +211,22 @@ def build_path_map(game: dict[str, Any]) -> dict[str, Any]:
         for block in scene.get("background_blocks", []):
             for anchor in block.get("observe_anchors", []):
                 flatten_anchor(anchor, observes)
+        echoes = []
+        for echo in scene.get("state_echoes", []):
+            echoes.append(
+                {
+                    "id": echo.get("id"),
+                    "label": echo.get("label"),
+                    "requirements": echo.get("requirements", []),
+                }
+            )
         scenes.append(
             {
                 "id": scene.get("id"),
                 "chapter": scene.get("chapter"),
                 "title": scene.get("title"),
                 "observes": observes,
+                "state_echoes": echoes,
                 "choices": scene_choices,
             }
         )
@@ -234,4 +260,3 @@ def write_validation_report(messages: list[ValidationMessage], path: str | Path)
     for message in messages:
         lines.append(f"- [{message.level.upper()}] `{message.location}`: {message.message}")
     Path(path).write_text("\n".join(lines) + "\n", encoding="utf-8")
-
