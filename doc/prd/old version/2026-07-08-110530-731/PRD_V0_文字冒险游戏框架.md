@@ -1,6 +1,6 @@
 # PRD V0：文字版底特律式互动叙事游戏框架
 
-版本：V0.14
+版本：V0.13
 日期：2026-07-08  
 文档目标：定义第一版本文字游戏本身的框架、具体形态、用户 UI/UX  
 保留文档：`PRD_AI文字冒险游戏.md` 继续保留，作为后续 AI 创作 Agent 和长期路线参考  
@@ -1033,7 +1033,6 @@ V0 失败时，测试用户会说：
 - 内容 QA 脚本：`/home/samsong/Desktop/game_writer/scripts/content_qa_report.py`
 - 冒烟游玩脚本：`/home/samsong/Desktop/game_writer/scripts/smoke_playthrough.py`
 - 浏览器冒烟脚本：`/home/samsong/Desktop/game_writer/scripts/browser_smoke.py`
-- 生成失败样本库：`/home/samsong/Desktop/game_writer/examples/fixtures/generation_failures/fixture_cases.json`
 
 它已经覆盖本 PRD 的关键体验闭环：
 
@@ -1065,7 +1064,6 @@ V0 失败时，测试用户会说：
 - 局部 repair：能修复常见生成硬伤，包括坏 `start_scene_id`、坏 `next_scene`、缺失 anchor 文本、错误 observe depth、坏 unlock choice 引用。
 - 显式 JSON Schema 契约：验证游戏数据的字段形状、必填项、枚举、递归 observe 结构和基础类型。
 - 生成导出门禁：`generate_game.py` 默认在写文件前通过 JSON Schema 和结构 validator，失败时阻断导出。
-- 生成失败 fixture：用 mutation case 覆盖 schema gate、validator gate、repair gate 的典型坏输出。
 - 基础测试入口：`/home/samsong/Desktop/game_writer/tests/test_demo_contract.py`
 - 内部测试记录模板：`/home/samsong/Desktop/game_writer/doc/testing/internal_playtest_record_template.md`
 - 内部测试批次模板：`/home/samsong/Desktop/game_writer/examples/playtests/internal_playtest_batch_template.json`
@@ -1324,19 +1322,3 @@ V0.13 的边界：
 - 导出门禁只阻断 schema 和 validator 的 error；content QA 仍是独立验收命令。
 - 当前还没有模型输出 fixtures 和失败样本库。
 - 这仍不是 LLM 语义 repair loop，但已把生成入口的硬合同前移到写文件之前。
-
-### 17.18 V0.14 版本变更记录
-
-V0.14 相比 V0.13 的实质变化：
-
-- 旧版 V0.13 PRD 和技术文档已归档到 `/home/samsong/Desktop/game_writer/doc/prd/old version/2026-07-08-110530-731`。
-- 新增 `examples/fixtures/generation_failures/fixture_cases.json`，用 mutation 描述典型坏模型输出。
-- fixture 覆盖 schema gate、validator gate 和 repair gate：缺必填字段、坏 `next_scene`、anchor 文本漂移、unlock choice typo、坏 `start_scene_id`。
-- 新增 `tests/test_generation_failure_fixtures.py`，按 fixture 预期验证 schema error、validator error 和 repair 是否能清除 validator error。
-- README 增加生成失败样本入口。
-
-V0.14 的边界：
-
-- 当前 fixture 是基于 deterministic demo 的 mutation 样本，不是真实 LLM 输出日志。
-- fixture 只覆盖硬结构失败，不覆盖剧情质量和语义修复。
-- 下一步应积累真实模型输出样本，并建立 prompt 版本与失败样本的对应关系。

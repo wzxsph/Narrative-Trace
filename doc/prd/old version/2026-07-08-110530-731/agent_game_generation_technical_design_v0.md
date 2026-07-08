@@ -1,6 +1,6 @@
 # Agent Game Generation Technical Design V0
 
-版本：V0.14
+版本：V0.13
 日期：2026-07-08  
 文档类型：技术设计文档  
 文件名规则：英文文件名，便于后续工程引用  
@@ -1174,7 +1174,6 @@ generated/missing_phone_v0/game.json
 - `repair_game.py` 已从 report-only 升级为保守局部修复器。
 - 新增显式 JSON Schema 和 schema 校验脚本。
 - `export_game()` 已将 JSON Schema 和结构 validator 接入默认导出门禁。
-- 新增生成失败 fixture，覆盖 schema gate、validator gate、repair gate 的典型坏输出。
 
 当前技术状态：
 
@@ -1191,7 +1190,6 @@ Browser smoke for core mobile path: achieved
 Conservative local repair tool: achieved
 Explicit JSON Schema contract: achieved
 Schema and validator export gate: achieved
-Generation failure fixtures: achieved
 Production-grade generation pipeline: not achieved
 ```
 
@@ -1203,7 +1201,7 @@ Production-grade generation pipeline: not achieved
 
 - 当前 LLM 只做可选 polish，不是真正多阶段生成。
 - repair loop 已能修复常见确定性结构错误，但还不是 LLM 驱动的语义局部重写。
-- 已有生成失败 mutation fixtures，但还缺少真实模型输出样本库。
+- 缺少模型输出 fixtures 和失败样本测试。
 - 缺少 prompt 版本管理。
 - deterministic demo 规模已扩到 9 场景，但仍是手写结构，不证明 agent 能稳定生成同等规模内容。
 
@@ -1227,7 +1225,7 @@ Production-grade generation pipeline: not achieved
 ### 21.4 Engineering Hygiene
 
 - 已引入最小 `tests/`，但还不是完整测试矩阵。
-- 已有统一 JSON Schema 文件和基础生成失败 fixtures，但还需要真实模型输出样本和 prompt 版本映射。
+- 已有统一 JSON Schema 文件，但还需要生成物 fixtures 和更多失败样本。
 - 需要把 generated demo 内容与手写 fixture 的边界定义清楚。
 - 已增加 README，但仍需要持续同步真实命令和产品边界。
 
@@ -1235,8 +1233,8 @@ Production-grade generation pipeline: not achieved
 
 下一轮建议按这个顺序推进：
 
-1. 积累真实模型输出 fixtures，并记录对应 prompt/model/provider 版本。
-2. 增加 prompt 版本管理，让失败样本能追溯到生成策略。
+1. 增加模型输出 fixtures 和失败样本测试，验证 repair loop 的真实输入输出。
+2. 增加生成失败样本 fixtures，覆盖 schema gate、validator gate、repair gate 的组合行为。
 3. 扩展浏览器 E2E 矩阵，覆盖多结局、多路径、章节继续和结局画像。
 4. 跑一轮内部 playtest 批次，使用 `summarize_playtest_batch.py` 生成 pass/fail 报告。
 5. 增加真实设备与无障碍测试，覆盖触控、滚动、可读性、键盘导航和屏幕阅读器。
@@ -1483,24 +1481,3 @@ Production-grade generation pipeline: not achieved
 - 模型输出 fixtures 和失败样本库。
 - content QA 尚未并入生成默认阻断链路。
 - LLM 语义 repair prompt 版本管理。
-
-## 36. V0.14 Implementation Delta
-
-本轮 V0.14 的工程变化：
-
-- PRD 和技术文档旧版已归档到 `doc/prd/old version/2026-07-08-110530-731`。
-- 新增 `examples/fixtures/generation_failures/fixture_cases.json`。
-- fixture 使用 base game + mutation 描述坏生成物，避免复制整份大 JSON。
-- fixture 覆盖：
-  - schema gate：choice 缺 `consequence_level`。
-  - validator gate：坏 `next_scene`。
-  - repair gate：anchor 文本漂移、unlock choice typo、坏 `start_scene_id`。
-- 新增 `tests/test_generation_failure_fixtures.py`，统一验证 schema/validator/repair 预期。
-- `README.md` 增加生成失败样本入口。
-
-本轮没有解决：
-
-- 真实 LLM 输出样本库。
-- prompt/model/provider 版本映射。
-- LLM 语义 repair prompt 版本管理。
-- 内容质量失败样本，例如“选择没有犹豫点”或“隐藏线索语义不公平”。

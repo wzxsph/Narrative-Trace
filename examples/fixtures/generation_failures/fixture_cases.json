@@ -1,0 +1,92 @@
+{
+  "schema_version": "game_writer_failure_fixtures_v0_1",
+  "base_game": "generated/missing_phone_v0/game.json",
+  "description": "Mutation-based fixtures that simulate common model output failures without copying the full demo game.",
+  "cases": [
+    {
+      "id": "schema_missing_choice_consequence_level",
+      "kind": "schema_gate",
+      "why_it_matters": "A model may omit a required enum field. This must be blocked before export.",
+      "mutations": [
+        {
+          "op": "delete",
+          "path": ["scenes", 0, "choices", 0, "consequence_level"]
+        }
+      ],
+      "expect": {
+        "schema_errors": true,
+        "validator_errors": false,
+        "repair_clears_validator_errors": false
+      }
+    },
+    {
+      "id": "validator_bad_next_scene_repairable",
+      "kind": "validator_gate",
+      "why_it_matters": "A model may produce a near-miss scene id. The local repair loop should recover it.",
+      "mutations": [
+        {
+          "op": "set",
+          "path": ["scenes", 0, "choices", 0, "next_scene"],
+          "value": "ch01_cloud_consol"
+        }
+      ],
+      "expect": {
+        "schema_errors": false,
+        "validator_errors": true,
+        "repair_clears_validator_errors": true
+      }
+    },
+    {
+      "id": "repair_anchor_text_and_unlock_typo",
+      "kind": "repair_gate",
+      "why_it_matters": "A model may rewrite the parent text but keep the old anchor text_range, and typo an unlocked choice id.",
+      "mutations": [
+        {
+          "op": "replace_text",
+          "path": ["scenes", 0, "background_blocks", 0, "text"],
+          "old": "未发送短信",
+          "new": "短信草稿"
+        },
+        {
+          "op": "set",
+          "path": [
+            "scenes",
+            0,
+            "background_blocks",
+            0,
+            "observe_anchors",
+            0,
+            "opens_fragment",
+            "nested_anchors",
+            0,
+            "unlocks_choices",
+            0
+          ],
+          "value": "choice_go_statio"
+        }
+      ],
+      "expect": {
+        "schema_errors": false,
+        "validator_errors": true,
+        "repair_clears_validator_errors": true
+      }
+    },
+    {
+      "id": "validator_bad_start_scene_repairable",
+      "kind": "repair_gate",
+      "why_it_matters": "A model may write a stale start scene id. Local repair should fall back to the first scene.",
+      "mutations": [
+        {
+          "op": "set",
+          "path": ["start_scene_id"],
+          "value": "missing_start_scene"
+        }
+      ],
+      "expect": {
+        "schema_errors": false,
+        "validator_errors": true,
+        "repair_clears_validator_errors": true
+      }
+    }
+  ]
+}
