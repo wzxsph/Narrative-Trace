@@ -8,6 +8,7 @@ from typing import Any, Literal
 from scripts.content_qa_report import ContentQAMessage, run_content_qa
 from scripts.repair_game import repair_game
 
+from .blueprint_alignment import BlueprintAlignmentMessage, validate_blueprint_alignment
 from .demo_agent import (
     OFFLINE_MODEL_ID,
     apply_llm_polish,
@@ -70,6 +71,7 @@ class AgentState:
     game: dict[str, Any] | None = None
     state_schema_messages: list[StateSchemaDesignMessage] = field(default_factory=list)
     scene_blueprint_messages: list[SceneBlueprintMessage] = field(default_factory=list)
+    blueprint_alignment_messages: list[BlueprintAlignmentMessage] = field(default_factory=list)
     schema_errors: list[str] = field(default_factory=list)
     validation_messages: list[ValidationMessage] = field(default_factory=list)
     content_qa_messages: list[ContentQAMessage] = field(default_factory=list)
@@ -84,9 +86,17 @@ class AgentState:
     def blocking_error_count(self) -> int:
         state_schema_errors = sum(1 for message in self.state_schema_messages if message.level == "error")
         scene_blueprint_errors = sum(1 for message in self.scene_blueprint_messages if message.level == "error")
+        blueprint_alignment_errors = sum(1 for message in self.blueprint_alignment_messages if message.level == "error")
         validation_errors = sum(1 for message in self.validation_messages if message.level == "error")
         content_errors = sum(1 for message in self.content_qa_messages if message.level == "error")
-        return state_schema_errors + scene_blueprint_errors + len(self.schema_errors) + validation_errors + content_errors
+        return (
+            state_schema_errors
+            + scene_blueprint_errors
+            + blueprint_alignment_errors
+            + len(self.schema_errors)
+            + validation_errors
+            + content_errors
+        )
 
 
 class GenerationAgentGraph:
@@ -99,6 +109,7 @@ class GenerationAgentGraph:
         self.design_scene_blueprint(state)
         self.validate_scene_blueprint(state)
         self.draft_skeleton(state)
+        self.validate_blueprint_alignment(state)
         self.optional_llm_polish(state)
 
         while True:
@@ -141,7 +152,7 @@ class GenerationAgentGraph:
         generation = state.game.setdefault("generation", {})
         generation["provider"] = "offline"
         generation["model"] = OFFLINE_MODEL_ID
-        generation["agent_graph"] = "v0_31"
+        generation["agent_graph"] = "v0_32"
         generation["plan_schema_version"] = state.generation_plan["plan_schema_version"]
         generation["state_schema_design_version"] = state.state_schema_design["schema_version"]
         generation["scene_blueprint_version"] = state.scene_blueprint_design["schema_version"]
@@ -235,6 +246,22 @@ class GenerationAgentGraph:
         )
         if errors:
             raise AgentRunError("Scene blueprint failed validation")
+
+    def validate_blueprint_alignment(self, state: AgentState) -> None:
+        if state.game is None or state.scene_blueprint_design is None:
+            raise AgentRunError("validate_blueprint_alignment requires game and scene blueprint")
+        state.blueprint_alignment_messages = validate_blueprint_alignment(state.game, state.scene_blueprint_design)
+        errors = sum(1 for message in state.blueprint_alignment_messages if message.level == "error")
+        warnings = sum(1 for message in state.blueprint_alignment_messages if message.level == "warning")
+        state.add_trace(
+            "validate_blueprint_alignment",
+            "ok" if errors == 0 else "error",
+            "Blueprint-to-game alignment gate completed",
+            errors=errors,
+            warnings=warnings,
+        )
+        if errors:
+            raise AgentRunError("Blueprint-to-game alignment failed validation")
 
     def optional_llm_polish(self, state: AgentState) -> None:
         if state.game is None or state.brief is None:

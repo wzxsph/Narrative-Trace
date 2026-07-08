@@ -17,19 +17,24 @@
       "state_writes": [
         "clues.unsent_warning",
         "clues.station_location",
-        "relationships.chen.trust"
+        "relationships.chen.trust",
+        "relationships.chen.suspicion"
       ],
       "observe_targets": [
         "obs_unsent_sms",
-        "obs_0213_log"
+        "obs_0213_log",
+        "obs_remote_wipe",
+        "obs_pause_window"
       ],
       "choice_targets": [
         "choice_call_chen",
         "choice_go_station",
-        "choice_inspect_without_calling"
+        "choice_delay_wipe",
+        "choice_confront_chen"
       ],
       "next_scene_ids": [
-        "ch01_cloud_console"
+        "ch01_cloud_console",
+        "ch01_contact_trace"
       ],
       "ending_targets": []
     },
@@ -43,19 +48,19 @@
         "clues.freeze_token"
       ],
       "state_writes": [
-        "clues.wipe_pause_window",
         "clues.freeze_token",
-        "pressure.company_alert"
+        "pressure.company_alert",
+        "stance.protect_person"
       ],
       "observe_targets": [
-        "obs_remote_wipe",
-        "obs_pause_window",
-        "obs_session_token"
+        "obs_device_admin",
+        "obs_session_token",
+        "obs_screen_recording"
       ],
       "choice_targets": [
         "choice_freeze_wipe",
         "choice_isolate_phone",
-        "choice_delay_wipe"
+        "choice_leave_unfrozen"
       ],
       "next_scene_ids": [
         "ch01_contact_trace"
@@ -73,16 +78,19 @@
       ],
       "state_writes": [
         "relationships.chen.trust",
-        "relationships.chen.suspicion"
+        "relationships.lin.bond",
+        "stance.truth_first"
       ],
       "observe_targets": [
-        "obs_call_history",
-        "obs_trimmed_gap"
+        "obs_chen_alias",
+        "obs_casefile_share",
+        "obs_taxi_order",
+        "obs_voice_note"
       ],
       "choice_targets": [
         "choice_leave_for_station",
         "choice_send_voice_to_self",
-        "choice_confront_chen"
+        "choice_warn_chen"
       ],
       "next_scene_ids": [
         "ch02_station_gate"
@@ -105,12 +113,13 @@
       ],
       "observe_targets": [
         "obs_station_entry_code",
-        "obs_camera_sweep"
+        "obs_security_booth",
+        "obs_camera_blind_spot"
       ],
       "choice_targets": [
         "choice_enter_service_corridor",
         "choice_wait_guard_shift",
-        "choice_cover_camera"
+        "choice_call_chen_at_gate"
       ],
       "next_scene_ids": [
         "ch02_station_platform"
@@ -128,18 +137,19 @@
       ],
       "state_writes": [
         "clues.locker_a17",
-        "clues.victim_list",
-        "relationships.lin.bond"
+        "relationships.lin.bond",
+        "stance.protect_person"
       ],
       "observe_targets": [
+        "obs_ticket",
         "obs_locker_code",
-        "obs_red_bracelet",
-        "obs_victim_list"
+        "obs_red_dot",
+        "obs_recording_warning"
       ],
       "choice_targets": [
+        "choice_wait_station",
         "choice_open_locker",
-        "choice_record_platform",
-        "choice_leave_cache"
+        "choice_cover_camera"
       ],
       "next_scene_ids": [
         "ch02_locker_room"
@@ -161,12 +171,13 @@
       ],
       "observe_targets": [
         "obs_backup_drive",
-        "obs_last_note"
+        "obs_audio_key",
+        "obs_red_bracelet"
       ],
       "choice_targets": [
         "choice_take_backup_to_safehouse",
-        "choice_call_chen_from_station",
-        "choice_copy_then_leave"
+        "choice_protect_lin_secret",
+        "choice_destroy_locker_camera"
       ],
       "next_scene_ids": [
         "ch03_backup_unlock"
@@ -183,20 +194,23 @@
         "clues.victim_list"
       ],
       "state_writes": [
-        "clues.public_packet_ready",
-        "clues.archive_ready"
+        "clues.victim_list",
+        "stance.truth_first",
+        "stance.protect_person"
       ],
       "observe_targets": [
-        "obs_backup_context",
-        "obs_confession_cut"
+        "obs_raw_recording",
+        "obs_edited_recording",
+        "obs_context_chain"
       ],
       "choice_targets": [
         "choice_compare_context",
-        "choice_prepare_archive",
-        "choice_prepare_public_packet"
+        "choice_send_hash_to_chen",
+        "choice_archive_first"
       ],
       "next_scene_ids": [
-        "ch03_witness_thread"
+        "ch03_witness_thread",
+        "ch03_publish_decision"
       ],
       "ending_targets": []
     },
@@ -211,18 +225,20 @@
         "relationships.lin.bond"
       ],
       "state_writes": [
+        "clues.public_packet_ready",
+        "clues.archive_ready",
         "clues.chen_message_ready",
-        "relationships.chen.trust",
-        "relationships.chen.suspicion"
+        "relationships.chen.trust"
       ],
       "observe_targets": [
-        "obs_send_to_chen",
-        "obs_lin_request"
+        "obs_final_message",
+        "obs_victim_list",
+        "obs_chen_pause"
       ],
       "choice_targets": [
-        "choice_ask_chen_last_time",
-        "choice_protect_lin_secret",
-        "choice_confront_final"
+        "choice_prepare_public_packet",
+        "choice_prepare_archive",
+        "choice_ask_chen_last_time"
       ],
       "next_scene_ids": [
         "ch03_publish_decision"

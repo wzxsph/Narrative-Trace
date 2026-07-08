@@ -49,6 +49,7 @@ class AgentGraphTest(unittest.TestCase):
       self.assertIn("design_scene_blueprint", nodes)
       self.assertIn("validate_scene_blueprint", nodes)
       self.assertIn("draft_skeleton", nodes)
+      self.assertIn("validate_blueprint_alignment", nodes)
       self.assertIn("validate_schema", nodes)
       self.assertIn("validate_structure", nodes)
       self.assertIn("validate_content_qa", nodes)
@@ -87,6 +88,8 @@ class AgentGraphTest(unittest.TestCase):
       self.assertEqual(scene_blueprint["ending_targets"], generation_plan["ending_targets"])
       scene_blueprint_events = [event for event in trace if event["node"] == "validate_scene_blueprint"]
       self.assertEqual(scene_blueprint_events[-1]["status"], "ok")
+      alignment_events = [event for event in trace if event["node"] == "validate_blueprint_alignment"]
+      self.assertEqual(alignment_events[-1]["status"], "ok")
 
   def test_repair_node_applies_supported_structural_repairs(self) -> None:
     brief = load_brief(BRIEF_PATH)

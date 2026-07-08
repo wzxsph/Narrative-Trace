@@ -120,7 +120,7 @@ python3 scripts/run_generation_agent.py \
   --provider offline
 ```
 
-该入口会执行 `load_brief -> plan_story_structure -> design_state_schema -> validate_state_schema_design -> design_scene_blueprint -> validate_scene_blueprint -> draft_skeleton -> optional_llm_polish -> validate_schema -> validate_structure -> validate_content_qa -> repair_if_needed -> export_artifacts -> write_agent_trace`，并导出 `generation_plan.json`、`state_schema_design.json`、`scene_blueprint.json` 与 `agent_trace.jsonl`。
+该入口会执行 `load_brief -> plan_story_structure -> design_state_schema -> validate_state_schema_design -> design_scene_blueprint -> validate_scene_blueprint -> draft_skeleton -> validate_blueprint_alignment -> optional_llm_polish -> validate_schema -> validate_structure -> validate_content_qa -> repair_if_needed -> export_artifacts -> write_agent_trace`，并导出 `generation_plan.json`、`state_schema_design.json`、`scene_blueprint.json` 与 `agent_trace.jsonl`。
 
 校验状态设计 artifact：
 
@@ -134,6 +134,13 @@ python3 scripts/validate_state_schema_design.py \
 ```bash
 python3 scripts/validate_scene_blueprint.py \
   generated/missing_phone_agent_v0/scene_blueprint.json
+```
+
+校验场景蓝图与最终 game 对齐：
+
+```bash
+python3 scripts/validate_blueprint_alignment.py \
+  generated/missing_phone_agent_v0/game.json
 ```
 
 归档真实模型输出样本：
