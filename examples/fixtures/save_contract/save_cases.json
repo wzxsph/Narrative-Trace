@@ -1,0 +1,172 @@
+{
+  "schema_version": "game_writer_save_contract_v0_1",
+  "description": "Save payload fixtures for localStorage restore, migration, and fallback behavior.",
+  "save_key": "game_writer_missing_phone_runtime_v1",
+  "current_save_version": 2,
+  "base_game": "generated/missing_phone_v0/game.json",
+  "cases": [
+    {
+      "id": "v1_chapter_review_migrates",
+      "kind": "migration",
+      "why_it_matters": "A user who reached the first chapter review on save v1 should keep that review state after save version v2 ships.",
+      "payload": {
+        "version": 1,
+        "projectId": "missing_phone",
+        "schemaVersion": "game_writer_demo_v0_5",
+        "sceneId": "ch01_contact_trace",
+        "state": {
+          "clues.station_location": true,
+          "clues.freeze_token": true,
+          "clues.station_route_confirmed": true,
+          "stance.truth_first": 2,
+          "pressure.company_alert": 1
+        },
+        "openedAnchors": ["obs_unsent_sms", "obs_0213_log", "obs_session_token", "obs_taxi_order"],
+        "unlockedChoices": ["choice_go_station", "choice_freeze_wipe", "choice_leave_for_station"],
+        "activeGuidance": null,
+        "seenGuidance": ["guide_first_observe", "guide_choice_from_observe"],
+        "highlightedChoices": [],
+        "visitedScenes": ["ch01_phone_lock", "ch01_cloud_console", "ch01_contact_trace"],
+        "chosenChoices": ["choice_go_station", "choice_freeze_wipe", "choice_leave_for_station"],
+        "choiceOutcomes": [
+          "你没有先解释，只把自己推向线索指向的地点。",
+          "你冻结了清除队列，但后台也记录了你的干预。",
+          "你沿订单路线离开，第一章的线索开始指向地铁站。"
+        ],
+        "endingId": "",
+        "review": {
+          "fromSceneId": "ch01_contact_trace",
+          "nextSceneId": "ch02_station_gate",
+          "choiceId": "choice_leave_for_station",
+          "outcome": "你沿订单路线离开，第一章的线索开始指向地铁站。"
+        }
+      },
+      "expect": {
+        "restores": true,
+        "migrated_version": 2,
+        "screen": "review"
+      }
+    },
+    {
+      "id": "v2_publish_ending_restores",
+      "kind": "restore",
+      "why_it_matters": "A current-version ending save should restore the ending state instead of returning to a scene.",
+      "payload": {
+        "version": 2,
+        "projectId": "missing_phone",
+        "schemaVersion": "game_writer_demo_v0_5",
+        "sceneId": "ch03_publish_decision",
+        "state": {
+          "clues.public_packet_ready": true,
+          "clues.raw_recording": true,
+          "clues.victim_list": true,
+          "stance.truth_first": 7,
+          "relationships.lin.bond": 2
+        },
+        "openedAnchors": [
+          "obs_unsent_sms",
+          "obs_0213_log",
+          "obs_session_token",
+          "obs_taxi_order",
+          "obs_station_entry_code",
+          "obs_ticket",
+          "obs_locker_code",
+          "obs_backup_drive",
+          "obs_raw_recording",
+          "obs_victim_list",
+          "obs_public_packet"
+        ],
+        "unlockedChoices": [
+          "choice_go_station",
+          "choice_freeze_wipe",
+          "choice_leave_for_station",
+          "choice_enter_service_corridor",
+          "choice_open_locker",
+          "choice_take_backup_to_safehouse",
+          "choice_compare_context",
+          "choice_prepare_public_packet",
+          "choice_publish_truth"
+        ],
+        "activeGuidance": null,
+        "seenGuidance": ["guide_first_observe", "guide_choice_from_observe"],
+        "highlightedChoices": [],
+        "visitedScenes": [
+          "ch01_phone_lock",
+          "ch01_cloud_console",
+          "ch01_contact_trace",
+          "ch02_station_gate",
+          "ch02_station_platform",
+          "ch02_locker_room",
+          "ch03_backup_unlock",
+          "ch03_witness_thread",
+          "ch03_publish_decision"
+        ],
+        "chosenChoices": [
+          "choice_go_station",
+          "choice_freeze_wipe",
+          "choice_leave_for_station",
+          "choice_enter_service_corridor",
+          "choice_open_locker",
+          "choice_take_backup_to_safehouse",
+          "choice_compare_context",
+          "choice_prepare_public_packet",
+          "choice_publish_truth"
+        ],
+        "choiceOutcomes": [
+          "你没有先解释，只把自己推向线索指向的地点。",
+          "你冻结了清除队列，但后台也记录了你的干预。",
+          "你沿订单路线离开，第一章的线索开始指向地铁站。",
+          "你从检修门进入，留下了一条清晰但危险的路径。",
+          "你打开储物柜，备份副本把案件推向无法回头的位置。",
+          "你带走备份盘和录音钥匙，准备让证据离开地铁站。",
+          "你继续查证人链，不让原始录音脱离上下文。",
+          "你整理公开包，把隐私遮住，把证据留下。",
+          "你公开了原始录音，真相不再只属于你。"
+        ],
+        "endingId": "ending_publish",
+        "review": null
+      },
+      "expect": {
+        "restores": true,
+        "migrated_version": 2,
+        "screen": "ending"
+      }
+    },
+    {
+      "id": "future_version_falls_back",
+      "kind": "fallback",
+      "why_it_matters": "A future unsupported save version should not be interpreted as current state.",
+      "payload": {
+        "version": 999,
+        "projectId": "missing_phone",
+        "schemaVersion": "game_writer_demo_v0_5",
+        "sceneId": "ch01_phone_lock",
+        "state": {},
+        "openedAnchors": [],
+        "unlockedChoices": [],
+        "activeGuidance": null,
+        "seenGuidance": [],
+        "highlightedChoices": [],
+        "visitedScenes": [],
+        "chosenChoices": [],
+        "choiceOutcomes": [],
+        "endingId": "",
+        "review": null
+      },
+      "expect": {
+        "restores": false,
+        "recovery_notice_contains": "旧进度与当前案件不兼容"
+      }
+    },
+    {
+      "id": "corrupt_json_falls_back",
+      "kind": "fallback",
+      "why_it_matters": "A corrupted localStorage string should not crash restore.",
+      "raw_save": "not-json",
+      "expect": {
+        "restores": false,
+        "recovery_notice_contains": "旧进度内容损坏"
+      }
+    }
+  ]
+}

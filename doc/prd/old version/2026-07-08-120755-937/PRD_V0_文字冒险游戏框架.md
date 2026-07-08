@@ -1,6 +1,6 @@
 # PRD V0：文字版底特律式互动叙事游戏框架
 
-版本：V0.23
+版本：V0.22
 日期：2026-07-08  
 文档目标：定义第一版本文字游戏本身的框架、具体形态、用户 UI/UX  
 保留文档：`PRD_AI文字冒险游戏.md` 继续保留，作为后续 AI 创作 Agent 和长期路线参考  
@@ -1030,7 +1030,6 @@ V0 失败时，测试用户会说：
 - Prompt Manifest：`/home/samsong/Desktop/game_writer/prompts/manifest.json`
 - 模型输出样本归档脚本：`/home/samsong/Desktop/game_writer/scripts/archive_model_output_sample.py`
 - 模型输出样本校验脚本：`/home/samsong/Desktop/game_writer/scripts/validate_model_output_archive.py`
-- 存档合同校验脚本：`/home/samsong/Desktop/game_writer/scripts/validate_save_contract.py`
 - Schema 校验脚本：`/home/samsong/Desktop/game_writer/scripts/validate_json_schema.py`
 - 局部修复脚本：`/home/samsong/Desktop/game_writer/scripts/repair_game.py`
 - 校验脚本：`/home/samsong/Desktop/game_writer/scripts/validate_game.py`
@@ -1040,7 +1039,6 @@ V0 失败时，测试用户会说：
 - 多结局浏览器 E2E 矩阵：`/home/samsong/Desktop/game_writer/scripts/browser_e2e_matrix.py`
 - 生成失败样本库：`/home/samsong/Desktop/game_writer/examples/fixtures/generation_failures/fixture_cases.json`
 - 模型输出样本库：`/home/samsong/Desktop/game_writer/examples/fixtures/model_outputs/sample_manifest.json`
-- 存档合同样本库：`/home/samsong/Desktop/game_writer/examples/fixtures/save_contract/save_cases.json`
 
 它已经覆盖本 PRD 的关键体验闭环：
 
@@ -1064,7 +1062,6 @@ V0 失败时，测试用户会说：
 - 第一章叙事内轻教学：首次展开 observe 时出现剧情内系统反馈，首次由 observe 长出行动时高亮新增 choice。
 - 结局行动画像：结局页展示关键 observe、关键 choice、最终立场与结局标签。
 - 本地保存/恢复：刷新页面后可恢复当前场景、已展开观察、选择路径、章节复盘或结局状态。
-- 存档合同 fixture：覆盖 v1 复盘迁移、v2 结局恢复、未来版本 fallback 和坏 JSON fallback。
 - 内容规模达到 3 章 x 每章 3 个主场景，共 9 个主场景。
 - 隐藏关系变量的叙事回声：`relationships.chen.trust`、`relationships.chen.suspicion`、`relationships.lin.bond` 会在后续场景中触发条件文本。
 - 生成产物的结构校验。
@@ -1490,20 +1487,3 @@ V0.22 的边界：
 - 当前只是 v1 到 v2 的最小迁移骨架，没有复杂字段重写、数据补全或跨项目迁移。
 - 不兼容版本仍会 fallback 到新局，并显示 V0.21 的恢复提示。
 - 下一步应把存档数据最小合同文档化，并为未来字段级迁移预留测试样本。
-
-### 17.27 V0.23 版本变更记录
-
-V0.23 相比 V0.22 的实质变化：
-
-- 旧版 V0.22 PRD 和技术文档已归档到 `/home/samsong/Desktop/game_writer/doc/prd/old version/2026-07-08-120755-937`。
-- 新增 `examples/fixtures/save_contract/save_cases.json`，把存档恢复/迁移/fallback 样本从浏览器脚本中的临时构造沉淀为合同 fixture。
-- 新增 `gamegen/save_contract.py`，提供存档合同读取、v1 到 v2 迁移模拟、payload 引用校验和 fallback 预期校验。
-- 新增 `scripts/validate_save_contract.py`，可在提交前校验存档合同样本。
-- 新增 `tests/test_save_contract.py`，覆盖当前合同通过、坏 scene 引用失败、重复 case id 失败、fallback 缺恢复提示失败。
-- README 增加存档合同样本和校验命令。
-
-V0.23 的边界：
-
-- 当前存档合同 fixture 是最小样本集，不覆盖所有路径和所有字段组合。
-- 当前迁移规则仍只支持 v1 到 v2 原样升级，不做字段级重写。
-- 下一步如果继续做存档系统，应扩展字段级迁移 fixture，并把 fixture 与浏览器 localStorage 注入路径更紧密地绑定。

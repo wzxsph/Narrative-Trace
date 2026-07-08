@@ -12,6 +12,7 @@
 - Prompt Manifest：`prompts/manifest.json`
 - 模型输出样本归档：`scripts/archive_model_output_sample.py`
 - 模型输出样本校验：`scripts/validate_model_output_archive.py`
+- 存档合同校验：`scripts/validate_save_contract.py`
 - Schema 校验：`scripts/validate_json_schema.py`
 - 校验器：`scripts/validate_game.py`
 - 局部修复器：`scripts/repair_game.py`
@@ -23,6 +24,7 @@
 - Demo 内容：`generated/missing_phone_v0/game.json`
 - 生成失败样本：`examples/fixtures/generation_failures/fixture_cases.json`
 - 模型输出样本库：`examples/fixtures/model_outputs/sample_manifest.json`
+- 存档合同样本：`examples/fixtures/save_contract/save_cases.json`
 
 当前 demo 已覆盖：
 
@@ -37,6 +39,7 @@
 - 隐藏关系变量在后续场景触发叙事回声。
 - 本地刷新恢复进度。
 - 浏览器级移动视口 smoke，覆盖轻教学、高亮、章节复盘、未解锁原因、刷新恢复、v1 存档迁移、坏存档 fallback 和恢复提示。
+- 存档合同 fixture 覆盖 v1 复盘迁移、v2 结局恢复、未来版本 fallback 和坏 JSON fallback。
 - 多结局浏览器 E2E 矩阵，覆盖 `ending_publish`、`ending_bury`、`ending_confront` 三条真实 UI 路径，并验证结局刷新恢复与重新开始。
 - 显式 JSON Schema 契约，减少生成器、校验器和前端之间的隐式耦合。
 - 生成失败 fixture，覆盖 schema gate、validator gate 和 repair gate 的典型坏输出。
@@ -114,6 +117,12 @@ python3 scripts/archive_model_output_sample.py \
 
 ```bash
 python3 scripts/validate_model_output_archive.py
+```
+
+校验存档合同样本：
+
+```bash
+python3 scripts/validate_save_contract.py
 ```
 
 跑测试：

@@ -1,6 +1,6 @@
 # Agent Game Generation Technical Design V0
 
-版本：V0.23
+版本：V0.22
 日期：2026-07-08  
 文档类型：技术设计文档  
 文件名规则：英文文件名，便于后续工程引用  
@@ -1194,7 +1194,6 @@ Ending persistence and restart browser E2E: achieved
 Corrupt save fallback browser smoke: achieved
 Corrupt save recovery notice: achieved
 Save version migration skeleton: achieved
-Save contract fixtures and validation gate: achieved
 Conservative local repair tool: achieved
 Explicit JSON Schema contract: achieved
 Schema and validator export gate: achieved
@@ -1220,7 +1219,7 @@ Production-grade generation pipeline: not achieved
 
 ### 21.2 Runtime Robustness
 
-- 当前前端已有本地单存档，且浏览器 E2E 已覆盖结局态刷新恢复和重新开始，浏览器 smoke 已覆盖 v1 存档迁移、坏 JSON / 旧版本存档 fallback 与可见恢复提示；存档合同 fixture 已覆盖 v1 复盘迁移、v2 结局恢复和 fallback 样本。但没有多存档、复杂字段迁移或云端同步。
+- 当前前端已有本地单存档，且浏览器 E2E 已覆盖结局态刷新恢复和重新开始，浏览器 smoke 已覆盖 v1 存档迁移、坏 JSON / 旧版本存档 fallback 与可见恢复提示；但没有多存档、复杂字段迁移或云端同步。
 - 已有基础章节 flowchart 复盘和未解锁原因说明，但还不是完整 flowchart 级路径复盘。
 - 已有基础 `state_echoes` 渲染，但还没有复杂优先级、互斥回声或节奏控制。
 - 已有第一章叙事内轻教学，但还没有用户测试数据证明提示强度刚好。
@@ -1237,8 +1236,8 @@ Production-grade generation pipeline: not achieved
 
 ### 21.4 Engineering Hygiene
 
-- 已引入最小 `tests/`、浏览器 smoke、三主结局 E2E 和存档合同校验，但还不是完整测试矩阵。
-- 已有统一 JSON Schema、基础生成失败 fixtures、prompt manifest、provider/model trace、模型输出样本归档/校验合同、存档合同 fixture 和结局路径 E2E，但还需要真实模型输出样本入库。
+- 已引入最小 `tests/`、浏览器 smoke 和三主结局 E2E，但还不是完整测试矩阵。
+- 已有统一 JSON Schema、基础生成失败 fixtures、prompt manifest、provider/model trace、模型输出样本归档/校验合同和结局路径 E2E，但还需要真实模型输出样本入库。
 - 需要把 generated demo 内容与手写 fixture 的边界定义清楚。
 - 已增加 README，但仍需要持续同步真实命令和产品边界。
 
@@ -1670,25 +1669,3 @@ Production-grade generation pipeline: not achieved
 - 字段级复杂迁移。
 - 存档合同 fixture。
 - 多存档、云同步和坏存档导出。
-
-## 45. V0.23 Implementation Delta
-
-本轮 V0.23 的工程变化：
-
-- PRD 和技术文档旧版已归档到 `doc/prd/old version/2026-07-08-120755-937`。
-- 新增 `examples/fixtures/save_contract/save_cases.json`。
-- 存档合同 fixture 覆盖：
-  - v1 章节复盘存档迁移到 v2 后恢复 review。
-  - v2 公开结局存档恢复 ending。
-  - 未来版本存档 fallback 并声明不兼容提示。
-  - 坏 JSON localStorage fallback 并声明损坏提示。
-- 新增 `gamegen/save_contract.py`，提供 fixture 加载、v1 到 v2 迁移模拟、payload shape 校验、scene/choice/ending 引用校验和 fallback 预期校验。
-- 新增 `scripts/validate_save_contract.py`。
-- 新增 `tests/test_save_contract.py`，覆盖合同通过、坏 scene 引用、重复 case id、fallback 缺提示。
-- `README.md` 同步存档合同样本和校验命令。
-
-本轮没有解决：
-
-- 复杂字段迁移和迁移链。
-- 浏览器逐条注入所有 save contract fixture。
-- 多存档、云同步、坏存档导出或错误报告。
