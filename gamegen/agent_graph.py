@@ -12,7 +12,7 @@ from .blueprint_alignment import BlueprintAlignmentMessage, validate_blueprint_a
 from .demo_agent import (
     OFFLINE_MODEL_ID,
     apply_llm_polish,
-    deterministic_demo_game,
+    compile_demo_game_from_blueprint,
     export_game,
     load_brief,
 )
@@ -148,11 +148,15 @@ class GenerationAgentGraph:
             or state.scene_blueprint_design is None
         ):
             raise AgentRunError("draft_skeleton requires loaded brief, generation plan, state schema design, and scene blueprint")
-        state.game = deterministic_demo_game(state.brief)
+        try:
+            state.game = compile_demo_game_from_blueprint(state.brief, state.scene_blueprint_design)
+        except ValueError as exc:
+            state.add_trace("draft_skeleton", "error", "Scene blueprint could not be compiled", error=str(exc))
+            raise AgentRunError(str(exc)) from exc
         generation = state.game.setdefault("generation", {})
         generation["provider"] = "offline"
         generation["model"] = OFFLINE_MODEL_ID
-        generation["agent_graph"] = "v0_32"
+        generation["agent_graph"] = "v0_33"
         generation["plan_schema_version"] = state.generation_plan["plan_schema_version"]
         generation["state_schema_design_version"] = state.state_schema_design["schema_version"]
         generation["scene_blueprint_version"] = state.scene_blueprint_design["schema_version"]
@@ -164,6 +168,7 @@ class GenerationAgentGraph:
             planned_scenes=state.generation_plan["scene_count"],
             designed_state_variables=len(state.state_schema_design["variables"]),
             planned_blueprint_scenes=len(state.scene_blueprint_design["scenes"]),
+            draft_source=generation["draft_source"],
             scenes=len(state.game.get("scenes", [])),
             endings=len(state.game.get("endings", [])),
         )

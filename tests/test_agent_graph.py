@@ -58,6 +58,8 @@ class AgentGraphTest(unittest.TestCase):
       self.assertEqual(nodes[-1], "write_agent_trace")
       repair_events = [event for event in trace if event["node"] == "repair_if_needed"]
       self.assertEqual(repair_events[-1]["status"], "skipped")
+      draft_events = [event for event in trace if event["node"] == "draft_skeleton"]
+      self.assertEqual(draft_events[-1]["metrics"]["draft_source"], "scene_blueprint_demo_library_v0_1")
 
       generation_plan = json.loads((output / "generation_plan.json").read_text(encoding="utf-8"))
       self.assertEqual(generation_plan["plan_schema_version"], "generation_plan_v0_1")

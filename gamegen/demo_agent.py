@@ -156,6 +156,33 @@ def deterministic_demo_game(brief: dict[str, Any]) -> dict[str, Any]:
     }
 
 
+def compile_demo_game_from_blueprint(brief: dict[str, Any], scene_blueprint: dict[str, Any]) -> dict[str, Any]:
+    """Compile the current demo scene library according to scene_blueprint order."""
+    game = deterministic_demo_game(brief)
+    scene_by_id = {scene["id"]: scene for scene in game["scenes"]}
+    compiled_scenes = []
+    missing_scene_ids = []
+
+    for blueprint_scene in scene_blueprint.get("scenes", []):
+        scene_id = blueprint_scene.get("id")
+        scene = scene_by_id.get(scene_id)
+        if scene is None:
+            missing_scene_ids.append(scene_id)
+            continue
+        compiled_scenes.append(deepcopy(scene))
+
+    if missing_scene_ids:
+        joined = ", ".join(str(scene_id) for scene_id in missing_scene_ids)
+        raise ValueError(f"Scene blueprint references missing demo scenes: {joined}")
+
+    game["start_scene_id"] = scene_blueprint.get("entry_scene_id", game["start_scene_id"])
+    game["scenes"] = compiled_scenes
+    generation = game.setdefault("generation", {})
+    generation["draft_source"] = "scene_blueprint_demo_library_v0_1"
+    generation["compiled_scene_count"] = len(compiled_scenes)
+    return game
+
+
 def make_scene(
     scene_id: str,
     chapter: str,

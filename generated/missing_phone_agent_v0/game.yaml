@@ -1343,9 +1343,11 @@ endings:
       - "company_alerted"
       - "unstable_truth"
 generation:
+  draft_source: "scene_blueprint_demo_library_v0_1"
+  compiled_scene_count: 9
   provider: "offline"
   model: "deterministic_demo_v0"
-  agent_graph: "v0_32"
+  agent_graph: "v0_33"
   plan_schema_version: "generation_plan_v0_1"
   state_schema_design_version: "state_schema_design_v0_1"
   scene_blueprint_version: "scene_blueprint_v0_1"

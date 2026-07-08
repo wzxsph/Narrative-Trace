@@ -1,6 +1,6 @@
 # Agent Game Generation Technical Design V0
 
-版本：V0.33
+版本：V0.32
 日期：2026-07-08  
 文档类型：技术设计文档  
 文件名规则：英文文件名，便于后续工程引用  
@@ -2247,70 +2247,3 @@ V0.32 必须满足：
 - LLM 自动生成任意 brief 的完整 observe/choice 正文。
 - 使用 LangGraph 原生 runtime 替换当前轻量 graph。
 - 自动评估文本质量、节奏和商业可玩性。
-
-## 55. V0.33 Blueprint-Driven Draft Compiler
-
-V0.32 已经证明 `scene_blueprint.json` 和最终 `game.json` 对齐，但 `draft_skeleton` 仍然直接调用固定 Demo 模板。V0.33 开始拆这个黑箱：新增 blueprint-driven compiler，让草稿生成按蓝图顺序从当前 demo scene library 中装配场景。
-
-这不是最终的动态生成，但它是必要过渡层：
-
-- scene library 仍然是当前稳定 Demo 内容。
-- `draft_skeleton` 的直接输入变为 brief + scene blueprint。
-- 如果蓝图引用不存在的场景，compiler 会失败。
-- trace 记录 `draft_source` 和已编译场景数量。
-
-### 55.1 New Compiler
-
-新增函数：
-
-```text
-compile_demo_game_from_blueprint(brief, scene_blueprint)
-```
-
-行为：
-
-- 先读取当前 deterministic demo scene library。
-- 按 `scene_blueprint.scenes[*].id` 选择并排序 scenes。
-- 设置 `game.start_scene_id = scene_blueprint.entry_scene_id`。
-- 写入 generation metadata：
-  - `draft_source = scene_blueprint_demo_library_v0_1`
-  - `compiled_scene_count`
-- 如果蓝图引用 scene library 中不存在的 scene id，直接失败。
-
-### 55.2 Graph Change
-
-`draft_skeleton` 从：
-
-```text
-deterministic_demo_game(brief)
-```
-
-改为：
-
-```text
-compile_demo_game_from_blueprint(brief, scene_blueprint)
-```
-
-这意味着后续可以逐步替换 scene library 的来源，例如：
-
-- 从蓝图生成单场景草稿。
-- 用 LLM 生成 observe/choice 文本。
-- 人类审稿后固化为 scene artifact。
-- 最终从 scene artifacts 编译完整 game。
-
-### 55.3 Acceptance
-
-V0.33 必须满足：
-
-- `draft_skeleton` 不再直接调用 deterministic whole-game template。
-- compiler 按蓝图 scene 顺序装配 game。
-- compiler 在蓝图引用缺失 scene 时失败。
-- `agent_trace.jsonl` 的 `draft_skeleton` metrics 包含 `draft_source`。
-- 完整离线 agent 仍可通过 state schema、scene blueprint、blueprint alignment、JSON schema、结构、内容 QA、smoke、save contract 等门禁。
-
-本轮仍不宣称完成：
-
-- 根据 scene blueprint 自动生成全新 scene 正文。
-- LLM 自动生成任意 brief 的完整 observe/choice。
-- scene artifact 的人工审稿工作台。
-- 使用 LangGraph 原生 runtime 替换当前轻量 graph。
