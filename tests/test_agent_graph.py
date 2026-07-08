@@ -29,6 +29,7 @@ class AgentGraphTest(unittest.TestCase):
       self.assertTrue((output / "game.yaml").exists())
       self.assertTrue((output / "generation_plan.json").exists())
       self.assertTrue((output / "state_schema_design.json").exists())
+      self.assertTrue((output / "scene_blueprint.json").exists())
       self.assertTrue((output / "path_map.json").exists())
       self.assertTrue((output / "state_registry.json").exists())
       self.assertTrue((output / "validation_report.md").exists())
@@ -45,6 +46,8 @@ class AgentGraphTest(unittest.TestCase):
       self.assertIn("plan_story_structure", nodes)
       self.assertIn("design_state_schema", nodes)
       self.assertIn("validate_state_schema_design", nodes)
+      self.assertIn("design_scene_blueprint", nodes)
+      self.assertIn("validate_scene_blueprint", nodes)
       self.assertIn("draft_skeleton", nodes)
       self.assertIn("validate_schema", nodes)
       self.assertIn("validate_structure", nodes)
@@ -76,6 +79,14 @@ class AgentGraphTest(unittest.TestCase):
 
       state_schema_events = [event for event in trace if event["node"] == "validate_state_schema_design"]
       self.assertEqual(state_schema_events[-1]["status"], "ok")
+
+      scene_blueprint = json.loads((output / "scene_blueprint.json").read_text(encoding="utf-8"))
+      self.assertEqual(scene_blueprint["schema_version"], "scene_blueprint_v0_1")
+      self.assertEqual(scene_blueprint["entry_scene_id"], "ch01_phone_lock")
+      self.assertEqual(len(scene_blueprint["scenes"]), 9)
+      self.assertEqual(scene_blueprint["ending_targets"], generation_plan["ending_targets"])
+      scene_blueprint_events = [event for event in trace if event["node"] == "validate_scene_blueprint"]
+      self.assertEqual(scene_blueprint_events[-1]["status"], "ok")
 
   def test_repair_node_applies_supported_structural_repairs(self) -> None:
     brief = load_brief(BRIEF_PATH)

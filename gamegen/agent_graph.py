@@ -17,6 +17,11 @@ from .demo_agent import (
 )
 from .llm_client import LLMClient, LLMConfig
 from .schema_contract import validate_against_default_schema
+from .scene_blueprint import (
+    SceneBlueprintMessage,
+    build_scene_blueprint_design,
+    validate_scene_blueprint_design,
+)
 from .state_schema_design import StateSchemaDesignMessage, validate_state_schema_design
 from .validator import ValidationMessage, validate_game
 
@@ -61,8 +66,10 @@ class AgentState:
     brief: dict[str, Any] | None = None
     generation_plan: dict[str, Any] | None = None
     state_schema_design: dict[str, Any] | None = None
+    scene_blueprint_design: dict[str, Any] | None = None
     game: dict[str, Any] | None = None
     state_schema_messages: list[StateSchemaDesignMessage] = field(default_factory=list)
+    scene_blueprint_messages: list[SceneBlueprintMessage] = field(default_factory=list)
     schema_errors: list[str] = field(default_factory=list)
     validation_messages: list[ValidationMessage] = field(default_factory=list)
     content_qa_messages: list[ContentQAMessage] = field(default_factory=list)
@@ -76,9 +83,10 @@ class AgentState:
 
     def blocking_error_count(self) -> int:
         state_schema_errors = sum(1 for message in self.state_schema_messages if message.level == "error")
+        scene_blueprint_errors = sum(1 for message in self.scene_blueprint_messages if message.level == "error")
         validation_errors = sum(1 for message in self.validation_messages if message.level == "error")
         content_errors = sum(1 for message in self.content_qa_messages if message.level == "error")
-        return state_schema_errors + len(self.schema_errors) + validation_errors + content_errors
+        return state_schema_errors + scene_blueprint_errors + len(self.schema_errors) + validation_errors + content_errors
 
 
 class GenerationAgentGraph:
@@ -88,6 +96,8 @@ class GenerationAgentGraph:
         self.plan_story_structure(state)
         self.design_state_schema(state)
         self.validate_state_schema_design(state)
+        self.design_scene_blueprint(state)
+        self.validate_scene_blueprint(state)
         self.draft_skeleton(state)
         self.optional_llm_polish(state)
 
@@ -120,15 +130,21 @@ class GenerationAgentGraph:
         )
 
     def draft_skeleton(self, state: AgentState) -> None:
-        if state.brief is None or state.generation_plan is None or state.state_schema_design is None:
-            raise AgentRunError("draft_skeleton requires loaded brief, generation plan, and state schema design")
+        if (
+            state.brief is None
+            or state.generation_plan is None
+            or state.state_schema_design is None
+            or state.scene_blueprint_design is None
+        ):
+            raise AgentRunError("draft_skeleton requires loaded brief, generation plan, state schema design, and scene blueprint")
         state.game = deterministic_demo_game(state.brief)
         generation = state.game.setdefault("generation", {})
         generation["provider"] = "offline"
         generation["model"] = OFFLINE_MODEL_ID
-        generation["agent_graph"] = "v0_30"
+        generation["agent_graph"] = "v0_31"
         generation["plan_schema_version"] = state.generation_plan["plan_schema_version"]
         generation["state_schema_design_version"] = state.state_schema_design["schema_version"]
+        generation["scene_blueprint_version"] = state.scene_blueprint_design["schema_version"]
         state.add_trace(
             "draft_skeleton",
             "ok",
@@ -136,6 +152,7 @@ class GenerationAgentGraph:
             planned_chapters=state.generation_plan["chapter_count"],
             planned_scenes=state.generation_plan["scene_count"],
             designed_state_variables=len(state.state_schema_design["variables"]),
+            planned_blueprint_scenes=len(state.scene_blueprint_design["scenes"]),
             scenes=len(state.game.get("scenes", [])),
             endings=len(state.game.get("endings", [])),
         )
@@ -181,6 +198,43 @@ class GenerationAgentGraph:
         )
         if errors:
             raise AgentRunError("State schema design failed validation")
+
+    def design_scene_blueprint(self, state: AgentState) -> None:
+        if state.brief is None or state.generation_plan is None or state.state_schema_design is None:
+            raise AgentRunError("design_scene_blueprint requires brief, generation plan, and state schema design")
+        state.scene_blueprint_design = build_scene_blueprint_design(
+            state.brief,
+            state.generation_plan,
+            state.state_schema_design,
+        )
+        ending_scene_count = sum(1 for scene in state.scene_blueprint_design["scenes"] if scene["ending_targets"])
+        state.add_trace(
+            "design_scene_blueprint",
+            "ok",
+            "Designed scene blueprint contract",
+            scenes=len(state.scene_blueprint_design["scenes"]),
+            ending_scene_count=ending_scene_count,
+        )
+
+    def validate_scene_blueprint(self, state: AgentState) -> None:
+        if state.scene_blueprint_design is None or state.generation_plan is None or state.state_schema_design is None:
+            raise AgentRunError("validate_scene_blueprint requires scene blueprint, generation plan, and state schema design")
+        state.scene_blueprint_messages = validate_scene_blueprint_design(
+            state.scene_blueprint_design,
+            state.generation_plan,
+            state.state_schema_design,
+        )
+        errors = sum(1 for message in state.scene_blueprint_messages if message.level == "error")
+        warnings = sum(1 for message in state.scene_blueprint_messages if message.level == "warning")
+        state.add_trace(
+            "validate_scene_blueprint",
+            "ok" if errors == 0 else "error",
+            "Scene blueprint gate completed",
+            errors=errors,
+            warnings=warnings,
+        )
+        if errors:
+            raise AgentRunError("Scene blueprint failed validation")
 
     def optional_llm_polish(self, state: AgentState) -> None:
         if state.game is None or state.brief is None:
@@ -291,8 +345,13 @@ class GenerationAgentGraph:
         )
 
     def export_artifacts(self, state: AgentState) -> None:
-        if state.game is None or state.generation_plan is None or state.state_schema_design is None:
-            raise AgentRunError("export_artifacts requires game, generation plan, and state schema design")
+        if (
+            state.game is None
+            or state.generation_plan is None
+            or state.state_schema_design is None
+            or state.scene_blueprint_design is None
+        ):
+            raise AgentRunError("export_artifacts requires game, generation plan, state schema design, and scene blueprint")
         export_game(state.game, state.config.out_dir)
         (state.config.out_dir / "generation_plan.json").write_text(
             json.dumps(state.generation_plan, ensure_ascii=False, indent=2) + "\n",
@@ -300,6 +359,10 @@ class GenerationAgentGraph:
         )
         (state.config.out_dir / "state_schema_design.json").write_text(
             json.dumps(state.state_schema_design, ensure_ascii=False, indent=2) + "\n",
+            encoding="utf-8",
+        )
+        (state.config.out_dir / "scene_blueprint.json").write_text(
+            json.dumps(state.scene_blueprint_design, ensure_ascii=False, indent=2) + "\n",
             encoding="utf-8",
         )
         state.exported = True

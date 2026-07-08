@@ -1,0 +1,269 @@
+{
+  "schema_version": "scene_blueprint_v0_1",
+  "project_id": "missing_phone",
+  "source_plan_schema_version": "generation_plan_v0_1",
+  "source_state_schema_design_version": "state_schema_design_v0_1",
+  "entry_scene_id": "ch01_phone_lock",
+  "scenes": [
+    {
+      "id": "ch01_phone_lock",
+      "chapter_id": "ch01",
+      "title": "锁屏上的半句话",
+      "scene_role": "entry_mystery",
+      "required_state_reads": [
+        "clues.unsent_warning",
+        "clues.station_location"
+      ],
+      "state_writes": [
+        "clues.unsent_warning",
+        "clues.station_location",
+        "relationships.chen.trust"
+      ],
+      "observe_targets": [
+        "obs_unsent_sms",
+        "obs_0213_log"
+      ],
+      "choice_targets": [
+        "choice_call_chen",
+        "choice_go_station",
+        "choice_inspect_without_calling"
+      ],
+      "next_scene_ids": [
+        "ch01_cloud_console"
+      ],
+      "ending_targets": []
+    },
+    {
+      "id": "ch01_cloud_console",
+      "chapter_id": "ch01",
+      "title": "云端控制台",
+      "scene_role": "pressure_escalation",
+      "required_state_reads": [
+        "clues.wipe_pause_window",
+        "clues.freeze_token"
+      ],
+      "state_writes": [
+        "clues.wipe_pause_window",
+        "clues.freeze_token",
+        "pressure.company_alert"
+      ],
+      "observe_targets": [
+        "obs_remote_wipe",
+        "obs_pause_window",
+        "obs_session_token"
+      ],
+      "choice_targets": [
+        "choice_freeze_wipe",
+        "choice_isolate_phone",
+        "choice_delay_wipe"
+      ],
+      "next_scene_ids": [
+        "ch01_contact_trace"
+      ],
+      "ending_targets": []
+    },
+    {
+      "id": "ch01_contact_trace",
+      "chapter_id": "ch01",
+      "title": "联系人里的陈",
+      "scene_role": "relationship_probe",
+      "required_state_reads": [
+        "relationships.chen.trust",
+        "relationships.chen.suspicion"
+      ],
+      "state_writes": [
+        "relationships.chen.trust",
+        "relationships.chen.suspicion"
+      ],
+      "observe_targets": [
+        "obs_call_history",
+        "obs_trimmed_gap"
+      ],
+      "choice_targets": [
+        "choice_leave_for_station",
+        "choice_send_voice_to_self",
+        "choice_confront_chen"
+      ],
+      "next_scene_ids": [
+        "ch02_station_gate"
+      ],
+      "ending_targets": []
+    },
+    {
+      "id": "ch02_station_gate",
+      "chapter_id": "ch02",
+      "title": "旧员工入口",
+      "scene_role": "threshold_choice",
+      "required_state_reads": [
+        "clues.station_entry_code",
+        "pressure.company_alert"
+      ],
+      "state_writes": [
+        "clues.station_entry_code",
+        "stance.truth_first",
+        "stance.protect_person"
+      ],
+      "observe_targets": [
+        "obs_station_entry_code",
+        "obs_camera_sweep"
+      ],
+      "choice_targets": [
+        "choice_enter_service_corridor",
+        "choice_wait_guard_shift",
+        "choice_cover_camera"
+      ],
+      "next_scene_ids": [
+        "ch02_station_platform"
+      ],
+      "ending_targets": []
+    },
+    {
+      "id": "ch02_station_platform",
+      "chapter_id": "ch02",
+      "title": "废弃站台",
+      "scene_role": "evidence_reveal",
+      "required_state_reads": [
+        "clues.locker_a17",
+        "clues.victim_list"
+      ],
+      "state_writes": [
+        "clues.locker_a17",
+        "clues.victim_list",
+        "relationships.lin.bond"
+      ],
+      "observe_targets": [
+        "obs_locker_code",
+        "obs_red_bracelet",
+        "obs_victim_list"
+      ],
+      "choice_targets": [
+        "choice_open_locker",
+        "choice_record_platform",
+        "choice_leave_cache"
+      ],
+      "next_scene_ids": [
+        "ch02_locker_room"
+      ],
+      "ending_targets": []
+    },
+    {
+      "id": "ch02_locker_room",
+      "chapter_id": "ch02",
+      "title": "储物柜后的维护间",
+      "scene_role": "asset_recovery",
+      "required_state_reads": [
+        "clues.backup_copy",
+        "relationships.lin.bond"
+      ],
+      "state_writes": [
+        "clues.backup_copy",
+        "relationships.lin.bond"
+      ],
+      "observe_targets": [
+        "obs_backup_drive",
+        "obs_last_note"
+      ],
+      "choice_targets": [
+        "choice_take_backup_to_safehouse",
+        "choice_call_chen_from_station",
+        "choice_copy_then_leave"
+      ],
+      "next_scene_ids": [
+        "ch03_backup_unlock"
+      ],
+      "ending_targets": []
+    },
+    {
+      "id": "ch03_backup_unlock",
+      "chapter_id": "ch03",
+      "title": "解密备份",
+      "scene_role": "context_reframe",
+      "required_state_reads": [
+        "clues.backup_copy",
+        "clues.victim_list"
+      ],
+      "state_writes": [
+        "clues.public_packet_ready",
+        "clues.archive_ready"
+      ],
+      "observe_targets": [
+        "obs_backup_context",
+        "obs_confession_cut"
+      ],
+      "choice_targets": [
+        "choice_compare_context",
+        "choice_prepare_archive",
+        "choice_prepare_public_packet"
+      ],
+      "next_scene_ids": [
+        "ch03_witness_thread"
+      ],
+      "ending_targets": []
+    },
+    {
+      "id": "ch03_witness_thread",
+      "chapter_id": "ch03",
+      "title": "最后留言串",
+      "scene_role": "relationship_echo",
+      "required_state_reads": [
+        "relationships.chen.trust",
+        "relationships.chen.suspicion",
+        "relationships.lin.bond"
+      ],
+      "state_writes": [
+        "clues.chen_message_ready",
+        "relationships.chen.trust",
+        "relationships.chen.suspicion"
+      ],
+      "observe_targets": [
+        "obs_send_to_chen",
+        "obs_lin_request"
+      ],
+      "choice_targets": [
+        "choice_ask_chen_last_time",
+        "choice_protect_lin_secret",
+        "choice_confront_final"
+      ],
+      "next_scene_ids": [
+        "ch03_publish_decision"
+      ],
+      "ending_targets": []
+    },
+    {
+      "id": "ch03_publish_decision",
+      "chapter_id": "ch03",
+      "title": "发布页",
+      "scene_role": "ending_matrix",
+      "required_state_reads": [
+        "clues.public_packet_ready",
+        "clues.archive_ready",
+        "clues.chen_message_ready"
+      ],
+      "state_writes": [
+        "stance.truth_first",
+        "stance.protect_person",
+        "pressure.company_alert"
+      ],
+      "observe_targets": [
+        "obs_public_packet",
+        "obs_offline_archive"
+      ],
+      "choice_targets": [
+        "choice_publish_truth",
+        "choice_keep_archive",
+        "choice_confront_final"
+      ],
+      "next_scene_ids": [],
+      "ending_targets": [
+        "ending_publish",
+        "ending_bury",
+        "ending_confront"
+      ]
+    }
+  ],
+  "ending_targets": [
+    "ending_publish",
+    "ending_bury",
+    "ending_confront"
+  ]
+}
