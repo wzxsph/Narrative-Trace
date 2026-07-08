@@ -347,6 +347,7 @@ h2 {
   align-content: start;
   grid-auto-rows: max-content;
   overflow: visible;
+  max-height: none;
   padding: 12px 14px;
   border-top: 1px solid var(--line);
   background: var(--paper-panel);

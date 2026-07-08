@@ -81,11 +81,13 @@ def run_browser_smoke() -> dict[str, object]:
 
             assert_condition(page.locator(".guidance-panel").count() == 0, "Guidance should not appear before observe")
             assert_no_horizontal_overflow(page)
+            assert_choices_visible_without_scroll(page)
 
             page.get_by_role("button", name="未发送短信").click()
             assert_single_active_observe_chain(page, "obs_unsent_sms")
             first_guidance = page.locator(".guidance-panel").inner_text()
             assert_condition("锁屏记录展开" in first_guidance, "First observe guidance missing")
+            assert_choices_visible_without_scroll(page)
 
             page.get_by_role("button", name="远程清除").click()
             assert_single_active_observe_chain(page, "obs_remote_wipe")
@@ -93,6 +95,7 @@ def run_browser_smoke() -> dict[str, object]:
                 page.locator('.background-block > .evidence-card[data-anchor-id="obs_unsent_sms"]').count() == 0,
                 "Sibling observe should close the previously displayed top-level card",
             )
+            assert_choices_visible_without_scroll(page)
 
             page.get_by_role("button", name="未发送短信").click()
             assert_single_active_observe_chain(page, "obs_unsent_sms")
@@ -102,6 +105,7 @@ def run_browser_smoke() -> dict[str, object]:
             assert_condition("行动栏刷新" in second_guidance, "Choice unlock guidance missing")
             highlighted = page.locator(".choice-button.newly-unlocked").all_inner_texts()
             assert_condition(any("前往废弃地铁站" in item for item in highlighted), "Unlocked choice was not highlighted")
+            assert_choices_visible_without_scroll(page)
 
             page.get_by_role("button", name=re.compile("前往废弃地铁站")).click()
             page.get_by_role("button", name="临时令牌").click()
@@ -119,11 +123,13 @@ def run_browser_smoke() -> dict[str, object]:
             assert_condition(locked_branches > 0, "Flow should contain at least one locked branch")
             assert_review_flow_choices_not_clipped(page)
             assert_review_continue_button_visible(page)
+            assert_choices_visible_without_scroll(page)
 
             page.reload(wait_until="networkidle")
             restored_text = page.locator(".review-screen").inner_text()
             assert_condition("本章路径图" in restored_text, "Review state did not restore after reload")
             assert_review_continue_button_visible(page)
+            assert_choices_visible_without_scroll(page)
             assert_no_horizontal_overflow(page)
 
             page.evaluate(
@@ -138,6 +144,7 @@ def run_browser_smoke() -> dict[str, object]:
             page.reload(wait_until="networkidle")
             migrated_review_text = page.locator(".review-screen").inner_text()
             assert_condition("本章路径图" in migrated_review_text, "Legacy v1 save did not migrate to review state")
+            assert_choices_visible_without_scroll(page)
             assert_no_horizontal_overflow(page)
 
             page.evaluate(f"window.localStorage.setItem('{SAVE_KEY}', 'not-json')")
@@ -189,6 +196,53 @@ def assert_no_horizontal_overflow(page: object) -> None:
         overflow["scrollWidth"] <= max_width and overflow["bodyScrollWidth"] <= max_width,
         f"Mobile viewport has horizontal overflow: {overflow}",
     )
+
+
+def assert_choices_visible_without_scroll(page: object) -> None:
+    metrics = page.locator("#choiceArea").evaluate(
+        """
+        (area) => {
+          const areaRect = area.getBoundingClientRect();
+          const style = window.getComputedStyle(area);
+          const items = Array.from(area.querySelectorAll(".choice-button, .choice-empty")).map((item) => {
+            const rect = item.getBoundingClientRect();
+            return {
+              text: item.textContent.trim(),
+              top: rect.top,
+              bottom: rect.bottom,
+              clipped: item.scrollHeight > item.clientHeight + 1 || item.scrollWidth > item.clientWidth + 1
+            };
+          });
+          return {
+            top: areaRect.top,
+            bottom: areaRect.bottom,
+            viewportHeight: window.innerHeight,
+            overflowY: style.overflowY,
+            scrollHeight: area.scrollHeight,
+            clientHeight: area.clientHeight,
+            items
+          };
+        }
+        """
+    )
+    hidden_items = [
+        item
+        for item in metrics["items"]
+        if item["top"] < 0 or item["bottom"] > metrics["viewportHeight"] + 1 or item["clipped"]
+    ]
+    assert_condition(
+        metrics["overflowY"] == "visible",
+        f"Choice area should not create its own scroll container: {metrics}",
+    )
+    assert_condition(
+        metrics["scrollHeight"] <= metrics["clientHeight"] + 1,
+        f"Choice area content should fit without internal scrolling: {metrics}",
+    )
+    assert_condition(
+        metrics["top"] >= 0 and metrics["bottom"] <= metrics["viewportHeight"] + 1,
+        f"Choice area should remain fully visible in the viewport: {metrics}",
+    )
+    assert_condition(not hidden_items, f"Choice items should be fully visible without clipping: {hidden_items}")
 
 
 def assert_single_active_observe_chain(page: object, *anchor_ids: str) -> None:
@@ -266,6 +320,7 @@ def assert_start_scene_restored(page: object, message: str, expected_notice: str
     notice_text = notice.inner_text()
     assert_condition(expected_notice in notice_text, f"{message}: recovery notice copy missing")
     assert_no_horizontal_overflow(page)
+    assert_choices_visible_without_scroll(page)
     return notice_text
 
 
