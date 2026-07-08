@@ -58,6 +58,7 @@ class AgentConfig:
 class AgentState:
     config: AgentConfig
     brief: dict[str, Any] | None = None
+    generation_plan: dict[str, Any] | None = None
     game: dict[str, Any] | None = None
     schema_errors: list[str] = field(default_factory=list)
     validation_messages: list[ValidationMessage] = field(default_factory=list)
@@ -80,6 +81,7 @@ class GenerationAgentGraph:
     def run(self, config: AgentConfig) -> AgentState:
         state = AgentState(config=config)
         self.load_brief(state)
+        self.plan_story_structure(state)
         self.draft_skeleton(state)
         self.optional_llm_polish(state)
 
@@ -112,19 +114,35 @@ class GenerationAgentGraph:
         )
 
     def draft_skeleton(self, state: AgentState) -> None:
-        if state.brief is None:
-            raise AgentRunError("draft_skeleton requires loaded brief")
+        if state.brief is None or state.generation_plan is None:
+            raise AgentRunError("draft_skeleton requires loaded brief and generation plan")
         state.game = deterministic_demo_game(state.brief)
         generation = state.game.setdefault("generation", {})
         generation["provider"] = "offline"
         generation["model"] = OFFLINE_MODEL_ID
-        generation["agent_graph"] = "v0_27"
+        generation["agent_graph"] = "v0_28"
+        generation["plan_schema_version"] = state.generation_plan["plan_schema_version"]
         state.add_trace(
             "draft_skeleton",
             "ok",
             "Created deterministic structured game skeleton",
+            planned_chapters=state.generation_plan["chapter_count"],
+            planned_scenes=state.generation_plan["scene_count"],
             scenes=len(state.game.get("scenes", [])),
             endings=len(state.game.get("endings", [])),
+        )
+
+    def plan_story_structure(self, state: AgentState) -> None:
+        if state.brief is None:
+            raise AgentRunError("plan_story_structure requires loaded brief")
+        state.generation_plan = build_generation_plan(state.brief)
+        state.add_trace(
+            "plan_story_structure",
+            "ok",
+            "Built deterministic generation plan",
+            chapters=state.generation_plan["chapter_count"],
+            scenes=state.generation_plan["scene_count"],
+            ending_targets=len(state.generation_plan["ending_targets"]),
         )
 
     def optional_llm_polish(self, state: AgentState) -> None:
@@ -236,9 +254,13 @@ class GenerationAgentGraph:
         )
 
     def export_artifacts(self, state: AgentState) -> None:
-        if state.game is None:
-            raise AgentRunError("export_artifacts requires game")
+        if state.game is None or state.generation_plan is None:
+            raise AgentRunError("export_artifacts requires game and generation plan")
         export_game(state.game, state.config.out_dir)
+        (state.config.out_dir / "generation_plan.json").write_text(
+            json.dumps(state.generation_plan, ensure_ascii=False, indent=2) + "\n",
+            encoding="utf-8",
+        )
         state.exported = True
         state.add_trace(
             "export_artifacts",
@@ -274,3 +296,45 @@ def run_generation_agent(
         max_repair_attempts=max_repair_attempts,
     )
     return GenerationAgentGraph().run(config)
+
+
+def build_generation_plan(brief: dict[str, Any]) -> dict[str, Any]:
+    project = brief["project"]
+    world = brief["world"]
+    return {
+        "plan_schema_version": "generation_plan_v0_1",
+        "project_id": project["id"],
+        "title": project["title"],
+        "theme_question": project["theme_question"],
+        "target_duration_minutes": project.get("target_duration_minutes", 25),
+        "interface": world["interface"],
+        "chapter_count": 3,
+        "scene_count": 9,
+        "chapters": [
+            {
+                "id": "ch01",
+                "title": "锁屏上的半句话",
+                "chapter_question": "玩家是否会在证据不足时信任陈，还是先保护手机里的线索？",
+                "scene_budget": 3,
+            },
+            {
+                "id": "ch02",
+                "title": "废弃地铁站",
+                "chapter_question": "玩家会优先拿到真相，还是降低暴露他人的风险？",
+                "scene_budget": 3,
+            },
+            {
+                "id": "ch03",
+                "title": "被保存的副本",
+                "chapter_question": "玩家会如何让真相进入世界，并承担它伤害谁的后果？",
+                "scene_budget": 3,
+            },
+        ],
+        "state_axes": ["clues", "stance", "relationships", "pressure"],
+        "ending_targets": ["ending_publish", "ending_bury", "ending_confront"],
+        "non_goals": [
+            "runtime_ai_story_generation",
+            "free_text_player_input",
+            "unbounded_branching",
+        ],
+    }

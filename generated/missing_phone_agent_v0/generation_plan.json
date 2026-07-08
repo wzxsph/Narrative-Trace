@@ -1,0 +1,46 @@
+{
+  "plan_schema_version": "generation_plan_v0_1",
+  "project_id": "missing_phone",
+  "title": "失踪者的手机",
+  "theme_question": "当真相会伤害无辜者时，你是否仍然有义务公开它？",
+  "target_duration_minutes": 25,
+  "interface": "竖屏手机",
+  "chapter_count": 3,
+  "scene_count": 9,
+  "chapters": [
+    {
+      "id": "ch01",
+      "title": "锁屏上的半句话",
+      "chapter_question": "玩家是否会在证据不足时信任陈，还是先保护手机里的线索？",
+      "scene_budget": 3
+    },
+    {
+      "id": "ch02",
+      "title": "废弃地铁站",
+      "chapter_question": "玩家会优先拿到真相，还是降低暴露他人的风险？",
+      "scene_budget": 3
+    },
+    {
+      "id": "ch03",
+      "title": "被保存的副本",
+      "chapter_question": "玩家会如何让真相进入世界，并承担它伤害谁的后果？",
+      "scene_budget": 3
+    }
+  ],
+  "state_axes": [
+    "clues",
+    "stance",
+    "relationships",
+    "pressure"
+  ],
+  "ending_targets": [
+    "ending_publish",
+    "ending_bury",
+    "ending_confront"
+  ],
+  "non_goals": [
+    "runtime_ai_story_generation",
+    "free_text_player_input",
+    "unbounded_branching"
+  ]
+}

@@ -27,6 +27,7 @@ class AgentGraphTest(unittest.TestCase):
       self.assertEqual(state.repair_attempts, 0)
       self.assertTrue((output / "game.json").exists())
       self.assertTrue((output / "game.yaml").exists())
+      self.assertTrue((output / "generation_plan.json").exists())
       self.assertTrue((output / "path_map.json").exists())
       self.assertTrue((output / "state_registry.json").exists())
       self.assertTrue((output / "validation_report.md").exists())
@@ -40,6 +41,7 @@ class AgentGraphTest(unittest.TestCase):
       ]
       nodes = [event["node"] for event in trace]
       self.assertEqual(nodes[0], "load_brief")
+      self.assertIn("plan_story_structure", nodes)
       self.assertIn("draft_skeleton", nodes)
       self.assertIn("validate_schema", nodes)
       self.assertIn("validate_structure", nodes)
@@ -49,6 +51,14 @@ class AgentGraphTest(unittest.TestCase):
       self.assertEqual(nodes[-1], "write_agent_trace")
       repair_events = [event for event in trace if event["node"] == "repair_if_needed"]
       self.assertEqual(repair_events[-1]["status"], "skipped")
+
+      generation_plan = json.loads((output / "generation_plan.json").read_text(encoding="utf-8"))
+      self.assertEqual(generation_plan["plan_schema_version"], "generation_plan_v0_1")
+      self.assertEqual(generation_plan["project_id"], "missing_phone")
+      self.assertEqual(generation_plan["chapter_count"], 3)
+      self.assertEqual(generation_plan["scene_count"], 9)
+      self.assertEqual(len(generation_plan["chapters"]), 3)
+      self.assertEqual(len(generation_plan["ending_targets"]), 3)
 
   def test_repair_node_applies_supported_structural_repairs(self) -> None:
     brief = load_brief(BRIEF_PATH)

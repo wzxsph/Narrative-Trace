@@ -1,9 +1,9 @@
 # Agent Game Generation Technical Design V0
 
-版本：V0.28
-日期：2026-07-08  
-文档类型：技术设计文档  
-文件名规则：英文文件名，便于后续工程引用  
+版本：V0.27
+日期：2026-07-08
+文档类型：技术设计文档
+文件名规则：英文文件名，便于后续工程引用
 对齐准则：`/home/samsong/Desktop/game_writer/doc/prd/PRD_V0_文字冒险游戏框架.md`
 
 ---
@@ -1844,75 +1844,3 @@ V0.27 必须满足：
 - LangGraph runtime 持久化、checkpoint、human-in-the-loop。
 - LLM 生成完整章节、节点图或结局矩阵。
 - 语义级 repair 和多候选评审。
-
-## 50. V0.28 Generation Plan Node Delta
-
-V0.27 已经把生成过程放进图式状态机，但 `draft_skeleton` 仍然直接调用 deterministic demo。V0.28 要继续拆开这个黑箱：在真正组装 game 之前，先产出一个可审计的 `generation_plan`。
-
-设计判断：
-
-> 工业级 agent 不应只输出最终 game JSON，还应输出它为什么要生成这种结构的中间计划。
-
-### 50.1 New Node
-
-新增节点：
-
-```text
-plan_story_structure
-```
-
-位置：
-
-```text
-load_brief
-  -> plan_story_structure
-  -> draft_skeleton
-```
-
-`plan_story_structure` 当前仍是 deterministic planner，但它必须生成独立 artifact：
-
-```text
-generated/<run>/generation_plan.json
-```
-
-### 50.2 Plan Contract
-
-`generation_plan.json` 至少包含：
-
-- `plan_schema_version`
-- `project_id`
-- `theme_question`
-- `target_duration_minutes`
-- `interface`
-- `chapter_count`
-- `scene_count`
-- `chapters`
-- `state_axes`
-- `ending_targets`
-- `non_goals`
-
-### 50.3 Why This Matters
-
-后续真正接入 LangGraph / LangChain 时，章节规划、状态变量设计、场景草稿、choice 生成都应拆成独立 node。`generation_plan` 是第一块可替换的中间层：
-
-- 当前：deterministic planner 生成 plan。
-- 下一步：LLM planner 生成候选 plan。
-- 再下一步：critic / validator 对 plan 做结构审查。
-- 最后：assembler 根据 plan 生成 game JSON。
-
-### 50.4 Acceptance
-
-V0.28 必须满足：
-
-- `agent_trace.jsonl` 出现 `plan_story_structure` node。
-- agent 输出目录包含 `generation_plan.json`。
-- `draft_skeleton` trace 必须引用 plan 中的 chapter / scene 数量。
-- 单测验证 plan artifact 的核心字段。
-- 旧 `scripts/generate_game.py` 仍保持可用。
-
-本轮仍不宣称完成：
-
-- LLM 自动规划章节。
-- 多候选 plan 选择。
-- plan schema 独立 JSON Schema。
-- 根据任意 plan 动态生成全新故事。

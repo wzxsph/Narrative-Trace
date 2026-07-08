@@ -2117,6 +2117,7 @@
   "generation": {
     "provider": "offline",
     "model": "deterministic_demo_v0",
-    "agent_graph": "v0_27"
+    "agent_graph": "v0_28",
+    "plan_schema_version": "generation_plan_v0_1"
   }
 }

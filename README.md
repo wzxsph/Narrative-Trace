@@ -120,7 +120,7 @@ python3 scripts/run_generation_agent.py \
   --provider offline
 ```
 
-该入口会执行 `load_brief -> draft_skeleton -> optional_llm_polish -> validate_schema -> validate_structure -> validate_content_qa -> repair_if_needed -> export_artifacts -> write_agent_trace`，并导出 `agent_trace.jsonl`。
+该入口会执行 `load_brief -> plan_story_structure -> draft_skeleton -> optional_llm_polish -> validate_schema -> validate_structure -> validate_content_qa -> repair_if_needed -> export_artifacts -> write_agent_trace`，并导出 `generation_plan.json` 与 `agent_trace.jsonl`。
 
 归档真实模型输出样本：
 

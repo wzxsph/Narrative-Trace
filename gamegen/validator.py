@@ -287,8 +287,9 @@ def write_validation_report(messages: list[ValidationMessage], path: str | Path)
         "",
         f"- Errors: {len(errors)}",
         f"- Warnings: {len(warnings)}",
-        "",
     ]
+    if messages:
+        lines.append("")
     for message in messages:
         lines.append(f"- [{message.level.upper()}] `{message.location}`: {message.message}")
     Path(path).write_text("\n".join(lines) + "\n", encoding="utf-8")
