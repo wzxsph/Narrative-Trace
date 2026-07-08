@@ -5,4 +5,5 @@ doc/给人类看的文档/
 __pycache__/
 *.py[cod]
 .DS_Store
-
+dist/
+.wrangler/

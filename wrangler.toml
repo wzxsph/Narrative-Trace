@@ -1,0 +1,6 @@
+name = "game-writer-missing-phone"
+main = "dist/game-worker-bundle.js"
+compatibility_date = "2026-07-08"
+
+[build]
+command = "node scripts/build_game_worker_bundle.mjs"

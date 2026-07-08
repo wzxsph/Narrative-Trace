@@ -2,6 +2,10 @@
 
 竖屏文字冒险游戏与 AI 辅助创作流水线的 V0 工程仓库。
 
+## Live Demo
+
+**在线体验**：[打开《失踪者的手机》Cloudflare Worker Demo](https://game-writer-missing-phone.samsong-1a3.workers.dev/)
+
 当前项目不是“AI 实时随机写剧情”，而是一个确定性叙事结构实验：玩家在手机竖屏界面中阅读场景、展开隐藏观察、解锁行动、承担后果，并在章节复盘和结局画像里看到世界如何记住自己。
 
 产品准则以 `/home/samsong/Desktop/game_writer/doc/prd` 为准；执行项目时先读 `/home/samsong/Desktop/game_writer/agent.md`。
@@ -85,6 +89,13 @@ python3 -m http.server 4173
 
 ```text
 http://127.0.0.1:4173/
+```
+
+部署玩家端到 Cloudflare Worker：
+
+```bash
+scripts/build_game_worker_bundle.sh
+npx --yes wrangler deploy
 ```
 
 ## Verification
