@@ -206,6 +206,28 @@ h2 {
   line-height: 1.55;
 }
 
+.recovery-notice {
+  margin-bottom: 14px;
+  padding: 12px;
+  border: 1px solid #e4c887;
+  border-left: 4px solid #b98217;
+  border-radius: 8px;
+  background: #fff7df;
+}
+
+.recovery-notice h2 {
+  margin-bottom: 6px;
+  color: #6a4508;
+  font-size: 0.9rem;
+}
+
+.recovery-notice p {
+  margin-bottom: 0;
+  color: #51422b;
+  font-size: 0.88rem;
+  line-height: 1.55;
+}
+
 .anchor-button {
   display: inline;
   min-height: 28px;

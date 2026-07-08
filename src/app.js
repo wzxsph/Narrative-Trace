@@ -56,6 +56,7 @@ const runtime = {
   choiceOutcomes: [],
   endingId: "",
   review: null,
+  recoveryNotice: null,
 };
 
 init();
@@ -74,7 +75,7 @@ async function init() {
     }
     runtime.game = await response.json();
     if (!restoreProgress()) {
-      resetGame({ clearSave: false });
+      resetGame({ clearSave: false, preserveRecoveryNotice: true });
     }
     render();
   } catch (error) {
@@ -102,6 +103,9 @@ function resetGame(options = {}) {
   runtime.choiceOutcomes = [];
   runtime.endingId = "";
   runtime.review = null;
+  if (!options.preserveRecoveryNotice) {
+    runtime.recoveryNotice = null;
+  }
 }
 
 function render() {
@@ -165,6 +169,7 @@ function renderOutcome() {
 
 function renderStory(scene) {
   dom.storyArea.innerHTML = "";
+  renderRecoveryNotice();
   renderStateEchoes(scene);
   renderGuidance();
   scene.background_blocks.forEach((block) => {
@@ -178,6 +183,24 @@ function renderStory(scene) {
     });
     dom.storyArea.appendChild(wrapper);
   });
+}
+
+function renderRecoveryNotice() {
+  const notice = runtime.recoveryNotice;
+  if (!notice) {
+    return;
+  }
+  const wrapper = document.createElement("aside");
+  wrapper.className = "recovery-notice";
+  wrapper.dataset.notice = "save-recovery";
+
+  const title = document.createElement("h2");
+  title.textContent = notice.title || "进度已重置";
+  const body = document.createElement("p");
+  body.textContent = notice.text || "旧进度无法恢复，已为你开启新局。";
+
+  wrapper.append(title, body);
+  dom.storyArea.appendChild(wrapper);
 }
 
 function renderGuidance() {
@@ -288,6 +311,7 @@ function renderFragment(anchor) {
 }
 
 function openAnchor(anchor) {
+  runtime.recoveryNotice = null;
   const firstOpen = !runtime.openedAnchors.has(anchor.id);
   runtime.openedAnchors.add(anchor.id);
   if (firstOpen) {
@@ -376,6 +400,7 @@ function choose(choice) {
   if (!isChoiceVisible(choice)) {
     return;
   }
+  runtime.recoveryNotice = null;
   const fromScene = currentScene();
   applyEffects(choice.effects || []);
   runtime.chosenChoices.push(choice.id);
@@ -798,6 +823,8 @@ function restoreProgress() {
   try {
     const payload = JSON.parse(raw);
     if (!isValidSave(payload)) {
+      runtime.recoveryNotice = makeRecoveryNotice("旧进度与当前案件不兼容，已为你开启新局。");
+      clearProgress();
       return false;
     }
     runtime.sceneId = payload.sceneId;
@@ -814,9 +841,17 @@ function restoreProgress() {
     runtime.review = payload.review;
     return true;
   } catch {
+    runtime.recoveryNotice = makeRecoveryNotice("旧进度内容损坏，已为你开启新局。");
     clearProgress();
     return false;
   }
+}
+
+function makeRecoveryNotice(text) {
+  return {
+    title: "进度已重置",
+    text,
+  };
 }
 
 function isValidSave(payload) {
@@ -844,7 +879,9 @@ function isValidSave(payload) {
     }
   }
   return (
+    payload.state &&
     typeof payload.state === "object" &&
+    !Array.isArray(payload.state) &&
     Array.isArray(payload.openedAnchors) &&
     Array.isArray(payload.unlockedChoices) &&
     (payload.activeGuidance === undefined ||

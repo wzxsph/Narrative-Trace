@@ -1,6 +1,6 @@
 # Agent Game Generation Technical Design V0
 
-版本：V0.21
+版本：V0.20
 日期：2026-07-08  
 文档类型：技术设计文档  
 文件名规则：英文文件名，便于后续工程引用  
@@ -1192,7 +1192,6 @@ Browser smoke for core mobile path: achieved
 Browser E2E matrix for all current main endings: achieved
 Ending persistence and restart browser E2E: achieved
 Corrupt save fallback browser smoke: achieved
-Corrupt save recovery notice: achieved
 Conservative local repair tool: achieved
 Explicit JSON Schema contract: achieved
 Schema and validator export gate: achieved
@@ -1218,7 +1217,7 @@ Production-grade generation pipeline: not achieved
 
 ### 21.2 Runtime Robustness
 
-- 当前前端已有本地单存档，且浏览器 E2E 已覆盖结局态刷新恢复和重新开始，浏览器 smoke 已覆盖坏 JSON / 旧版本存档 fallback 与可见恢复提示；但没有多存档、版本迁移或云端同步。
+- 当前前端已有本地单存档，且浏览器 E2E 已覆盖结局态刷新恢复和重新开始，浏览器 smoke 已覆盖坏 JSON / 旧版本存档 fallback；但没有多存档、版本迁移、损坏存档提示或云端同步。
 - 已有基础章节 flowchart 复盘和未解锁原因说明，但还不是完整 flowchart 级路径复盘。
 - 已有基础 `state_echoes` 渲染，但还没有复杂优先级、互斥回声或节奏控制。
 - 已有第一章叙事内轻教学，但还没有用户测试数据证明提示强度刚好。
@@ -1629,23 +1628,3 @@ Production-grade generation pipeline: not achieved
 - 没有可见的损坏存档提示。
 - 没有存档版本迁移策略。
 - 没有多存档、云同步或损坏存档备份。
-
-## 43. V0.21 Implementation Delta
-
-本轮 V0.21 的工程变化：
-
-- PRD 和技术文档旧版已归档到 `doc/prd/old version/2026-07-08-115126-273`。
-- `src/app.js` 新增 `runtime.recoveryNotice`。
-- `src/app.js` 新增 `renderRecoveryNotice()`，在故事正文前渲染恢复提示。
-- `restoreProgress()` 对坏 JSON 存档设置“旧进度内容损坏，已为你开启新局。”提示。
-- `restoreProgress()` 对版本/项目/schema/引用不兼容的存档设置“旧进度与当前案件不兼容，已为你开启新局。”提示，并清除坏存档。
-- `openAnchor()` 和 `choose()` 会在玩家继续操作时清除恢复提示。
-- `src/styles.css` 新增 `.recovery-notice` 样式。
-- `scripts/browser_smoke.py` 检查坏 JSON / 不兼容存档 fallback 后恢复提示存在且文案正确。
-- `tests/test_demo_contract.py` 增加恢复提示静态 hook。
-
-本轮没有解决：
-
-- 存档版本迁移。
-- 多存档、云同步和损坏存档备份。
-- 错误报告、坏存档导出或更复杂的恢复动作。

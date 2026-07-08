@@ -114,11 +114,19 @@ def run_browser_smoke() -> dict[str, object]:
 
             page.evaluate(f"window.localStorage.setItem('{SAVE_KEY}', 'not-json')")
             page.reload(wait_until="networkidle")
-            assert_start_scene_restored(page, "Corrupt JSON save did not fall back to first scene")
+            corrupt_notice = assert_start_scene_restored(
+                page,
+                "Corrupt JSON save did not fall back to first scene",
+                "旧进度内容损坏",
+            )
 
             page.evaluate(f"window.localStorage.setItem('{SAVE_KEY}', JSON.stringify({{'version': 999}}))")
             page.reload(wait_until="networkidle")
-            assert_start_scene_restored(page, "Invalid version save did not fall back to first scene")
+            invalid_notice = assert_start_scene_restored(
+                page,
+                "Invalid version save did not fall back to first scene",
+                "旧进度与当前案件不兼容",
+            )
 
             result = {
                 "base_url": base_url,
@@ -129,6 +137,8 @@ def run_browser_smoke() -> dict[str, object]:
                 "locked_branches": locked_branches,
                 "corrupt_save_recovered": True,
                 "invalid_save_recovered": True,
+                "corrupt_save_notice": corrupt_notice,
+                "invalid_save_notice": invalid_notice,
             }
             browser.close()
             return result
@@ -152,12 +162,17 @@ def assert_no_horizontal_overflow(page: object) -> None:
     )
 
 
-def assert_start_scene_restored(page: object, message: str) -> None:
+def assert_start_scene_restored(page: object, message: str, expected_notice: str) -> str:
     page.wait_for_selector('[data-anchor-id="obs_unsent_sms"]')
     assert_condition(page.locator("#sceneTitle").inner_text() == "锁屏上的半句话", message)
     assert_condition(page.locator(".review-screen").count() == 0, message)
     assert_condition(page.locator(".ending-screen").count() == 0, message)
+    notice = page.locator('[data-notice="save-recovery"]')
+    assert_condition(notice.count() == 1, f"{message}: recovery notice missing")
+    notice_text = notice.inner_text()
+    assert_condition(expected_notice in notice_text, f"{message}: recovery notice copy missing")
     assert_no_horizontal_overflow(page)
+    return notice_text
 
 
 def main() -> int:
@@ -171,6 +186,8 @@ def main() -> int:
     print(f"- locked_branches: {result['locked_branches']}")
     print(f"- corrupt_save_recovered: {result['corrupt_save_recovered']}")
     print(f"- invalid_save_recovered: {result['invalid_save_recovered']}")
+    print(f"- corrupt_save_notice: {result['corrupt_save_notice']}")
+    print(f"- invalid_save_notice: {result['invalid_save_notice']}")
     return 0
 
 
