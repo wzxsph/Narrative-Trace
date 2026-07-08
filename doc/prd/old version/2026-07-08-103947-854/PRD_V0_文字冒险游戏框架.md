@@ -1,6 +1,6 @@
 # PRD V0：文字版底特律式互动叙事游戏框架
 
-版本：V0.9
+版本：V0.8
 日期：2026-07-08  
 文档目标：定义第一版本文字游戏本身的框架、具体形态、用户 UI/UX  
 保留文档：`PRD_AI文字冒险游戏.md` 继续保留，作为后续 AI 创作 Agent 和长期路线参考  
@@ -1055,7 +1055,7 @@ V0 失败时，测试用户会说：
 - 内容规模达到 3 章 x 每章 3 个主场景，共 9 个主场景。
 - 隐藏关系变量的叙事回声：`relationships.chen.trust`、`relationships.chen.suspicion`、`relationships.lin.bond` 会在后续场景中触发条件文本。
 - 生成产物的结构校验。
-- 自动内容 QA 检查：关键场景必须有明显 observe 入口，`hidden_optional` 不能解锁章节/全局后果 choice，choice 必须有描述和后果文案，结局必须可达并具备画像标签。
+- 自动内容 QA 检查：关键场景必须有明显 observe 入口，`hidden_optional` 不能解锁章节/全局后果 choice，choice 必须有描述和后果文案。
 - 基础测试入口：`/home/samsong/Desktop/game_writer/tests/test_demo_contract.py`
 - 内部测试记录模板：`/home/samsong/Desktop/game_writer/doc/testing/internal_playtest_record_template.md`
 - 内部测试批次模板：`/home/samsong/Desktop/game_writer/examples/playtests/internal_playtest_batch_template.json`
@@ -1076,7 +1076,6 @@ V0 失败时，测试用户会说：
 - 已建立内部测试记录模板和批次汇总脚本，但尚未实际完成 5 到 8 名内部用户测试，因此第 14 节量化指标尚未验证。
 - 保存/恢复已支持单机本地状态，但还没有多存档、云端同步、版本迁移或异常恢复 UI。
 - 内容 QA 已有基础自动检查，但还不能判断“选择是否真的让人犹豫”或“隐藏线索是否在语义上公平”。
-- 结局画像已有自动完整性检查，但还不能判断结局是否有足够情感重量。
 
 ### 17.3 下一轮产品优先级
 
@@ -1234,19 +1233,3 @@ V0.8 的边界：
 - 当前锁定原因基于运行时最终状态和已解锁 choice 记录，不是逐节点时间旅行回放。
 - 当前仍不是空间化全路径图，也没有跨章因果线。
 - 未解锁原因是线索级提示，不直接剧透隐藏 observe 的完整正文。
-
-### 17.13 V0.9 版本变更记录
-
-V0.9 相比 V0.8 的实质变化：
-
-- 旧版 V0.8 PRD 和技术文档已归档到 `/home/samsong/Desktop/game_writer/doc/prd/old version/2026-07-08-103947-854`。
-- 内容 QA 扩展到结局画像完整性检查。
-- 自动检查每个 ending 是否有标题、足够正文、至少 3 个画像标签、是否被 choice 指向。
-- 自动检查通往 ending 的 choice 是否为 `consequence_level: ending`，且是否写入至少一个状态值，避免结局画像和玩家轨迹脱节。
-- `tests/test_content_qa.py` 新增结局不可达、结局 tag 不足、ending choice 不写状态的失败用例。
-
-V0.9 的边界：
-
-- 自动 QA 能检查结局画像的结构完整性，不能判断结局文案是否真正有冲击力。
-- 结局 tag 仍是字符串标签，还不是完整的“保护了谁、伤害了谁、相信了什么”的结构化画像。
-- 下一步仍应通过真实 playtest 验证玩家是否觉得结局回应了自己的选择。

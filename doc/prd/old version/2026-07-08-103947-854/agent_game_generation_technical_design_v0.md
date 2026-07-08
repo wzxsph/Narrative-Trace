@@ -1,6 +1,6 @@
 # Agent Game Generation Technical Design V0
 
-版本：V0.9
+版本：V0.8
 日期：2026-07-08  
 文档类型：技术设计文档  
 文件名规则：英文文件名，便于后续工程引用  
@@ -1168,7 +1168,6 @@ generated/missing_phone_v0/game.json
 - validator 校验 guidance 的 `id`、`title`、`text`，测试覆盖首章轻教学契约。
 - 新增内部 playtest 记录模板、批次 JSON 模板和汇总脚本，用于验证 PRD 第 14 节成功指标。
 - 新增自动内容 QA 报告脚本，用于检查隐藏 observe 可发现性和 choice 代价文案硬伤。
-- 自动内容 QA 已覆盖结局画像完整性硬伤。
 - 章节 flowchart 分支可显示已选择、可选未走、已解锁未选、未解锁原因。
 
 当前技术状态：
@@ -1181,7 +1180,6 @@ Diegetic first-chapter guidance runtime: achieved
 Internal playtest metric pipeline: achieved
 Automated content QA hard-error gate: achieved
 Chapter flow locked-branch explanation: achieved
-Ending portrait completeness gate: achieved
 Production-grade generation pipeline: not achieved
 ```
 
@@ -1211,7 +1209,7 @@ Production-grade generation pipeline: not achieved
 - 当前 validator 偏结构，较少判断 choice 是否真的有犹豫点。
 - 已有内部 playtest 记录模板和汇总脚本，但还没有真实用户批次数据。
 - 已有基础自动内容 QA，但只能发现硬性 contract 问题，不能判断语义公平性和真实犹豫感。
-- 结局画像已有前端呈现和自动完整性检查，但缺少情感质量和语义画像 QA。
+- 结局画像已有前端呈现，但缺少完整性检查。
 - 关系回声已有覆盖测试，但缺少人工 QA 判断文案是否自然、是否过度解释数值。
 
 ### 21.4 Engineering Hygiene
@@ -1375,21 +1373,3 @@ Production-grade generation pipeline: not achieved
 - 浏览器自动化测试进入常规 test suite。
 - 空间化全章节路径图和跨章因果线。
 - 逐节点历史状态回放；当前锁定原因基于最终 runtime state 和已解锁 choice 记录。
-
-## 31. V0.9 Implementation Delta
-
-本轮 V0.9 的工程变化：
-
-- PRD 和技术文档旧版已归档到 `doc/prd/old version/2026-07-08-103947-854`。
-- `scripts/content_qa_report.py` 扩展 `validate_endings()` 和 `choice_writes_state()`。
-- 内容 QA 现在检查 ending 标题、正文厚度、至少 3 个画像标签、是否被 choice 指向。
-- 内容 QA 检查通往 ending 的 choice 是否为 `consequence_level: ending`，以及是否写入至少一个 state。
-- `tests/test_content_qa.py` 新增结局不可达、结局 tag 不足、ending choice 不写状态的失败用例。
-- `README.md` 同步内容 QA 的结局画像覆盖范围。
-
-本轮没有解决：
-
-- 真实 5 到 8 人内部用户测试。
-- 浏览器自动化测试进入常规 test suite。
-- 结局画像仍是字符串标签，不是完整结构化因果画像。
-- 结局文案是否有情感重量，仍需人工 QA 或 playtest 判断。

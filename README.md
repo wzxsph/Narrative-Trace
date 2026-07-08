@@ -27,7 +27,7 @@
 - 隐藏关系变量在后续场景触发叙事回声。
 - 本地刷新恢复进度。
 - 内部 playtest 记录模板和 PRD 第 14 节指标汇总脚本。
-- 自动内容 QA 检查，覆盖隐藏 observe 可发现性和 choice 代价文案硬伤。
+- 自动内容 QA 检查，覆盖隐藏 observe 可发现性、choice 代价文案和结局画像完整性硬伤。
 - 冒烟路径穿过 9 个主场景并抵达 `ending_publish`。
 
 ## Quick Start

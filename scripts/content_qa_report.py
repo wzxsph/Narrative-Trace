@@ -30,6 +30,10 @@ def run_content_qa(game: dict[str, Any]) -> list[ContentQAMessage]:
         for choice in scene.get("choices", [])
         if choice.get("id")
     }
+    ending_ids = {ending.get("id") for ending in game.get("endings", []) if ending.get("id")}
+    ending_choice_targets: dict[str, list[tuple[dict[str, Any], dict[str, Any]]]] = {
+        ending_id: [] for ending_id in ending_ids
+    }
 
     for scene in game.get("scenes", []):
         scene_id = scene.get("id", "<missing-scene-id>")
@@ -92,8 +96,12 @@ def run_content_qa(game: dict[str, Any]) -> list[ContentQAMessage]:
 
         for choice in scene.get("choices", []):
             validate_choice(scene_id, choice, messages)
+            target = choice.get("next_scene")
+            if target in ending_choice_targets:
+                ending_choice_targets[target].append((scene, choice))
 
     validate_first_scene_guidance(game, messages)
+    validate_endings(game, ending_choice_targets, messages)
     return messages
 
 
@@ -136,6 +144,55 @@ def validate_choice(scene_id: str, choice: dict[str, Any], messages: list[Conten
             messages.append(ContentQAMessage("warning", location, "Chapter/global choice description is too thin"))
         if len(str(choice.get("outcome", ""))) < 12:
             messages.append(ContentQAMessage("warning", location, "Chapter/global choice outcome is too thin"))
+
+
+def validate_endings(
+    game: dict[str, Any],
+    ending_choice_targets: dict[str, list[tuple[dict[str, Any], dict[str, Any]]]],
+    messages: list[ContentQAMessage],
+) -> None:
+    endings = game.get("endings", [])
+    if len(endings) < 3:
+        messages.append(ContentQAMessage("error", "game.endings", "Game should contain at least 3 main endings"))
+
+    seen_tags: set[str] = set()
+    for ending in endings:
+        ending_id = ending.get("id", "<missing-ending-id>")
+        location = f"ending.{ending_id}"
+        if not ending.get("title"):
+            messages.append(ContentQAMessage("error", location, "Ending must have a title"))
+        if len(str(ending.get("body", ""))) < 24:
+            messages.append(ContentQAMessage("error", location, "Ending body is too thin for a portrait"))
+
+        tags = ending.get("tags", [])
+        if not isinstance(tags, list) or len(tags) < 3:
+            messages.append(ContentQAMessage("error", location, "Ending must include at least 3 portrait tags"))
+        for tag in tags:
+            if not isinstance(tag, str) or not tag:
+                messages.append(ContentQAMessage("error", location, "Ending tags must be non-empty strings"))
+                continue
+            if tag in seen_tags:
+                messages.append(ContentQAMessage("warning", location, f"Ending tag '{tag}' is reused"))
+            seen_tags.add(tag)
+
+        ending_choices = ending_choice_targets.get(ending_id, [])
+        if not ending_choices:
+            messages.append(ContentQAMessage("error", location, "Ending is not targeted by any choice"))
+        for scene, choice in ending_choices:
+            choice_location = f"{scene.get('id', '<missing-scene-id>')}.{choice.get('id', '<missing-choice-id>')}"
+            if choice.get("consequence_level") != "ending":
+                messages.append(ContentQAMessage("error", choice_location, "Choice targeting an ending must have consequence_level 'ending'"))
+            if not choice_writes_state(choice):
+                messages.append(ContentQAMessage("error", choice_location, "Choice targeting an ending must write at least one state value"))
+            if len(str(choice.get("outcome", ""))) < 12:
+                messages.append(ContentQAMessage("warning", choice_location, "Ending choice outcome is too thin"))
+
+
+def choice_writes_state(choice: dict[str, Any]) -> bool:
+    for effect in choice.get("effects", []):
+        if effect.get("set") or effect.get("add"):
+            return True
+    return False
 
 
 def validate_first_scene_guidance(game: dict[str, Any], messages: list[ContentQAMessage]) -> None:

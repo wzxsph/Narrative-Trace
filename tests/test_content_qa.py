@@ -66,6 +66,34 @@ class ContentQATest(unittest.TestCase):
     self.assertTrue(any("Choice must have a description" in message.message for message in messages))
     self.assertTrue(any("Choice must have an outcome" in message.message for message in messages))
 
+  def test_ending_must_be_targeted_by_choice(self) -> None:
+    game = copy.deepcopy(load_game())
+    target = game["endings"][0]["id"]
+    for scene in game["scenes"]:
+      for choice in scene["choices"]:
+        if choice["next_scene"] == target:
+          choice["next_scene"] = game["endings"][1]["id"]
+
+    messages = run_content_qa(game)
+    self.assertTrue(any("Ending is not targeted by any choice" in message.message for message in messages))
+
+  def test_ending_requires_portrait_tags(self) -> None:
+    game = copy.deepcopy(load_game())
+    game["endings"][0]["tags"] = ["truth_first"]
+
+    messages = run_content_qa(game)
+    self.assertTrue(any("at least 3 portrait tags" in message.message for message in messages))
+
+  def test_ending_choice_must_write_state(self) -> None:
+    game = copy.deepcopy(load_game())
+    for scene in game["scenes"]:
+      for choice in scene["choices"]:
+        if choice["next_scene"] == "ending_publish":
+          choice["effects"] = []
+
+    messages = run_content_qa(game)
+    self.assertTrue(any("must write at least one state value" in message.message for message in messages))
+
 
 if __name__ == "__main__":
   unittest.main()
