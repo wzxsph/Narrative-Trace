@@ -1,6 +1,6 @@
 # Agent Game Generation Technical Design V0
 
-版本：V0.20
+版本：V0.19
 日期：2026-07-08  
 文档类型：技术设计文档  
 文件名规则：英文文件名，便于后续工程引用  
@@ -1191,7 +1191,6 @@ Ending portrait completeness gate: achieved
 Browser smoke for core mobile path: achieved
 Browser E2E matrix for all current main endings: achieved
 Ending persistence and restart browser E2E: achieved
-Corrupt save fallback browser smoke: achieved
 Conservative local repair tool: achieved
 Explicit JSON Schema contract: achieved
 Schema and validator export gate: achieved
@@ -1217,7 +1216,7 @@ Production-grade generation pipeline: not achieved
 
 ### 21.2 Runtime Robustness
 
-- 当前前端已有本地单存档，且浏览器 E2E 已覆盖结局态刷新恢复和重新开始，浏览器 smoke 已覆盖坏 JSON / 旧版本存档 fallback；但没有多存档、版本迁移、损坏存档提示或云端同步。
+- 当前前端已有本地单存档，且浏览器 E2E 已覆盖结局态刷新恢复和重新开始；但没有多存档、版本迁移、损坏存档提示或云端同步。
 - 已有基础章节 flowchart 复盘和未解锁原因说明，但还不是完整 flowchart 级路径复盘。
 - 已有基础 `state_echoes` 渲染，但还没有复杂优先级、互斥回声或节奏控制。
 - 已有第一章叙事内轻教学，但还没有用户测试数据证明提示强度刚好。
@@ -1610,21 +1609,3 @@ Production-grade generation pipeline: not achieved
 - 损坏存档提示和恢复。
 - 多存档、云同步和版本迁移。
 - 多浏览器、真实移动设备、键盘导航和屏幕阅读器验收。
-
-## 42. V0.20 Implementation Delta
-
-本轮 V0.20 的工程变化：
-
-- PRD 和技术文档旧版已归档到 `doc/prd/old version/2026-07-08-114644-796`。
-- `scripts/browser_smoke.py` 增加 `SAVE_KEY` 常量，用于注入测试存档。
-- `scripts/browser_smoke.py` 新增 `assert_start_scene_restored()`，验证 fallback 后回到首场景、没有 review/ending 残留、没有横向溢出。
-- 浏览器 smoke 新增坏 JSON 存档测试：`localStorage` 写入 `not-json` 后刷新必须恢复首场景。
-- 浏览器 smoke 新增旧版本存档测试：`localStorage` 写入 `version: 999` 后刷新必须恢复首场景。
-- smoke 输出新增 `corrupt_save_recovered` 和 `invalid_save_recovered`。
-- `README.md` 同步坏存档 fallback 覆盖范围。
-
-本轮没有解决：
-
-- 没有可见的损坏存档提示。
-- 没有存档版本迁移策略。
-- 没有多存档、云同步或损坏存档备份。

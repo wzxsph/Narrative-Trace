@@ -13,6 +13,7 @@ from typing import Iterator
 
 
 ROOT = Path(__file__).resolve().parents[1]
+SAVE_KEY = "game_writer_missing_phone_runtime_v1"
 
 
 class QuietHandler(SimpleHTTPRequestHandler):
@@ -111,6 +112,14 @@ def run_browser_smoke() -> dict[str, object]:
             assert_condition("本章路径图" in restored_text, "Review state did not restore after reload")
             assert_no_horizontal_overflow(page)
 
+            page.evaluate(f"window.localStorage.setItem('{SAVE_KEY}', 'not-json')")
+            page.reload(wait_until="networkidle")
+            assert_start_scene_restored(page, "Corrupt JSON save did not fall back to first scene")
+
+            page.evaluate(f"window.localStorage.setItem('{SAVE_KEY}', JSON.stringify({{'version': 999}}))")
+            page.reload(wait_until="networkidle")
+            assert_start_scene_restored(page, "Invalid version save did not fall back to first scene")
+
             result = {
                 "base_url": base_url,
                 "first_guidance": first_guidance,
@@ -118,6 +127,8 @@ def run_browser_smoke() -> dict[str, object]:
                 "highlighted_choices": highlighted,
                 "flow_nodes": flow_nodes,
                 "locked_branches": locked_branches,
+                "corrupt_save_recovered": True,
+                "invalid_save_recovered": True,
             }
             browser.close()
             return result
@@ -141,6 +152,14 @@ def assert_no_horizontal_overflow(page: object) -> None:
     )
 
 
+def assert_start_scene_restored(page: object, message: str) -> None:
+    page.wait_for_selector('[data-anchor-id="obs_unsent_sms"]')
+    assert_condition(page.locator("#sceneTitle").inner_text() == "锁屏上的半句话", message)
+    assert_condition(page.locator(".review-screen").count() == 0, message)
+    assert_condition(page.locator(".ending-screen").count() == 0, message)
+    assert_no_horizontal_overflow(page)
+
+
 def main() -> int:
     try:
         result = run_browser_smoke()
@@ -150,6 +169,8 @@ def main() -> int:
     print("Browser smoke passed")
     print(f"- flow_nodes: {result['flow_nodes']}")
     print(f"- locked_branches: {result['locked_branches']}")
+    print(f"- corrupt_save_recovered: {result['corrupt_save_recovered']}")
+    print(f"- invalid_save_recovered: {result['invalid_save_recovered']}")
     return 0
 
 
