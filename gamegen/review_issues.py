@@ -89,3 +89,65 @@ def validate_review_issues(review_issues: dict[str, Any]) -> list[ReviewIssueMes
         if not isinstance(issue.get("blocking"), bool):
             messages.append(ReviewIssueMessage("error", f"{location}.blocking", "Issue blocking must be boolean"))
     return messages
+
+
+def evaluate_review_issue_release_policy(review_issues: dict[str, Any]) -> dict[str, Any]:
+    issues = review_issues.get("issues", [])
+    active_issues = [
+        issue
+        for issue in issues
+        if isinstance(issue, dict)
+        and issue.get("status") in {"open", "acknowledged"}
+    ]
+    open_major = [
+        issue
+        for issue in active_issues
+        if issue.get("severity") == "major"
+    ]
+    open_minor = [
+        issue
+        for issue in active_issues
+        if issue.get("severity") == "minor"
+    ]
+    blocking_issues = [
+        issue
+        for issue in active_issues
+        if issue.get("blocking") is True
+    ]
+    warning_issues = [issue for issue in active_issues if issue.get("blocking") is not True]
+    return {
+        "schema_version": "review_issue_release_policy_v0_1",
+        "project_id": review_issues.get("project_id"),
+        "policy": {
+            "block_on_active_blocking": True,
+            "warn_on_active_nonblocking": True,
+        },
+        "status": "blocked" if blocking_issues else "passed",
+        "blocking_issue_ids": [issue["id"] for issue in blocking_issues],
+        "warning_issue_ids": [issue["id"] for issue in warning_issues],
+        "summary": {
+            "open_major": len(open_major),
+            "open_minor": len(open_minor),
+            "active_blocking": len(blocking_issues),
+            "active_nonblocking": len(warning_issues),
+            "total_issues": len(issues) if isinstance(issues, list) else 0,
+        },
+    }
+
+
+def validate_review_issue_release_policy(policy_report: dict[str, Any]) -> list[ReviewIssueMessage]:
+    messages: list[ReviewIssueMessage] = []
+    if policy_report.get("schema_version") != "review_issue_release_policy_v0_1":
+        messages.append(
+            ReviewIssueMessage("error", "schema_version", "Release policy report must use review_issue_release_policy_v0_1")
+        )
+    if policy_report.get("status") not in {"passed", "blocked"}:
+        messages.append(ReviewIssueMessage("error", "status", "Release policy status must be passed or blocked"))
+    for field in ("blocking_issue_ids", "warning_issue_ids"):
+        value = policy_report.get(field)
+        if not isinstance(value, list) or not all(isinstance(issue_id, str) for issue_id in value):
+            messages.append(ReviewIssueMessage("error", field, f"{field} must be a list of issue ids"))
+    summary = policy_report.get("summary")
+    if not isinstance(summary, dict):
+        messages.append(ReviewIssueMessage("error", "summary", "Release policy summary must be an object"))
+    return messages

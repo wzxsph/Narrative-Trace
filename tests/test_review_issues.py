@@ -2,7 +2,12 @@ from __future__ import annotations
 
 import unittest
 
-from gamegen.review_issues import build_review_issues, validate_review_issues
+from gamegen.review_issues import (
+  build_review_issues,
+  evaluate_review_issue_release_policy,
+  validate_review_issue_release_policy,
+  validate_review_issues,
+)
 
 
 class ReviewIssuesTest(unittest.TestCase):
@@ -54,6 +59,65 @@ class ReviewIssuesTest(unittest.TestCase):
     messages = validate_review_issues(review_issues)
 
     self.assertTrue(any(message.level == "error" and message.location == "issues[0].status" for message in messages))
+
+  def test_release_policy_warns_on_open_major_nonblocking_issue(self) -> None:
+    review_issues = build_review_issues(
+      "missing_phone",
+      {
+        "schema_version": "llm_scene_review_v0_1",
+        "scene_id": "ch01_phone_lock",
+        "verdict": "revise",
+        "risk_flags": ["missing_observe_payoff"],
+        "notes": ["观察缺少收益。"],
+      },
+    )
+
+    policy = evaluate_review_issue_release_policy(review_issues)
+
+    self.assertEqual(validate_review_issue_release_policy(policy), [])
+    self.assertEqual(policy["status"], "passed")
+    self.assertEqual(policy["summary"]["open_major"], 1)
+    self.assertEqual(policy["summary"]["active_nonblocking"], 1)
+    self.assertEqual(len(policy["warning_issue_ids"]), 1)
+
+  def test_release_policy_blocks_explicit_blocking_issue(self) -> None:
+    review_issues = build_review_issues(
+      "missing_phone",
+      {
+        "schema_version": "llm_scene_review_v0_1",
+        "scene_id": "ch01_phone_lock",
+        "verdict": "revise",
+        "risk_flags": ["missing_observe_payoff"],
+        "notes": ["观察缺少收益。"],
+      },
+    )
+    review_issues["issues"][0]["blocking"] = True
+
+    policy = evaluate_review_issue_release_policy(review_issues)
+
+    self.assertEqual(validate_review_issue_release_policy(policy), [])
+    self.assertEqual(policy["status"], "blocked")
+    self.assertEqual(policy["blocking_issue_ids"], [review_issues["issues"][0]["id"]])
+    self.assertEqual(policy["summary"]["active_blocking"], 1)
+
+  def test_release_policy_passes_with_open_minor_warning(self) -> None:
+    review_issues = build_review_issues(
+      "missing_phone",
+      {
+        "schema_version": "llm_scene_review_v0_1",
+        "scene_id": "ch01_phone_lock",
+        "verdict": "revise",
+        "risk_flags": ["state_echo_missing"],
+        "notes": ["状态缺少回声。"],
+      },
+    )
+
+    policy = evaluate_review_issue_release_policy(review_issues)
+
+    self.assertEqual(validate_review_issue_release_policy(policy), [])
+    self.assertEqual(policy["status"], "passed")
+    self.assertEqual(policy["summary"]["open_minor"], 1)
+    self.assertEqual(len(policy["warning_issue_ids"]), 1)
 
 
 if __name__ == "__main__":

@@ -8,17 +8,18 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
-from gamegen.review_issues import validate_review_issues
+from gamegen.review_issues import validate_review_issue_release_policy, validate_review_issues
 
 
 def main() -> int:
     parser = argparse.ArgumentParser(description="Validate review_issues.json.")
     parser.add_argument("path", help="Path to review_issues.json")
+    parser.add_argument("--policy", action="store_true", help="Validate a review_issue_policy.json report instead.")
     args = parser.parse_args()
 
     path = Path(args.path)
-    review_issues = json.loads(path.read_text(encoding="utf-8"))
-    messages = validate_review_issues(review_issues)
+    payload = json.loads(path.read_text(encoding="utf-8"))
+    messages = validate_review_issue_release_policy(payload) if args.policy else validate_review_issues(payload)
     errors = [message for message in messages if message.level == "error"]
 
     if not messages:

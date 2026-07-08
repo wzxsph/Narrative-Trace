@@ -10,19 +10,30 @@
 
 首屏是一个竖屏手机阅读界面，核心由场景文字、observe anchor 和底部 choice 组成。
 
-![Start screen](screenshots/01-start-screen.jpg)
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px;align-items:start;">
+  <figure style="margin:0;">
+    <img src="screenshots/01-start-screen.jpg" alt="Start screen with vertical story text, observe anchors, and bottom choices" style="width:100%;border:1px solid #d0d7de;border-radius:8px;">
+    <figcaption style="font-size:13px;line-height:1.45;color:#57606a;margin-top:6px;">Start screen: 竖屏阅读、observe anchor、底部 choice。</figcaption>
+  </figure>
+  <figure style="margin:0;">
+    <img src="screenshots/02-observe-unlocks-choice.jpg" alt="Observe interaction unlocks an additional visible choice" style="width:100%;border:1px solid #d0d7de;border-radius:8px;">
+    <figcaption style="font-size:13px;line-height:1.45;color:#57606a;margin-top:6px;">Observe unlock: 观察写入状态，并解锁新的可见行动。</figcaption>
+  </figure>
+  <figure style="margin:0;">
+    <img src="screenshots/03-chapter-review-flow.jpg" alt="Chapter review screen showing path flow and missing evidence" style="width:100%;border:1px solid #d0d7de;border-radius:8px;">
+    <figcaption style="font-size:13px;line-height:1.45;color:#57606a;margin-top:6px;">Chapter review: 复盘路径、关键状态回声和未解锁原因。</figcaption>
+  </figure>
+  <figure style="margin:0;">
+    <img src="screenshots/04-ending-portrait.jpg" alt="Ending portrait showing key observations, actions, stance, and ending tags" style="width:100%;border:1px solid #d0d7de;border-radius:8px;">
+    <figcaption style="font-size:13px;line-height:1.45;color:#57606a;margin-top:6px;">Ending portrait: 结局画像回看关键观察、行动和标签。</figcaption>
+  </figure>
+</div>
 
 观察不是补充说明，而是会改写玩家理解、写入隐藏状态，并在证据足够时长出新的行动。
 
-![Observe unlocks choice](screenshots/02-observe-unlocks-choice.jpg)
-
 章节结束后会进入复盘：展示已走路径、关键行动、状态回声，以及未解锁分支缺少的证据。
 
-![Chapter review flow](screenshots/03-chapter-review-flow.jpg)
-
 结局页不是只显示一个结论，而是回看关键观察、关键行动、最终立场和结局标签。
-
-![Ending portrait](screenshots/04-ending-portrait.jpg)
 
 ## Current Slice
 
@@ -111,6 +122,59 @@ python3 scripts/repair_game.py generated/missing_phone_v0/game.json --out /tmp/r
 - 模型输出样本归档：`scripts/archive_model_output_sample.py`
 - 模型输出样本校验：`scripts/validate_model_output_archive.py`
 
+### Algorithm Structure
+
+玩家端核心循环：
+
+<div role="img" aria-label="Player loop: Observe to Interpretation to Choice or Action to State to Echo to Ending" style="display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:12px 0 20px;">
+  <span style="display:inline-block;padding:8px 10px;border:1px solid #8c959f;border-radius:6px;background:#f6f8fa;">Observe</span>
+  <span style="color:#57606a;">→</span>
+  <span style="display:inline-block;padding:8px 10px;border:1px solid #8c959f;border-radius:6px;background:#f6f8fa;">Interpretation</span>
+  <span style="color:#57606a;">→</span>
+  <span style="display:inline-block;padding:8px 10px;border:1px solid #8c959f;border-radius:6px;background:#f6f8fa;">Choice / Action</span>
+  <span style="color:#57606a;">→</span>
+  <span style="display:inline-block;padding:8px 10px;border:1px solid #8c959f;border-radius:6px;background:#f6f8fa;">State</span>
+  <span style="color:#57606a;">→</span>
+  <span style="display:inline-block;padding:8px 10px;border:1px solid #8c959f;border-radius:6px;background:#f6f8fa;">Echo</span>
+  <span style="color:#57606a;">→</span>
+  <span style="display:inline-block;padding:8px 10px;border:1px solid #8c959f;border-radius:6px;background:#f6f8fa;">Ending</span>
+</div>
+
+Agent 生成主链路：
+
+<div role="img" aria-label="Agent pipeline from brief loading to trace writing" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:8px;margin:12px 0 20px;">
+  <div style="padding:8px 10px;border:1px solid #0969da;border-radius:6px;background:#ddf4ff;">load_brief</div>
+  <div style="padding:8px 10px;border:1px solid #0969da;border-radius:6px;background:#ddf4ff;">plan_story_structure</div>
+  <div style="padding:8px 10px;border:1px solid #0969da;border-radius:6px;background:#ddf4ff;">design_state_schema</div>
+  <div style="padding:8px 10px;border:1px solid #0969da;border-radius:6px;background:#ddf4ff;">design_scene_blueprint</div>
+  <div style="padding:8px 10px;border:1px solid #0969da;border-radius:6px;background:#ddf4ff;">draft_scene_artifacts</div>
+  <div style="padding:8px 10px;border:1px solid #0969da;border-radius:6px;background:#ddf4ff;">optional_llm_scene_review</div>
+  <div style="padding:8px 10px;border:1px solid #0969da;border-radius:6px;background:#ddf4ff;">review_issue_policy</div>
+  <div style="padding:8px 10px;border:1px solid #0969da;border-radius:6px;background:#ddf4ff;">locked_scene_artifacts</div>
+  <div style="padding:8px 10px;border:1px solid #0969da;border-radius:6px;background:#ddf4ff;">draft_skeleton</div>
+  <div style="padding:8px 10px;border:1px solid #0969da;border-radius:6px;background:#ddf4ff;">validate / repair</div>
+  <div style="padding:8px 10px;border:1px solid #0969da;border-radius:6px;background:#ddf4ff;">export_artifacts</div>
+  <div style="padding:8px 10px;border:1px solid #0969da;border-radius:6px;background:#ddf4ff;">write_agent_trace</div>
+</div>
+
+Artifact 发布闸门：
+
+<div role="img" aria-label="Artifact release gates from scene blueprint to final game JSON" style="display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:12px 0 20px;">
+  <span style="display:inline-block;padding:8px 10px;border:1px solid #1a7f37;border-radius:6px;background:#dafbe1;">scene_blueprint.json</span>
+  <span style="color:#57606a;">→</span>
+  <span style="display:inline-block;padding:8px 10px;border:1px solid #1a7f37;border-radius:6px;background:#dafbe1;">scene_artifacts.json</span>
+  <span style="color:#57606a;">→</span>
+  <span style="display:inline-block;padding:8px 10px;border:1px solid #9a6700;border-radius:6px;background:#fff8c5;">LLM review</span>
+  <span style="color:#57606a;">→</span>
+  <span style="display:inline-block;padding:8px 10px;border:1px solid #9a6700;border-radius:6px;background:#fff8c5;">review_issues.json</span>
+  <span style="color:#57606a;">→</span>
+  <span style="display:inline-block;padding:8px 10px;border:1px solid #9a6700;border-radius:6px;background:#fff8c5;">review_issue_policy.json</span>
+  <span style="color:#57606a;">→</span>
+  <span style="display:inline-block;padding:8px 10px;border:1px solid #1a7f37;border-radius:6px;background:#dafbe1;">locked artifacts</span>
+  <span style="color:#57606a;">→</span>
+  <span style="display:inline-block;padding:8px 10px;border:1px solid #1a7f37;border-radius:6px;background:#dafbe1;">game.json</span>
+</div>
+
 运行图式生成 Agent：
 
 ```bash
@@ -120,7 +184,7 @@ python3 scripts/run_generation_agent.py \
   --provider offline
 ```
 
-该入口会执行 `load_brief -> plan_story_structure -> design_state_schema -> validate_state_schema_design -> design_scene_blueprint -> validate_scene_blueprint -> draft_scene_artifacts -> validate_scene_artifacts -> optional_llm_scene_review -> build_review_issues -> validate_review_issues -> review_scene_artifacts -> validate_scene_artifact_release -> draft_skeleton -> validate_blueprint_alignment -> optional_llm_polish -> validate_schema -> validate_structure -> validate_content_qa -> repair_if_needed -> export_artifacts -> write_agent_trace`，并导出 `generation_plan.json`、`state_schema_design.json`、`scene_blueprint.json`、`scene_artifacts.json`、`review_issues.json` 与 `agent_trace.jsonl`。其中 `draft_skeleton` 只消费已 locked 的 `scene_artifacts.json` 编译完整 game。
+该入口会执行 `load_brief -> plan_story_structure -> design_state_schema -> validate_state_schema_design -> design_scene_blueprint -> validate_scene_blueprint -> draft_scene_artifacts -> validate_scene_artifacts -> optional_llm_scene_review -> build_review_issues -> validate_review_issues -> evaluate_review_issue_release_policy -> validate_review_issue_release_policy -> review_scene_artifacts -> validate_scene_artifact_release -> draft_skeleton -> validate_blueprint_alignment -> optional_llm_polish -> validate_schema -> validate_structure -> validate_content_qa -> repair_if_needed -> export_artifacts -> write_agent_trace`，并导出 `generation_plan.json`、`state_schema_design.json`、`scene_blueprint.json`、`scene_artifacts.json`、`review_issues.json`、`review_issue_policy.json` 与 `agent_trace.jsonl`。其中 `draft_skeleton` 只消费已 locked 的 `scene_artifacts.json` 编译完整 game。
 
 校验状态设计 artifact：
 
@@ -175,6 +239,14 @@ python3 scripts/llm_scene_review_smoke.py
 ```bash
 python3 scripts/validate_review_issues.py \
   generated/missing_phone_agent_v0/review_issues.json
+```
+
+校验 review issue release policy：
+
+```bash
+python3 scripts/validate_review_issues.py \
+  generated/missing_phone_agent_v0/review_issue_policy.json \
+  --policy
 ```
 
 归档真实模型输出样本：

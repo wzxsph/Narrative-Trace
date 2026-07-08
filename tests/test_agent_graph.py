@@ -32,6 +32,7 @@ class AgentGraphTest(unittest.TestCase):
       self.assertTrue((output / "scene_blueprint.json").exists())
       self.assertTrue((output / "scene_artifacts.json").exists())
       self.assertTrue((output / "review_issues.json").exists())
+      self.assertTrue((output / "review_issue_policy.json").exists())
       self.assertTrue((output / "path_map.json").exists())
       self.assertTrue((output / "state_registry.json").exists())
       self.assertTrue((output / "validation_report.md").exists())
@@ -55,6 +56,8 @@ class AgentGraphTest(unittest.TestCase):
       self.assertIn("optional_llm_scene_review", nodes)
       self.assertIn("build_review_issues", nodes)
       self.assertIn("validate_review_issues", nodes)
+      self.assertIn("evaluate_review_issue_release_policy", nodes)
+      self.assertIn("validate_review_issue_release_policy", nodes)
       self.assertIn("review_scene_artifacts", nodes)
       self.assertIn("validate_scene_artifact_release", nodes)
       self.assertIn("draft_skeleton", nodes)
@@ -106,6 +109,8 @@ class AgentGraphTest(unittest.TestCase):
       self.assertEqual(llm_scene_review_events[-1]["status"], "skipped")
       review_issue_events = [event for event in trace if event["node"] == "validate_review_issues"]
       self.assertEqual(review_issue_events[-1]["status"], "ok")
+      policy_events = [event for event in trace if event["node"] == "validate_review_issue_release_policy"]
+      self.assertEqual(policy_events[-1]["status"], "ok")
       release_events = [event for event in trace if event["node"] == "validate_scene_artifact_release"]
       self.assertEqual(release_events[-1]["status"], "ok")
       alignment_events = [event for event in trace if event["node"] == "validate_blueprint_alignment"]
@@ -120,6 +125,9 @@ class AgentGraphTest(unittest.TestCase):
       review_issues = json.loads((output / "review_issues.json").read_text(encoding="utf-8"))
       self.assertEqual(review_issues["schema_version"], "review_issues_v0_1")
       self.assertEqual(review_issues["issues"], [])
+      review_policy = json.loads((output / "review_issue_policy.json").read_text(encoding="utf-8"))
+      self.assertEqual(review_policy["schema_version"], "review_issue_release_policy_v0_1")
+      self.assertEqual(review_policy["status"], "passed")
 
   def test_repair_node_applies_supported_structural_repairs(self) -> None:
     brief = load_brief(BRIEF_PATH)

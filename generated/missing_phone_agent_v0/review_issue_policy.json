@@ -1,0 +1,18 @@
+{
+  "schema_version": "review_issue_release_policy_v0_1",
+  "project_id": "missing_phone",
+  "policy": {
+    "block_on_active_blocking": true,
+    "warn_on_active_nonblocking": true
+  },
+  "status": "passed",
+  "blocking_issue_ids": [],
+  "warning_issue_ids": [],
+  "summary": {
+    "open_major": 0,
+    "open_minor": 0,
+    "active_blocking": 0,
+    "active_nonblocking": 0,
+    "total_issues": 0
+  }
+}
