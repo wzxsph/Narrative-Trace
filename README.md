@@ -14,24 +14,32 @@
 
 首屏是一个竖屏手机阅读界面，核心由场景文字、observe anchor 和底部 choice 组成。
 
-<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px;align-items:start;">
-  <figure style="margin:0;">
-    <img src="screenshots/01-start-screen.jpg" alt="Start screen with vertical story text, observe anchors, and bottom choices" style="width:100%;border:1px solid #d0d7de;border-radius:8px;">
-    <figcaption style="font-size:13px;line-height:1.45;color:#57606a;margin-top:6px;">Start screen: 竖屏阅读、observe anchor、底部 choice。</figcaption>
-  </figure>
-  <figure style="margin:0;">
-    <img src="screenshots/02-observe-unlocks-choice.jpg" alt="Observe interaction unlocks an additional visible choice" style="width:100%;border:1px solid #d0d7de;border-radius:8px;">
-    <figcaption style="font-size:13px;line-height:1.45;color:#57606a;margin-top:6px;">Observe unlock: 观察写入状态，并解锁新的可见行动。</figcaption>
-  </figure>
-  <figure style="margin:0;">
-    <img src="screenshots/03-chapter-review-flow.jpg" alt="Chapter review screen showing path flow and missing evidence" style="width:100%;border:1px solid #d0d7de;border-radius:8px;">
-    <figcaption style="font-size:13px;line-height:1.45;color:#57606a;margin-top:6px;">Chapter review: 复盘路径、关键状态回声和未解锁原因。</figcaption>
-  </figure>
-  <figure style="margin:0;">
-    <img src="screenshots/04-ending-portrait.jpg" alt="Ending portrait showing key observations, actions, stance, and ending tags" style="width:100%;border:1px solid #d0d7de;border-radius:8px;">
-    <figcaption style="font-size:13px;line-height:1.45;color:#57606a;margin-top:6px;">Ending portrait: 结局画像回看关键观察、行动和标签。</figcaption>
-  </figure>
-</div>
+<table>
+  <tr>
+    <td align="center" width="25%">
+      <a href="screenshots/01-start-screen.jpg"><img src="screenshots/thumb-01-start-screen.jpg" width="120" alt="Start screen with vertical story text, observe anchors, and bottom choices"></a>
+      <br>
+      <sub>Start screen</sub>
+    </td>
+    <td align="center" width="25%">
+      <a href="screenshots/02-observe-unlocks-choice.jpg"><img src="screenshots/thumb-02-observe-unlocks-choice.jpg" width="120" alt="Observe interaction unlocks an additional visible choice"></a>
+      <br>
+      <sub>Observe unlock</sub>
+    </td>
+    <td align="center" width="25%">
+      <a href="screenshots/03-chapter-review-flow.jpg"><img src="screenshots/thumb-03-chapter-review-flow.jpg" width="120" alt="Chapter review screen showing path flow and missing evidence"></a>
+      <br>
+      <sub>Chapter review</sub>
+    </td>
+    <td align="center" width="25%">
+      <a href="screenshots/04-ending-portrait.jpg"><img src="screenshots/thumb-04-ending-portrait.jpg" width="120" alt="Ending portrait showing key observations, actions, stance, and ending tags"></a>
+      <br>
+      <sub>Ending portrait</sub>
+    </td>
+  </tr>
+</table>
+
+<sub>截图以缩略图展示，点击可查看完整长图。</sub>
 
 观察不是补充说明，而是会改写玩家理解、写入隐藏状态，并在证据足够时长出新的行动。
 
