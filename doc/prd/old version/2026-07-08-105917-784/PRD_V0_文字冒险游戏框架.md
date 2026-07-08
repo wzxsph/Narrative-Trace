@@ -1,6 +1,6 @@
 # PRD V0：文字版底特律式互动叙事游戏框架
 
-版本：V0.13
+版本：V0.12
 日期：2026-07-08  
 文档目标：定义第一版本文字游戏本身的框架、具体形态、用户 UI/UX  
 保留文档：`PRD_AI文字冒险游戏.md` 继续保留，作为后续 AI 创作 Agent 和长期路线参考  
@@ -1063,7 +1063,6 @@ V0 失败时，测试用户会说：
 - 浏览器级移动视口 smoke：验证轻教学、新行动高亮、章节复盘、未解锁原因、刷新恢复和移动端横向溢出。
 - 局部 repair：能修复常见生成硬伤，包括坏 `start_scene_id`、坏 `next_scene`、缺失 anchor 文本、错误 observe depth、坏 unlock choice 引用。
 - 显式 JSON Schema 契约：验证游戏数据的字段形状、必填项、枚举、递归 observe 结构和基础类型。
-- 生成导出门禁：`generate_game.py` 默认在写文件前通过 JSON Schema 和结构 validator，失败时阻断导出。
 - 基础测试入口：`/home/samsong/Desktop/game_writer/tests/test_demo_contract.py`
 - 内部测试记录模板：`/home/samsong/Desktop/game_writer/doc/testing/internal_playtest_record_template.md`
 - 内部测试批次模板：`/home/samsong/Desktop/game_writer/examples/playtests/internal_playtest_batch_template.json`
@@ -1305,20 +1304,3 @@ V0.12 的边界：
 - JSON Schema 只验证字段形状、类型、必填项和枚举。
 - `start_scene_id` 是否真实存在、choice/observe ID 是否互相指向、隐藏内容是否公平，仍由 `validate_game.py` 和 `content_qa_report.py` 负责。
 - 这不是完整内容质量保证，但它减少了前端、生成器、repair 和 validator 之间的隐式契约。
-
-### 17.17 V0.13 版本变更记录
-
-V0.13 相比 V0.12 的实质变化：
-
-- 旧版 V0.12 PRD 和技术文档已归档到 `/home/samsong/Desktop/game_writer/doc/prd/old version/2026-07-08-105917-784`。
-- 新增 `gamegen/schema_contract.py`，让生成器、脚本和测试共享同一套 schema 校验逻辑。
-- `export_game()` 在写任何 artifact 前先运行 JSON Schema 校验和 `validate_game()`，存在 error 时直接抛错并阻断导出。
-- `generation_trace.jsonl` 增加 `schema` 字段，记录本次导出使用的 schema contract。
-- 新增 `tests/test_export_contract.py`，覆盖正常导出和坏数据阻断写文件。
-- `scripts/validate_json_schema.py` 改为复用 `gamegen.schema_contract`。
-
-V0.13 的边界：
-
-- 导出门禁只阻断 schema 和 validator 的 error；content QA 仍是独立验收命令。
-- 当前还没有模型输出 fixtures 和失败样本库。
-- 这仍不是 LLM 语义 repair loop，但已把生成入口的硬合同前移到写文件之前。

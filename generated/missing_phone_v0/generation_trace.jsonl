@@ -1,1 +1,1 @@
-{"provider": "offline", "artifacts": ["game.json", "game.yaml", "path_map.json", "state_registry.json", "validation_report.md"]}
+{"provider": "offline", "schema": "schemas/game.schema.json", "artifacts": ["game.json", "game.yaml", "path_map.json", "state_registry.json", "validation_report.md"]}

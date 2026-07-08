@@ -48,6 +48,8 @@ python3 scripts/generate_game.py \
   --provider offline
 ```
 
+生成导出会先通过 JSON Schema 和结构 validator；不通过时不会写出半成品。
+
 校验结构：
 
 ```bash

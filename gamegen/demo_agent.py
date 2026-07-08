@@ -6,6 +6,7 @@ from pathlib import Path
 from typing import Any
 
 from .llm_client import LLMClient, LLMConfig
+from .schema_contract import validate_against_default_schema
 from .validator import build_path_map, validate_game, write_validation_report
 
 
@@ -1196,6 +1197,7 @@ def scene_publish_decision() -> dict[str, Any]:
 
 
 def export_game(game: dict[str, Any], out_dir: str | Path) -> None:
+    messages = validate_export_contract(game)
     output = Path(out_dir)
     output.mkdir(parents=True, exist_ok=True)
     (output / "game.json").write_text(json.dumps(game, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
@@ -1206,13 +1208,29 @@ def export_game(game: dict[str, Any], out_dir: str | Path) -> None:
     (output / "state_registry.json").write_text(
         json.dumps(state_registry, ensure_ascii=False, indent=2) + "\n", encoding="utf-8"
     )
-    messages = validate_game(game)
     write_validation_report(messages, output / "validation_report.md")
     trace = {
         "provider": game.get("generation", {}).get("provider", "offline"),
+        "schema": "schemas/game.schema.json",
         "artifacts": ["game.json", "game.yaml", "path_map.json", "state_registry.json", "validation_report.md"],
     }
     (output / "generation_trace.jsonl").write_text(json.dumps(trace, ensure_ascii=False) + "\n", encoding="utf-8")
+
+
+def validate_export_contract(game: dict[str, Any]):
+    schema_errors = validate_against_default_schema(game)
+    validation_messages = validate_game(game)
+    validation_errors = [message for message in validation_messages if message.level == "error"]
+    if schema_errors or validation_errors:
+        lines = ["Generated game failed export contract validation."]
+        if schema_errors:
+            lines.append("JSON Schema errors:")
+            lines.extend(f"- {error}" for error in schema_errors)
+        if validation_errors:
+            lines.append("Game validation errors:")
+            lines.extend(f"- {message.location}: {message.message}" for message in validation_errors)
+        raise ValueError("\n".join(lines))
+    return validation_messages
 
 
 def build_state_registry(game: dict[str, Any]) -> dict[str, Any]:

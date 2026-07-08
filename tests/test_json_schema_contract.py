@@ -9,7 +9,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 
-from scripts.validate_json_schema import validate_against_schema
+from gamegen.schema_contract import validate_against_schema
 
 
 GAME_PATH = ROOT / "generated" / "missing_phone_v0" / "game.json"

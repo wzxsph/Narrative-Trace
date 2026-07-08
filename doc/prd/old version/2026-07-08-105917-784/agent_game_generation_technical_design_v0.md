@@ -1,6 +1,6 @@
 # Agent Game Generation Technical Design V0
 
-版本：V0.13
+版本：V0.12
 日期：2026-07-08  
 文档类型：技术设计文档  
 文件名规则：英文文件名，便于后续工程引用  
@@ -1173,7 +1173,6 @@ generated/missing_phone_v0/game.json
 - 新增浏览器级 smoke，覆盖移动视口、轻教学、高亮、章节复盘、未解锁原因和刷新恢复。
 - `repair_game.py` 已从 report-only 升级为保守局部修复器。
 - 新增显式 JSON Schema 和 schema 校验脚本。
-- `export_game()` 已将 JSON Schema 和结构 validator 接入默认导出门禁。
 
 当前技术状态：
 
@@ -1189,7 +1188,6 @@ Ending portrait completeness gate: achieved
 Browser smoke for core mobile path: achieved
 Conservative local repair tool: achieved
 Explicit JSON Schema contract: achieved
-Schema and validator export gate: achieved
 Production-grade generation pipeline: not achieved
 ```
 
@@ -1234,7 +1232,7 @@ Production-grade generation pipeline: not achieved
 下一轮建议按这个顺序推进：
 
 1. 增加模型输出 fixtures 和失败样本测试，验证 repair loop 的真实输入输出。
-2. 增加生成失败样本 fixtures，覆盖 schema gate、validator gate、repair gate 的组合行为。
+2. 将 JSON Schema 纳入生成脚本默认验证链路，失败时阻断导出。
 3. 扩展浏览器 E2E 矩阵，覆盖多结局、多路径、章节继续和结局画像。
 4. 跑一轮内部 playtest 批次，使用 `summarize_playtest_batch.py` 生成 pass/fail 报告。
 5. 增加真实设备与无障碍测试，覆盖触控、滚动、可读性、键盘导航和屏幕阅读器。
@@ -1462,22 +1460,3 @@ Production-grade generation pipeline: not achieved
 - 模型输出 fixtures 和失败样本库。
 - schema 尚未接入 `generate_game.py` 的默认导出阻断链路。
 - JSON Schema 不验证跨引用和语义质量；这些仍由 validator、content QA 和 playtest 处理。
-
-## 35. V0.13 Implementation Delta
-
-本轮 V0.13 的工程变化：
-
-- PRD 和技术文档旧版已归档到 `doc/prd/old version/2026-07-08-105917-784`。
-- 新增 `gamegen/schema_contract.py`，让生成器、CLI 和测试共享 schema 校验逻辑。
-- `scripts/validate_json_schema.py` 改为复用 `gamegen.schema_contract`。
-- `gamegen/demo_agent.py` 的 `export_game()` 在写文件前先运行 JSON Schema 和 `validate_game()`。
-- 若 schema 或 validator 存在 error，导出会抛出 `ValueError`，不会写出 `game.json` 半成品。
-- `generation_trace.jsonl` 增加 `schema` 字段。
-- 新增 `tests/test_export_contract.py` 覆盖正常导出和坏数据阻断写文件。
-- 重新生成 `generated/missing_phone_v0/generation_trace.jsonl`。
-
-本轮没有解决：
-
-- 模型输出 fixtures 和失败样本库。
-- content QA 尚未并入生成默认阻断链路。
-- LLM 语义 repair prompt 版本管理。
