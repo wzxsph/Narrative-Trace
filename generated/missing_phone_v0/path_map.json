@@ -61,13 +61,13 @@
         {
           "id": "choice_call_chen",
           "label": "联系陈警官",
-          "target": "ch02_station",
+          "target": "ch01_cloud_console",
           "requirements": []
         },
         {
           "id": "choice_go_station",
           "label": "前往废弃地铁站",
-          "target": "ch02_station",
+          "target": "ch01_cloud_console",
           "requirements": [
             {
               "state": "clues.station_location",
@@ -78,7 +78,7 @@
         {
           "id": "choice_delay_wipe",
           "label": "延迟远程清除",
-          "target": "ch02_station",
+          "target": "ch01_cloud_console",
           "requirements": [
             {
               "state": "clues.wipe_pause_window",
@@ -89,7 +89,7 @@
         {
           "id": "choice_confront_chen",
           "label": "带着截断记录质问陈",
-          "target": "ch03_backup",
+          "target": "ch01_contact_trace",
           "requirements": [
             {
               "state": "clues.chen_trimmed_location",
@@ -100,9 +100,234 @@
       ]
     },
     {
-      "id": "ch02_station",
+      "id": "ch01_cloud_console",
+      "chapter": "第一章：锁屏上的半句话",
+      "title": "云端控制台",
+      "observes": [
+        {
+          "id": "obs_device_admin",
+          "label": "核对后台来源",
+          "depth": 1,
+          "unlocks_choices": [
+            "choice_isolate_phone"
+          ]
+        },
+        {
+          "id": "obs_three_devices",
+          "label": "查看设备列表",
+          "depth": 2,
+          "unlocks_choices": [
+            "choice_isolate_phone"
+          ]
+        },
+        {
+          "id": "obs_session_token",
+          "label": "复制临时令牌",
+          "depth": 1,
+          "unlocks_choices": [
+            "choice_freeze_wipe"
+          ]
+        },
+        {
+          "id": "obs_screen_recording",
+          "label": "检查录制来源",
+          "depth": 1,
+          "unlocks_choices": [
+            "choice_blind_recording"
+          ]
+        }
+      ],
+      "choices": [
+        {
+          "id": "choice_freeze_wipe",
+          "label": "冻结清除队列",
+          "target": "ch01_contact_trace",
+          "requirements": [
+            {
+              "state": "clues.freeze_token",
+              "equals": true
+            }
+          ]
+        },
+        {
+          "id": "choice_isolate_phone",
+          "label": "隔离林的手机",
+          "target": "ch01_contact_trace",
+          "requirements": [
+            {
+              "state": "clues.cloud_admin",
+              "equals": true
+            }
+          ]
+        },
+        {
+          "id": "choice_blind_recording",
+          "label": "遮断屏幕录制",
+          "target": "ch01_contact_trace",
+          "requirements": [
+            {
+              "state": "clues.screen_recording",
+              "equals": true
+            }
+          ]
+        },
+        {
+          "id": "choice_leave_unfrozen",
+          "label": "带着倒计时继续查",
+          "target": "ch01_contact_trace",
+          "requirements": []
+        }
+      ]
+    },
+    {
+      "id": "ch01_contact_trace",
+      "chapter": "第一章：锁屏上的半句话",
+      "title": "联系人里的陈",
+      "observes": [
+        {
+          "id": "obs_chen_alias",
+          "label": "核对联系人备注",
+          "depth": 1,
+          "unlocks_choices": []
+        },
+        {
+          "id": "obs_casefile_share",
+          "label": "打开共享案件夹",
+          "depth": 2,
+          "unlocks_choices": [
+            "choice_warn_chen"
+          ]
+        },
+        {
+          "id": "obs_taxi_order",
+          "label": "查看订单路线",
+          "depth": 1,
+          "unlocks_choices": [
+            "choice_leave_for_station"
+          ]
+        },
+        {
+          "id": "obs_voice_note",
+          "label": "播放语音便签",
+          "depth": 1,
+          "unlocks_choices": [
+            "choice_send_voice_to_self"
+          ]
+        }
+      ],
+      "choices": [
+        {
+          "id": "choice_leave_for_station",
+          "label": "沿订单路线去旧员工入口",
+          "target": "ch02_station_gate",
+          "requirements": [
+            {
+              "state": "clues.station_route_confirmed",
+              "equals": true
+            }
+          ]
+        },
+        {
+          "id": "choice_send_voice_to_self",
+          "label": "备份语音便签",
+          "target": "ch02_station_gate",
+          "requirements": [
+            {
+              "state": "clues.voice_note",
+              "equals": true
+            }
+          ]
+        },
+        {
+          "id": "choice_warn_chen",
+          "label": "把共享草稿截图发给陈",
+          "target": "ch02_station_gate",
+          "requirements": [
+            {
+              "state": "clues.chen_casefile",
+              "equals": true
+            }
+          ]
+        },
+        {
+          "id": "choice_follow_old_address",
+          "label": "不通知任何人直接出发",
+          "target": "ch02_station_gate",
+          "requirements": []
+        }
+      ]
+    },
+    {
+      "id": "ch02_station_gate",
       "chapter": "第二章：废弃地铁站",
-      "title": "废弃地铁站",
+      "title": "旧员工入口",
+      "observes": [
+        {
+          "id": "obs_station_entry_code",
+          "label": "查看检修门编号",
+          "depth": 1,
+          "unlocks_choices": [
+            "choice_enter_service_corridor"
+          ]
+        },
+        {
+          "id": "obs_security_booth",
+          "label": "检查保安亭",
+          "depth": 1,
+          "unlocks_choices": [
+            "choice_wait_guard_shift"
+          ]
+        },
+        {
+          "id": "obs_camera_blind_spot",
+          "label": "确认摄像头盲区",
+          "depth": 1,
+          "unlocks_choices": [
+            "choice_enter_service_corridor"
+          ]
+        }
+      ],
+      "choices": [
+        {
+          "id": "choice_enter_service_corridor",
+          "label": "从检修门进入",
+          "target": "ch02_station_platform",
+          "requirements": [
+            {
+              "state": "clues.station_entry_code",
+              "equals": true
+            }
+          ]
+        },
+        {
+          "id": "choice_wait_guard_shift",
+          "label": "等保安亭换班",
+          "target": "ch02_station_platform",
+          "requirements": [
+            {
+              "state": "clues.security_booth",
+              "equals": true
+            }
+          ]
+        },
+        {
+          "id": "choice_force_gate",
+          "label": "剪断铁链",
+          "target": "ch02_station_platform",
+          "requirements": []
+        },
+        {
+          "id": "choice_call_chen_at_gate",
+          "label": "让陈确认入口安全",
+          "target": "ch02_station_platform",
+          "requirements": []
+        }
+      ]
+    },
+    {
+      "id": "ch02_station_platform",
+      "chapter": "第二章：废弃地铁站",
+      "title": "废弃站台",
       "observes": [
         {
           "id": "obs_ticket",
@@ -131,7 +356,7 @@
           "label": "辨认字迹",
           "depth": 1,
           "unlocks_choices": [
-            "choice_protect_lin"
+            "choice_read_wall_note"
           ]
         }
       ],
@@ -139,13 +364,13 @@
         {
           "id": "choice_wait_station",
           "label": "继续等待",
-          "target": "ch03_backup",
+          "target": "ch02_locker_room",
           "requirements": []
         },
         {
           "id": "choice_open_locker",
           "label": "打开 A-17 储物柜",
-          "target": "ch03_backup",
+          "target": "ch02_locker_room",
           "requirements": [
             {
               "state": "clues.locker_a17",
@@ -156,7 +381,7 @@
         {
           "id": "choice_cover_camera",
           "label": "遮住隐藏摄像头",
-          "target": "ch03_backup",
+          "target": "ch02_locker_room",
           "requirements": [
             {
               "state": "clues.hidden_camera",
@@ -165,9 +390,9 @@
           ]
         },
         {
-          "id": "choice_protect_lin",
-          "label": "先保护林的秘密",
-          "target": "ch03_backup",
+          "id": "choice_read_wall_note",
+          "label": "带走写有警告的车票",
+          "target": "ch02_locker_room",
           "requirements": [
             {
               "state": "clues.lin_confession",
@@ -178,16 +403,83 @@
       ]
     },
     {
-      "id": "ch03_backup",
+      "id": "ch02_locker_room",
+      "chapter": "第二章：废弃地铁站",
+      "title": "储物柜后的维护间",
+      "observes": [
+        {
+          "id": "obs_backup_drive",
+          "label": "读取离线备份",
+          "depth": 1,
+          "unlocks_choices": [
+            "choice_take_backup_to_safehouse"
+          ]
+        },
+        {
+          "id": "obs_audio_key",
+          "label": "检查录音钥匙",
+          "depth": 1,
+          "unlocks_choices": [
+            "choice_take_backup_to_safehouse"
+          ]
+        },
+        {
+          "id": "obs_red_bracelet",
+          "label": "查看红色手环",
+          "depth": 1,
+          "unlocks_choices": [
+            "choice_protect_lin_secret"
+          ]
+        }
+      ],
+      "choices": [
+        {
+          "id": "choice_take_backup_to_safehouse",
+          "label": "带走备份盘和录音钥匙",
+          "target": "ch03_backup_unlock",
+          "requirements": [
+            {
+              "state": "clues.backup_copy",
+              "equals": true
+            }
+          ]
+        },
+        {
+          "id": "choice_protect_lin_secret",
+          "label": "先遮住红色手环的信息",
+          "target": "ch03_backup_unlock",
+          "requirements": [
+            {
+              "state": "clues.victim_list",
+              "equals": true
+            }
+          ]
+        },
+        {
+          "id": "choice_destroy_locker_camera",
+          "label": "砸掉维护间摄像头",
+          "target": "ch03_backup_unlock",
+          "requirements": []
+        },
+        {
+          "id": "choice_wait_for_lin_contact",
+          "label": "等林预设的下一条消息",
+          "target": "ch03_backup_unlock",
+          "requirements": []
+        }
+      ]
+    },
+    {
+      "id": "ch03_backup_unlock",
       "chapter": "第三章：被保存的副本",
-      "title": "被保存的副本",
+      "title": "解密备份",
       "observes": [
         {
           "id": "obs_raw_recording",
           "label": "播放原始录音",
           "depth": 1,
           "unlocks_choices": [
-            "choice_publish_truth"
+            "choice_compare_context"
           ]
         },
         {
@@ -195,15 +487,159 @@
           "label": "比对剪辑版本",
           "depth": 1,
           "unlocks_choices": [
-            "choice_confront_final"
+            "choice_send_hash_to_chen"
           ]
         },
+        {
+          "id": "obs_context_chain",
+          "label": "查看证人链缺口",
+          "depth": 1,
+          "unlocks_choices": [
+            "choice_archive_first"
+          ]
+        }
+      ],
+      "choices": [
+        {
+          "id": "choice_compare_context",
+          "label": "继续查证人链",
+          "target": "ch03_witness_thread",
+          "requirements": [
+            {
+              "state": "clues.raw_recording",
+              "equals": true
+            }
+          ]
+        },
+        {
+          "id": "choice_send_hash_to_chen",
+          "label": "把剪辑哈希发给陈",
+          "target": "ch03_witness_thread",
+          "requirements": [
+            {
+              "state": "clues.edited_recording",
+              "equals": true
+            }
+          ]
+        },
+        {
+          "id": "choice_archive_first",
+          "label": "先做离线封存",
+          "target": "ch03_witness_thread",
+          "requirements": [
+            {
+              "state": "clues.victim_list",
+              "equals": true
+            }
+          ]
+        },
+        {
+          "id": "choice_skip_context",
+          "label": "跳过上下文直接进入发布页",
+          "target": "ch03_publish_decision",
+          "requirements": []
+        }
+      ]
+    },
+    {
+      "id": "ch03_witness_thread",
+      "chapter": "第三章：被保存的副本",
+      "title": "最后留言串",
+      "observes": [
         {
           "id": "obs_final_message",
           "label": "阅读最后留言",
           "depth": 1,
           "unlocks_choices": [
+            "choice_prepare_archive"
+          ]
+        },
+        {
+          "id": "obs_victim_list",
+          "label": "核对受害者名单",
+          "depth": 1,
+          "unlocks_choices": [
+            "choice_prepare_public_packet"
+          ]
+        },
+        {
+          "id": "obs_chen_pause",
+          "label": "重听陈的停顿",
+          "depth": 1,
+          "unlocks_choices": [
+            "choice_ask_chen_last_time"
+          ]
+        }
+      ],
+      "choices": [
+        {
+          "id": "choice_prepare_public_packet",
+          "label": "整理带遮罩的公开包",
+          "target": "ch03_publish_decision",
+          "requirements": [
+            {
+              "state": "clues.victim_list",
+              "equals": true
+            }
+          ]
+        },
+        {
+          "id": "choice_prepare_archive",
+          "label": "整理只给律师的封存包",
+          "target": "ch03_publish_decision",
+          "requirements": [
+            {
+              "state": "clues.final_message",
+              "equals": true
+            }
+          ]
+        },
+        {
+          "id": "choice_ask_chen_last_time",
+          "label": "最后一次询问陈",
+          "target": "ch03_publish_decision",
+          "requirements": [
+            {
+              "state": "clues.chen_motive",
+              "equals": true
+            }
+          ]
+        },
+        {
+          "id": "choice_enter_decision_without_more",
+          "label": "带着缺口进入发布页",
+          "target": "ch03_publish_decision",
+          "requirements": []
+        }
+      ]
+    },
+    {
+      "id": "ch03_publish_decision",
+      "chapter": "第三章：被保存的副本",
+      "title": "发布页",
+      "observes": [
+        {
+          "id": "obs_public_packet",
+          "label": "检查公开包",
+          "depth": 1,
+          "unlocks_choices": [
+            "choice_publish_truth"
+          ]
+        },
+        {
+          "id": "obs_offline_archive",
+          "label": "检查离线存储",
+          "depth": 1,
+          "unlocks_choices": [
             "choice_keep_archive"
+          ]
+        },
+        {
+          "id": "obs_send_to_chen",
+          "label": "检查发给陈的草稿",
+          "depth": 1,
+          "unlocks_choices": [
+            "choice_confront_final"
           ]
         }
       ],
@@ -214,7 +650,7 @@
           "target": "ending_publish",
           "requirements": [
             {
-              "state": "clues.raw_recording",
+              "state": "clues.public_packet_ready",
               "equals": true
             }
           ]
@@ -225,7 +661,7 @@
           "target": "ending_bury",
           "requirements": [
             {
-              "state": "clues.final_message",
+              "state": "clues.archive_ready",
               "equals": true
             }
           ]
@@ -236,7 +672,7 @@
           "target": "ending_confront",
           "requirements": [
             {
-              "state": "clues.edited_recording",
+              "state": "clues.chen_message_ready",
               "equals": true
             }
           ]

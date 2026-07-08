@@ -1,5 +1,5 @@
 {
-  "schema_version": "game_writer_demo_v0",
+  "schema_version": "game_writer_demo_v0_2",
   "project": {
     "id": "missing_phone",
     "title": "失踪者的手机",
@@ -8,10 +8,35 @@
   },
   "start_scene_id": "ch01_phone_lock",
   "initial_state": {
+    "clues.unsent_warning": false,
     "clues.station_location": false,
     "clues.chen_trimmed_location": false,
+    "clues.wipe_pause_window": false,
+    "clues.lock_time_0213": false,
+    "clues.cloud_admin": false,
+    "clues.freeze_token": false,
+    "clues.screen_recording": false,
+    "clues.chen_alias": false,
+    "clues.chen_casefile": false,
+    "clues.station_route_confirmed": false,
+    "clues.voice_note": false,
+    "clues.station_entry_code": false,
+    "clues.security_booth": false,
+    "clues.camera_blind_spot": false,
+    "clues.ticket_warning": false,
+    "clues.locker_a17": false,
+    "clues.hidden_camera": false,
     "clues.backup_copy": false,
+    "clues.lin_audio_key": false,
+    "clues.victim_list": false,
     "clues.lin_confession": false,
+    "clues.raw_recording": false,
+    "clues.edited_recording": false,
+    "clues.final_message": false,
+    "clues.chen_motive": false,
+    "clues.public_packet_ready": false,
+    "clues.archive_ready": false,
+    "clues.chen_message_ready": false,
     "stance.truth_first": 0,
     "stance.protect_person": 0,
     "relationships.chen.trust": 0,
@@ -29,7 +54,7 @@
       "required_for_demo": true,
       "background_blocks": [
         {
-          "id": "bg_lock_01",
+          "id": "bg_ch01_phone_lock",
           "text": "手机亮起。未发送短信停在输入框里：“如果我没回来，不要相信陈...” 顶部通知显示：远程清除已排队。锁屏时间停在 02:13。",
           "observe_anchors": [
             {
@@ -48,7 +73,7 @@
               "unlocks_choices": [],
               "opens_fragment": {
                 "id": "frag_unsent_sms",
-                "title": "未发送的短信",
+                "title": "查看短信草稿",
                 "body": "草稿创建于 02:13，最后一次编辑停在“陈”字后。输入法候选里，第一个词是“陈警官”，第二个词是“陈述”。",
                 "evidence_tags": [
                   "warning",
@@ -73,7 +98,7 @@
                     ],
                     "opens_fragment": {
                       "id": "frag_0213_log",
-                      "title": "02:13 的系统日志",
+                      "title": "对照系统日志",
                       "body": "02:13 时手机短暂开启定位，地点是城北废弃地铁站。4 秒后，定位记录被手动截断。",
                       "evidence_tags": [
                         "location",
@@ -98,7 +123,7 @@
                           ],
                           "opens_fragment": {
                             "id": "frag_trimmed_gap",
-                            "title": "被截断的 4 秒",
+                            "title": "检查截断痕迹",
                             "body": "截断命令来自一个备注为“陈”的联系人号码。这不是系统自动清理。",
                             "evidence_tags": [
                               "chen",
@@ -131,7 +156,7 @@
               ],
               "opens_fragment": {
                 "id": "frag_remote_wipe",
-                "title": "远程清除队列",
+                "title": "查看远程清除来源",
                 "body": "清除请求不是来自普通云服务，而是来自林调查过的公司设备管理后台。队列里有一个临时的暂停窗口。",
                 "evidence_tags": [
                   "pressure",
@@ -156,7 +181,7 @@
                     ],
                     "opens_fragment": {
                       "id": "frag_pause_window",
-                      "title": "六分钟暂停窗口",
+                      "title": "检查暂停窗口",
                       "body": "你可以让清除队列延迟六分钟，但系统会记录这次入侵。",
                       "evidence_tags": [
                         "timer"
@@ -183,7 +208,7 @@
               "unlocks_choices": [],
               "opens_fragment": {
                 "id": "frag_time_0213",
-                "title": "停住的时间",
+                "title": "查看锁屏时间",
                 "body": "02:13 同时出现在短信草稿、定位日志和锁屏时间里。林像是故意把这个时间留给你。",
                 "evidence_tags": [
                   "pattern"
@@ -207,7 +232,7 @@
               }
             }
           ],
-          "next_scene": "ch02_station",
+          "next_scene": "ch01_cloud_console",
           "irreversible": true,
           "consequence_level": "chapter",
           "outcome": "陈接得很快。他听完后只问了一句：“你看过里面的内容了吗？”"
@@ -215,7 +240,7 @@
         {
           "id": "choice_go_station",
           "label": "前往废弃地铁站",
-          "description": "你会离开安全地点，手机可能在路上被清除。",
+          "description": "你会离开安全地点，但手机要求先处理远程清除。",
           "requirements": [
             {
               "state": "clues.station_location",
@@ -229,10 +254,10 @@
               }
             }
           ],
-          "next_scene": "ch02_station",
+          "next_scene": "ch01_cloud_console",
           "irreversible": true,
           "consequence_level": "global",
-          "outcome": "你把手机揣进口袋。导航路线亮起，终点是城北废弃地铁站。"
+          "outcome": "你把手机揣进口袋。导航路线亮起，云端控制台却先弹了出来。"
         },
         {
           "id": "choice_delay_wipe",
@@ -251,7 +276,7 @@
               }
             }
           ],
-          "next_scene": "ch02_station",
+          "next_scene": "ch01_cloud_console",
           "irreversible": true,
           "consequence_level": "global",
           "outcome": "倒计时跳回 12:00。屏幕角落多了一个你没见过的远程会话图标。"
@@ -278,7 +303,7 @@
               }
             }
           ],
-          "next_scene": "ch03_backup",
+          "next_scene": "ch01_contact_trace",
           "irreversible": true,
           "consequence_level": "global",
           "outcome": "陈沉默了三秒：“你不该看到那四秒。”"
@@ -286,15 +311,616 @@
       ]
     },
     {
-      "id": "ch02_station",
+      "id": "ch01_cloud_console",
+      "chapter": "第一章：锁屏上的半句话",
+      "title": "云端控制台",
+      "task": "阻止手机在路上被清空。",
+      "pressure": "远程会话在线",
+      "required_for_demo": true,
+      "background_blocks": [
+        {
+          "id": "bg_ch01_cloud_console",
+          "text": "云端控制台自动展开。设备管理后台列出三台设备，临时令牌只剩一次使用机会，右上角的屏幕录制仍在跳秒。",
+          "observe_anchors": [
+            {
+              "id": "obs_device_admin",
+              "text_range": "设备管理后台",
+              "label": "核对后台来源",
+              "discoverability": "obvious",
+              "depth": 1,
+              "effects": [
+                {
+                  "set": {
+                    "clues.cloud_admin": true
+                  }
+                }
+              ],
+              "unlocks_choices": [
+                "choice_isolate_phone"
+              ],
+              "opens_fragment": {
+                "id": "frag_device_admin",
+                "title": "核对后台来源",
+                "body": "后台证书属于林调查过的公司。三台设备最近一次登录都不在公司内网，其中一台落在陈警官所在辖区的公共终端。",
+                "evidence_tags": [
+                  "company",
+                  "chen"
+                ],
+                "nested_anchors": [
+                  {
+                    "id": "obs_three_devices",
+                    "text_range": "三台设备",
+                    "label": "查看设备列表",
+                    "discoverability": "subtle",
+                    "depth": 2,
+                    "effects": [
+                      {
+                        "add": {
+                          "pressure.company_alert": 1
+                        }
+                      }
+                    ],
+                    "unlocks_choices": [
+                      "choice_isolate_phone"
+                    ],
+                    "opens_fragment": {
+                      "id": "frag_three_devices",
+                      "title": "查看设备列表",
+                      "body": "三台设备里只有林的手机仍在移动，另外两台设备像是在给它打掩护。",
+                      "evidence_tags": [
+                        "device"
+                      ],
+                      "nested_anchors": []
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "id": "obs_session_token",
+              "text_range": "临时令牌",
+              "label": "复制临时令牌",
+              "discoverability": "obvious",
+              "depth": 1,
+              "effects": [
+                {
+                  "set": {
+                    "clues.freeze_token": true
+                  }
+                }
+              ],
+              "unlocks_choices": [
+                "choice_freeze_wipe"
+              ],
+              "opens_fragment": {
+                "id": "frag_session_token",
+                "title": "复制临时令牌",
+                "body": "令牌可以冻结清除队列，但会把你的设备指纹写入后台日志。",
+                "evidence_tags": [
+                  "timer",
+                  "risk"
+                ],
+                "nested_anchors": []
+              }
+            },
+            {
+              "id": "obs_screen_recording",
+              "text_range": "屏幕录制",
+              "label": "检查录制来源",
+              "discoverability": "subtle",
+              "depth": 1,
+              "effects": [
+                {
+                  "set": {
+                    "clues.screen_recording": true
+                  }
+                }
+              ],
+              "unlocks_choices": [
+                "choice_blind_recording"
+              ],
+              "opens_fragment": {
+                "id": "frag_screen_recording",
+                "title": "检查录制来源",
+                "body": "录制窗口没有麦克风权限，只能看见你点了什么，看不见你听见了什么。",
+                "evidence_tags": [
+                  "surveillance"
+                ],
+                "nested_anchors": []
+              }
+            }
+          ]
+        }
+      ],
+      "choices": [
+        {
+          "id": "choice_freeze_wipe",
+          "label": "冻结清除队列",
+          "description": "手机内容会暂时安全，但你的指纹会进入公司日志。",
+          "requirements": [
+            {
+              "state": "clues.freeze_token",
+              "equals": true
+            }
+          ],
+          "effects": [
+            {
+              "add": {
+                "pressure.company_alert": 1
+              }
+            }
+          ],
+          "next_scene": "ch01_contact_trace",
+          "irreversible": true,
+          "consequence_level": "global",
+          "outcome": "清除队列变成灰色，倒计时旁多了一条新日志：外部令牌介入。"
+        },
+        {
+          "id": "choice_isolate_phone",
+          "label": "隔离林的手机",
+          "description": "你会切断其他设备掩护，换来一条更干净的追踪路径。",
+          "requirements": [
+            {
+              "state": "clues.cloud_admin",
+              "equals": true
+            }
+          ],
+          "effects": [
+            {
+              "set": {
+                "clues.station_route_confirmed": true
+              }
+            }
+          ],
+          "next_scene": "ch01_contact_trace",
+          "irreversible": true,
+          "consequence_level": "chapter",
+          "outcome": "另外两台设备掉线，林的手机位置被单独标出。"
+        },
+        {
+          "id": "choice_blind_recording",
+          "label": "遮断屏幕录制",
+          "description": "你能隐藏接下来的操作，但会让对方知道你发现了监视。",
+          "requirements": [
+            {
+              "state": "clues.screen_recording",
+              "equals": true
+            }
+          ],
+          "effects": [
+            {
+              "add": {
+                "pressure.company_alert": 1
+              }
+            }
+          ],
+          "next_scene": "ch01_contact_trace",
+          "irreversible": true,
+          "consequence_level": "chapter",
+          "outcome": "录制窗口黑了两秒，又重新亮起。对面一定注意到了。"
+        },
+        {
+          "id": "choice_leave_unfrozen",
+          "label": "带着倒计时继续查",
+          "description": "你不改动后台，换取对方暂时不知道你介入。",
+          "requirements": [],
+          "effects": [
+            {
+              "add": {
+                "stance.protect_person": 1
+              }
+            }
+          ],
+          "next_scene": "ch01_contact_trace",
+          "irreversible": true,
+          "consequence_level": "chapter",
+          "outcome": "倒计时还在跳。你把手机调成离线，只留下本地日志。"
+        }
+      ]
+    },
+    {
+      "id": "ch01_contact_trace",
+      "chapter": "第一章：锁屏上的半句话",
+      "title": "联系人里的陈",
+      "task": "确认陈到底是人名、备注，还是陷阱。",
+      "pressure": "倒计时稳定",
+      "required_for_demo": true,
+      "background_blocks": [
+        {
+          "id": "bg_ch01_contact_trace",
+          "text": "联系人陈被置顶在最近通话里。共享案件夹的权限还没关闭，一条出租车订单把林送向城北，语音便签停在未播放状态。",
+          "observe_anchors": [
+            {
+              "id": "obs_chen_alias",
+              "text_range": "联系人陈",
+              "label": "核对联系人备注",
+              "discoverability": "obvious",
+              "depth": 1,
+              "effects": [
+                {
+                  "set": {
+                    "clues.chen_alias": true
+                  }
+                }
+              ],
+              "unlocks_choices": [],
+              "opens_fragment": {
+                "id": "frag_chen_alias",
+                "title": "核对联系人备注",
+                "body": "备注里的陈不只有陈警官，还关联了一个匿名报案人。林把两个号码故意合并在同一张联系人卡里，并把共享案件夹挂在联系人详情下。",
+                "evidence_tags": [
+                  "chen",
+                  "alias"
+                ],
+                "nested_anchors": [
+                  {
+                    "id": "obs_casefile_share",
+                    "text_range": "共享案件夹",
+                    "label": "打开共享案件夹",
+                    "discoverability": "subtle",
+                    "depth": 2,
+                    "effects": [
+                      {
+                        "set": {
+                          "clues.chen_casefile": true
+                        }
+                      }
+                    ],
+                    "unlocks_choices": [
+                      "choice_warn_chen"
+                    ],
+                    "opens_fragment": {
+                      "id": "frag_casefile_share",
+                      "title": "打开共享案件夹",
+                      "body": "案件夹里有陈警官写给林的草稿：如果录音公开，先保人，再保案子。",
+                      "evidence_tags": [
+                        "relationship",
+                        "casefile"
+                      ],
+                      "nested_anchors": []
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "id": "obs_taxi_order",
+              "text_range": "出租车订单",
+              "label": "查看订单路线",
+              "discoverability": "obvious",
+              "depth": 1,
+              "effects": [
+                {
+                  "set": {
+                    "clues.station_route_confirmed": true
+                  }
+                }
+              ],
+              "unlocks_choices": [
+                "choice_leave_for_station"
+              ],
+              "opens_fragment": {
+                "id": "frag_taxi_order",
+                "title": "查看订单路线",
+                "body": "订单终点不是地铁站正门，而是废弃站旁的旧员工入口。",
+                "evidence_tags": [
+                  "location"
+                ],
+                "nested_anchors": []
+              }
+            },
+            {
+              "id": "obs_voice_note",
+              "text_range": "语音便签",
+              "label": "播放语音便签",
+              "discoverability": "obvious",
+              "depth": 1,
+              "effects": [
+                {
+                  "set": {
+                    "clues.voice_note": true
+                  }
+                },
+                {
+                  "add": {
+                    "relationships.lin.bond": 1
+                  }
+                }
+              ],
+              "unlocks_choices": [
+                "choice_send_voice_to_self"
+              ],
+              "opens_fragment": {
+                "id": "frag_voice_note",
+                "title": "播放语音便签",
+                "body": "林的声音很低：别让他们把我变成唯一的坏人。你第一次听见她像是在向你求证，而不是求救。",
+                "evidence_tags": [
+                  "lin",
+                  "bond"
+                ],
+                "nested_anchors": []
+              }
+            }
+          ]
+        }
+      ],
+      "choices": [
+        {
+          "id": "choice_leave_for_station",
+          "label": "沿订单路线去旧员工入口",
+          "description": "路线更隐蔽，但会直接进入林最后出现的区域。",
+          "requirements": [
+            {
+              "state": "clues.station_route_confirmed",
+              "equals": true
+            }
+          ],
+          "effects": [
+            {
+              "add": {
+                "stance.truth_first": 1
+              }
+            }
+          ],
+          "next_scene": "ch02_station_gate",
+          "irreversible": true,
+          "consequence_level": "global",
+          "outcome": "你按下确认。第一章的线索收束成一个地点：城北废弃站。"
+        },
+        {
+          "id": "choice_send_voice_to_self",
+          "label": "备份语音便签",
+          "description": "你会保留林的原声，也承担保管她软弱证据的责任。",
+          "requirements": [
+            {
+              "state": "clues.voice_note",
+              "equals": true
+            }
+          ],
+          "effects": [
+            {
+              "add": {
+                "relationships.lin.bond": 1
+              }
+            }
+          ],
+          "next_scene": "ch02_station_gate",
+          "irreversible": true,
+          "consequence_level": "global",
+          "outcome": "便签被复制到离线区。林的声音从案件线索变成了一个你必须面对的人。"
+        },
+        {
+          "id": "choice_warn_chen",
+          "label": "把共享草稿截图发给陈",
+          "description": "他会知道你看见了他的犹豫，也可能因此帮你。",
+          "requirements": [
+            {
+              "state": "clues.chen_casefile",
+              "equals": true
+            }
+          ],
+          "effects": [
+            {
+              "add": {
+                "relationships.chen.trust": 1
+              }
+            }
+          ],
+          "next_scene": "ch02_station_gate",
+          "irreversible": true,
+          "consequence_level": "chapter",
+          "outcome": "陈回了一个定位点，没有解释，也没有否认。"
+        },
+        {
+          "id": "choice_follow_old_address",
+          "label": "不通知任何人直接出发",
+          "description": "你会少暴露一点，但也少一个外部支点。",
+          "requirements": [],
+          "effects": [
+            {
+              "add": {
+                "stance.protect_person": 1
+              }
+            }
+          ],
+          "next_scene": "ch02_station_gate",
+          "irreversible": true,
+          "consequence_level": "chapter",
+          "outcome": "你锁上屏幕，出租车订单的终点在黑暗里闪了一下。"
+        }
+      ]
+    },
+    {
+      "id": "ch02_station_gate",
       "chapter": "第二章：废弃地铁站",
-      "title": "废弃地铁站",
-      "task": "确认林在地铁站留下了什么。",
+      "title": "旧员工入口",
+      "task": "找到进入废弃站台的低风险路线。",
+      "pressure": "站外监控稀疏",
+      "required_for_demo": true,
+      "background_blocks": [
+        {
+          "id": "bg_ch02_station_gate",
+          "text": "旧员工入口被铁链绕住，检修门旁贴着褪色编号。保安亭里还亮着一盏台灯，墙角摄像头盲区刚好覆盖半扇门。",
+          "observe_anchors": [
+            {
+              "id": "obs_station_entry_code",
+              "text_range": "检修门",
+              "label": "查看检修门编号",
+              "discoverability": "obvious",
+              "depth": 1,
+              "effects": [
+                {
+                  "set": {
+                    "clues.station_entry_code": true
+                  }
+                }
+              ],
+              "unlocks_choices": [
+                "choice_enter_service_corridor"
+              ],
+              "opens_fragment": {
+                "id": "frag_station_entry_code",
+                "title": "查看检修门编号",
+                "body": "编号末尾是 0213。林把时间、订单和入口码叠在了一起。",
+                "evidence_tags": [
+                  "pattern",
+                  "entry"
+                ],
+                "nested_anchors": []
+              }
+            },
+            {
+              "id": "obs_security_booth",
+              "text_range": "保安亭",
+              "label": "检查保安亭",
+              "discoverability": "obvious",
+              "depth": 1,
+              "effects": [
+                {
+                  "set": {
+                    "clues.security_booth": true
+                  }
+                }
+              ],
+              "unlocks_choices": [
+                "choice_wait_guard_shift"
+              ],
+              "opens_fragment": {
+                "id": "frag_security_booth",
+                "title": "检查保安亭",
+                "body": "值班表被撕掉了一半。剩下的名字里有陈警官辖区的一名辅警。",
+                "evidence_tags": [
+                  "chen",
+                  "risk"
+                ],
+                "nested_anchors": []
+              }
+            },
+            {
+              "id": "obs_camera_blind_spot",
+              "text_range": "摄像头盲区",
+              "label": "确认摄像头盲区",
+              "discoverability": "subtle",
+              "depth": 1,
+              "effects": [
+                {
+                  "set": {
+                    "clues.camera_blind_spot": true
+                  }
+                }
+              ],
+              "unlocks_choices": [
+                "choice_enter_service_corridor"
+              ],
+              "opens_fragment": {
+                "id": "frag_camera_blind_spot",
+                "title": "确认摄像头盲区",
+                "body": "盲区不是自然形成的，像是有人提前把摄像头角度偏了三度。",
+                "evidence_tags": [
+                  "surveillance"
+                ],
+                "nested_anchors": []
+              }
+            }
+          ]
+        }
+      ],
+      "choices": [
+        {
+          "id": "choice_enter_service_corridor",
+          "label": "从检修门进入",
+          "description": "你会避开正门摄像头，但进入后很难回头。",
+          "requirements": [
+            {
+              "state": "clues.station_entry_code",
+              "equals": true
+            }
+          ],
+          "effects": [
+            {
+              "add": {
+                "stance.truth_first": 1
+              }
+            }
+          ],
+          "next_scene": "ch02_station_platform",
+          "irreversible": true,
+          "consequence_level": "chapter",
+          "outcome": "检修门发出很轻的一声响，像是早就等着这个编号。"
+        },
+        {
+          "id": "choice_wait_guard_shift",
+          "label": "等保安亭换班",
+          "description": "你会浪费时间，但可能减少被拍到的风险。",
+          "requirements": [
+            {
+              "state": "clues.security_booth",
+              "equals": true
+            }
+          ],
+          "effects": [
+            {
+              "add": {
+                "stance.protect_person": 1
+              }
+            }
+          ],
+          "next_scene": "ch02_station_platform",
+          "irreversible": true,
+          "consequence_level": "chapter",
+          "outcome": "十分钟后，台灯熄了。你错过一点窗口，也避开了一双眼睛。"
+        },
+        {
+          "id": "choice_force_gate",
+          "label": "剪断铁链",
+          "description": "速度最快，也最容易留下痕迹。",
+          "requirements": [],
+          "effects": [
+            {
+              "add": {
+                "pressure.company_alert": 1
+              }
+            }
+          ],
+          "next_scene": "ch02_station_platform",
+          "irreversible": true,
+          "consequence_level": "chapter",
+          "outcome": "铁链落地的声音比你想象中响。远处有水滴声停了一下。"
+        },
+        {
+          "id": "choice_call_chen_at_gate",
+          "label": "让陈确认入口安全",
+          "description": "如果他可信，这能少走弯路；如果不可信，你等于报点。",
+          "requirements": [],
+          "effects": [
+            {
+              "add": {
+                "relationships.chen.trust": 1
+              }
+            },
+            {
+              "add": {
+                "relationships.chen.suspicion": 1
+              }
+            }
+          ],
+          "next_scene": "ch02_station_platform",
+          "irreversible": true,
+          "consequence_level": "chapter",
+          "outcome": "陈说：“走检修门，别走正门。”他太快给出答案，让你更不安。"
+        }
+      ]
+    },
+    {
+      "id": "ch02_station_platform",
+      "chapter": "第二章：废弃地铁站",
+      "title": "废弃站台",
+      "task": "确认林在站台留下了什么。",
       "pressure": "公司警报升高",
       "required_for_demo": true,
       "background_blocks": [
         {
-          "id": "bg_station_01",
+          "id": "bg_ch02_station_platform",
           "text": "站台没有灯，只有手机屏幕照亮墙上的旧广告。广告背面贴着一张车票，票根上写着“别公开录音”。轨道旁的储物柜还亮着微弱红点。",
           "observe_anchors": [
             {
@@ -313,7 +939,7 @@
               "unlocks_choices": [],
               "opens_fragment": {
                 "id": "frag_ticket",
-                "title": "一张旧车票",
+                "title": "取下车票",
                 "body": "车票背面写着：录音是真的，剪辑是假的。底部还有一串储物柜编号：A-17。",
                 "evidence_tags": [
                   "recording",
@@ -338,7 +964,7 @@
                     ],
                     "opens_fragment": {
                       "id": "frag_locker_code",
-                      "title": "A-17",
+                      "title": "核对储物柜编号",
                       "body": "A-17 的柜门没有锁死，只要用手机靠近就能触发离线备份。",
                       "evidence_tags": [
                         "backup"
@@ -367,7 +993,7 @@
               ],
               "opens_fragment": {
                 "id": "frag_red_dot",
-                "title": "隐藏摄像头",
+                "title": "检查红点",
                 "body": "红点来自一个临时摄像头。它正在上传低清画面，上传目的地仍是那套公司后台。",
                 "evidence_tags": [
                   "camera",
@@ -390,11 +1016,11 @@
                 }
               ],
               "unlocks_choices": [
-                "choice_protect_lin"
+                "choice_read_wall_note"
               ],
               "opens_fragment": {
                 "id": "frag_recording_warning",
-                "title": "林的字迹",
+                "title": "辨认字迹",
                 "body": "这是林的字。她不是说录音不存在，而是在求你不要公开它。",
                 "evidence_tags": [
                   "lin",
@@ -419,7 +1045,7 @@
               }
             }
           ],
-          "next_scene": "ch03_backup",
+          "next_scene": "ch02_locker_room",
           "irreversible": true,
           "consequence_level": "chapter",
           "outcome": "五分钟后，摄像头自动转向了你。你等到了答案，也暴露了自己。"
@@ -427,7 +1053,7 @@
         {
           "id": "choice_open_locker",
           "label": "打开 A-17 储物柜",
-          "description": "你会取得备份，也会触发林留下的最后留言。",
+          "description": "你会进入储物柜后方的维护间，那里可能有林留下的备份。",
           "requirements": [
             {
               "state": "clues.locker_a17",
@@ -446,10 +1072,10 @@
               }
             }
           ],
-          "next_scene": "ch03_backup",
+          "next_scene": "ch02_locker_room",
           "irreversible": true,
           "consequence_level": "global",
-          "outcome": "柜门弹开，手机自动接收一份加密副本。林的留言开始播放。"
+          "outcome": "柜门弹开，后面不是储物格，而是一条窄窄的维护通道。"
         },
         {
           "id": "choice_cover_camera",
@@ -468,15 +1094,15 @@
               }
             }
           ],
-          "next_scene": "ch03_backup",
+          "next_scene": "ch02_locker_room",
           "irreversible": true,
           "consequence_level": "chapter",
           "outcome": "画面中断。几乎同时，手机收到一条没有号码的短信：别再碰柜子。"
         },
         {
-          "id": "choice_protect_lin",
-          "label": "先保护林的秘密",
-          "description": "你会暂时不碰录音，但真相可能因此被永远藏住。",
+          "id": "choice_read_wall_note",
+          "label": "带走写有警告的车票",
+          "description": "你会把林的请求放进行动记录里，而不只是把它当线索。",
           "requirements": [
             {
               "state": "clues.lin_confession",
@@ -490,24 +1116,205 @@
               }
             }
           ],
-          "next_scene": "ch03_backup",
+          "next_scene": "ch02_locker_room",
           "irreversible": true,
-          "consequence_level": "ending",
-          "outcome": "你把车票折好收进口袋。手机屏幕暗下去，像是林终于短暂地信了你一次。"
+          "consequence_level": "global",
+          "outcome": "车票被你折进手机壳。那句话变成了你后面每个选择的重量。"
         }
       ]
     },
     {
-      "id": "ch03_backup",
-      "chapter": "第三章：被保存的副本",
-      "title": "被保存的副本",
-      "task": "决定是否公开林留下的备份。",
-      "pressure": "最后选择",
+      "id": "ch02_locker_room",
+      "chapter": "第二章：废弃地铁站",
+      "title": "储物柜后的维护间",
+      "task": "取走备份，并判断林想保护谁。",
+      "pressure": "脚步声接近",
       "required_for_demo": true,
       "background_blocks": [
         {
-          "id": "bg_backup_01",
-          "text": "备份解密完成。屏幕上有两份文件：原始录音和剪辑版本。林的最后留言写着：“真相不是没有代价，只是代价别让无辜的人替我付。”",
+          "id": "bg_ch02_locker_room",
+          "text": "维护间里有一块离线备份盘，一枚录音钥匙，以及挂在管道上的红色手环。手机自动弹出林留下的短句：别只救我。",
+          "observe_anchors": [
+            {
+              "id": "obs_backup_drive",
+              "text_range": "离线备份",
+              "label": "读取离线备份",
+              "discoverability": "obvious",
+              "depth": 1,
+              "effects": [
+                {
+                  "set": {
+                    "clues.backup_copy": true
+                  }
+                }
+              ],
+              "unlocks_choices": [
+                "choice_take_backup_to_safehouse"
+              ],
+              "opens_fragment": {
+                "id": "frag_backup_drive",
+                "title": "读取离线备份",
+                "body": "备份盘里不是单个文件，而是一组互相校验的音频、短信和后台日志。",
+                "evidence_tags": [
+                  "backup"
+                ],
+                "nested_anchors": []
+              }
+            },
+            {
+              "id": "obs_audio_key",
+              "text_range": "录音钥匙",
+              "label": "检查录音钥匙",
+              "discoverability": "obvious",
+              "depth": 1,
+              "effects": [
+                {
+                  "set": {
+                    "clues.lin_audio_key": true
+                  }
+                }
+              ],
+              "unlocks_choices": [
+                "choice_take_backup_to_safehouse"
+              ],
+              "opens_fragment": {
+                "id": "frag_audio_key",
+                "title": "检查录音钥匙",
+                "body": "钥匙只解一半录音。另一半需要林手机里的本地日志配对。",
+                "evidence_tags": [
+                  "recording",
+                  "key"
+                ],
+                "nested_anchors": []
+              }
+            },
+            {
+              "id": "obs_red_bracelet",
+              "text_range": "红色手环",
+              "label": "查看红色手环",
+              "discoverability": "subtle",
+              "depth": 1,
+              "effects": [
+                {
+                  "set": {
+                    "clues.victim_list": true
+                  }
+                },
+                {
+                  "add": {
+                    "relationships.lin.bond": 1
+                  }
+                }
+              ],
+              "unlocks_choices": [
+                "choice_protect_lin_secret"
+              ],
+              "opens_fragment": {
+                "id": "frag_red_bracelet",
+                "title": "查看红色手环",
+                "body": "手环内侧刻着三个名字。林不是唯一被卷进来的人。",
+                "evidence_tags": [
+                  "victims",
+                  "lin"
+                ],
+                "nested_anchors": []
+              }
+            }
+          ]
+        }
+      ],
+      "choices": [
+        {
+          "id": "choice_take_backup_to_safehouse",
+          "label": "带走备份盘和录音钥匙",
+          "description": "你会拿到完整证据链，也会成为公司最明确的目标。",
+          "requirements": [
+            {
+              "state": "clues.backup_copy",
+              "equals": true
+            }
+          ],
+          "effects": [
+            {
+              "add": {
+                "stance.truth_first": 1
+              }
+            }
+          ],
+          "next_scene": "ch03_backup_unlock",
+          "irreversible": true,
+          "consequence_level": "global",
+          "outcome": "备份盘发热，手机开始配对。第二章到此收束成一个问题：真相到底伤害谁？"
+        },
+        {
+          "id": "choice_protect_lin_secret",
+          "label": "先遮住红色手环的信息",
+          "description": "你会保护其他受害者身份，但证据链会暂时不完整。",
+          "requirements": [
+            {
+              "state": "clues.victim_list",
+              "equals": true
+            }
+          ],
+          "effects": [
+            {
+              "add": {
+                "stance.protect_person": 1
+              }
+            }
+          ],
+          "next_scene": "ch03_backup_unlock",
+          "irreversible": true,
+          "consequence_level": "global",
+          "outcome": "你拍下手环，却把名字打码。林的秘密没有再扩大。"
+        },
+        {
+          "id": "choice_destroy_locker_camera",
+          "label": "砸掉维护间摄像头",
+          "description": "你能阻止继续上传，但会留下非常明确的破坏痕迹。",
+          "requirements": [],
+          "effects": [
+            {
+              "add": {
+                "pressure.company_alert": 1
+              }
+            }
+          ],
+          "next_scene": "ch03_backup_unlock",
+          "irreversible": true,
+          "consequence_level": "chapter",
+          "outcome": "摄像头碎掉。手机震了一下，像是后台终于确认你在现场。"
+        },
+        {
+          "id": "choice_wait_for_lin_contact",
+          "label": "等林预设的下一条消息",
+          "description": "你会多等两分钟，看她是否还留了别的条件。",
+          "requirements": [],
+          "effects": [
+            {
+              "add": {
+                "relationships.lin.bond": 1
+              }
+            }
+          ],
+          "next_scene": "ch03_backup_unlock",
+          "irreversible": true,
+          "consequence_level": "chapter",
+          "outcome": "两分钟后只出现一句话：如果你已经到这里，别再相信单一证据。"
+        }
+      ]
+    },
+    {
+      "id": "ch03_backup_unlock",
+      "chapter": "第三章：被保存的副本",
+      "title": "解密备份",
+      "task": "还原录音与剪辑之间的差异。",
+      "pressure": "最后选择逼近",
+      "required_for_demo": true,
+      "background_blocks": [
+        {
+          "id": "bg_ch03_backup_unlock",
+          "text": "备份解密完成。屏幕上有两份文件：原始录音和剪辑版本。校验区提示：仍缺少上下文证人链。",
           "observe_anchors": [
             {
               "id": "obs_raw_recording",
@@ -523,11 +1330,11 @@
                 }
               ],
               "unlocks_choices": [
-                "choice_publish_truth"
+                "choice_compare_context"
               ],
               "opens_fragment": {
                 "id": "frag_raw_recording",
-                "title": "原始录音",
+                "title": "播放原始录音",
                 "body": "原始录音能证明公司伪造证据，但也会暴露林曾经剪辑过另一段证词。",
                 "evidence_tags": [
                   "truth",
@@ -550,11 +1357,11 @@
                 }
               ],
               "unlocks_choices": [
-                "choice_confront_final"
+                "choice_send_hash_to_chen"
               ],
               "opens_fragment": {
                 "id": "frag_edited_recording",
-                "title": "剪辑版本",
+                "title": "比对剪辑版本",
                 "body": "剪辑版本删去了陈警官阻止上报的两句话，也删去了林承认自己曾经越界的一句。",
                 "evidence_tags": [
                   "chen",
@@ -563,6 +1370,133 @@
                 "nested_anchors": []
               }
             },
+            {
+              "id": "obs_context_chain",
+              "text_range": "上下文证人链",
+              "label": "查看证人链缺口",
+              "discoverability": "obvious",
+              "depth": 1,
+              "effects": [
+                {
+                  "set": {
+                    "clues.victim_list": true
+                  }
+                }
+              ],
+              "unlocks_choices": [
+                "choice_archive_first"
+              ],
+              "opens_fragment": {
+                "id": "frag_context_chain",
+                "title": "查看证人链缺口",
+                "body": "证人链里有三个匿名名字，对应你在维护间看到的红色手环。",
+                "evidence_tags": [
+                  "victims"
+                ],
+                "nested_anchors": []
+              }
+            }
+          ]
+        }
+      ],
+      "choices": [
+        {
+          "id": "choice_compare_context",
+          "label": "继续查证人链",
+          "description": "你会延后发布，先弄清录音会伤到哪些人。",
+          "requirements": [
+            {
+              "state": "clues.raw_recording",
+              "equals": true
+            }
+          ],
+          "effects": [
+            {
+              "add": {
+                "stance.truth_first": 1
+              }
+            }
+          ],
+          "next_scene": "ch03_witness_thread",
+          "irreversible": true,
+          "consequence_level": "global",
+          "outcome": "原始录音被暂存。你打开证人链，林留下的最后留言开始浮现。"
+        },
+        {
+          "id": "choice_send_hash_to_chen",
+          "label": "把剪辑哈希发给陈",
+          "description": "你给他最后一次解释机会，也让他知道你快要公开。",
+          "requirements": [
+            {
+              "state": "clues.edited_recording",
+              "equals": true
+            }
+          ],
+          "effects": [
+            {
+              "add": {
+                "relationships.chen.suspicion": 1
+              }
+            }
+          ],
+          "next_scene": "ch03_witness_thread",
+          "irreversible": true,
+          "consequence_level": "chapter",
+          "outcome": "陈回了一个句号。几秒后，他又发来：先看最后留言。"
+        },
+        {
+          "id": "choice_archive_first",
+          "label": "先做离线封存",
+          "description": "你会保证证据不消失，但发布窗口会变窄。",
+          "requirements": [
+            {
+              "state": "clues.victim_list",
+              "equals": true
+            }
+          ],
+          "effects": [
+            {
+              "add": {
+                "stance.protect_person": 1
+              }
+            }
+          ],
+          "next_scene": "ch03_witness_thread",
+          "irreversible": true,
+          "consequence_level": "chapter",
+          "outcome": "证据被封存两份，一份在你手里，一份在手机自己生成的死信箱里。"
+        },
+        {
+          "id": "choice_skip_context",
+          "label": "跳过上下文直接进入发布页",
+          "description": "你会更快触达结局，也更容易误伤。",
+          "requirements": [],
+          "effects": [
+            {
+              "add": {
+                "pressure.company_alert": 1
+              }
+            }
+          ],
+          "next_scene": "ch03_publish_decision",
+          "irreversible": true,
+          "consequence_level": "global",
+          "outcome": "发布页提前打开。缺失的证人链像空白栏一样刺眼。"
+        }
+      ]
+    },
+    {
+      "id": "ch03_witness_thread",
+      "chapter": "第三章：被保存的副本",
+      "title": "最后留言串",
+      "task": "判断真相公开前必须保留哪些上下文。",
+      "pressure": "证人链不完整",
+      "required_for_demo": true,
+      "background_blocks": [
+        {
+          "id": "bg_ch03_witness_thread",
+          "text": "留言串按时间展开。最后留言写着：“真相不是没有代价。” 受害者名单被打码，陈的停顿夹在两段录音之间。",
+          "observe_anchors": [
             {
               "id": "obs_final_message",
               "text_range": "最后留言",
@@ -577,14 +1511,265 @@
                 }
               ],
               "unlocks_choices": [
-                "choice_keep_archive"
+                "choice_prepare_archive"
               ],
               "opens_fragment": {
                 "id": "frag_final_message",
-                "title": "林的最后留言",
+                "title": "阅读最后留言",
                 "body": "她没有请求你救她。她只请求你在公开之前，先想清楚谁会因此被毁掉。",
                 "evidence_tags": [
                   "moral_pressure"
+                ],
+                "nested_anchors": []
+              }
+            },
+            {
+              "id": "obs_victim_list",
+              "text_range": "受害者名单",
+              "label": "核对受害者名单",
+              "discoverability": "obvious",
+              "depth": 1,
+              "effects": [
+                {
+                  "set": {
+                    "clues.victim_list": true
+                  }
+                }
+              ],
+              "unlocks_choices": [
+                "choice_prepare_public_packet"
+              ],
+              "opens_fragment": {
+                "id": "frag_victim_list",
+                "title": "核对受害者名单",
+                "body": "名单里有人仍在公司任职。如果公开没有遮罩，他们会先被找到。",
+                "evidence_tags": [
+                  "victims",
+                  "risk"
+                ],
+                "nested_anchors": []
+              }
+            },
+            {
+              "id": "obs_chen_pause",
+              "text_range": "陈的停顿",
+              "label": "重听陈的停顿",
+              "discoverability": "subtle",
+              "depth": 1,
+              "effects": [
+                {
+                  "set": {
+                    "clues.chen_motive": true
+                  }
+                }
+              ],
+              "unlocks_choices": [
+                "choice_ask_chen_last_time"
+              ],
+              "opens_fragment": {
+                "id": "frag_chen_pause",
+                "title": "重听陈的停顿",
+                "body": "陈停顿的地方不是删词，而是在等林把一句话说完：别让他们只抓我。",
+                "evidence_tags": [
+                  "chen",
+                  "motive"
+                ],
+                "nested_anchors": []
+              }
+            }
+          ]
+        }
+      ],
+      "choices": [
+        {
+          "id": "choice_prepare_public_packet",
+          "label": "整理带遮罩的公开包",
+          "description": "你会公开核心证据，同时尽量保护名单里的人。",
+          "requirements": [
+            {
+              "state": "clues.victim_list",
+              "equals": true
+            }
+          ],
+          "effects": [
+            {
+              "set": {
+                "clues.public_packet_ready": true
+              }
+            },
+            {
+              "add": {
+                "stance.truth_first": 1
+              }
+            }
+          ],
+          "next_scene": "ch03_publish_decision",
+          "irreversible": true,
+          "consequence_level": "global",
+          "outcome": "公开包生成了两版：一版完整，一版遮住了仍有风险的人名。"
+        },
+        {
+          "id": "choice_prepare_archive",
+          "label": "整理只给律师的封存包",
+          "description": "你会降低公开冲击，但可能让公司有时间反制。",
+          "requirements": [
+            {
+              "state": "clues.final_message",
+              "equals": true
+            }
+          ],
+          "effects": [
+            {
+              "set": {
+                "clues.archive_ready": true
+              }
+            },
+            {
+              "add": {
+                "stance.protect_person": 1
+              }
+            }
+          ],
+          "next_scene": "ch03_publish_decision",
+          "irreversible": true,
+          "consequence_level": "global",
+          "outcome": "封存包被打上时间戳。它更稳，也更慢。"
+        },
+        {
+          "id": "choice_ask_chen_last_time",
+          "label": "最后一次询问陈",
+          "description": "你会把陈重新拉进局面，逼他承担自己的停顿。",
+          "requirements": [
+            {
+              "state": "clues.chen_motive",
+              "equals": true
+            }
+          ],
+          "effects": [
+            {
+              "set": {
+                "clues.chen_message_ready": true
+              }
+            },
+            {
+              "add": {
+                "relationships.chen.trust": 1
+              }
+            }
+          ],
+          "next_scene": "ch03_publish_decision",
+          "irreversible": true,
+          "consequence_level": "chapter",
+          "outcome": "陈发来一段未剪辑录音。他没有洗清自己，但补上了一块缺口。"
+        },
+        {
+          "id": "choice_enter_decision_without_more",
+          "label": "带着缺口进入发布页",
+          "description": "你接受不完整性，让选择本身承担后果。",
+          "requirements": [],
+          "effects": [
+            {
+              "add": {
+                "pressure.company_alert": 1
+              }
+            }
+          ],
+          "next_scene": "ch03_publish_decision",
+          "irreversible": true,
+          "consequence_level": "chapter",
+          "outcome": "发布页打开，三个空白栏还在提醒你：你并没有掌握全部。"
+        }
+      ]
+    },
+    {
+      "id": "ch03_publish_decision",
+      "chapter": "第三章：被保存的副本",
+      "title": "发布页",
+      "task": "决定真相以什么形式进入世界。",
+      "pressure": "最后选择",
+      "required_for_demo": true,
+      "background_blocks": [
+        {
+          "id": "bg_ch03_publish_decision",
+          "text": "发布页等待确认。公开包、离线存储和发给陈的草稿并排亮着。每一项都能保存一部分真相，也会牺牲另一部分人。",
+          "observe_anchors": [
+            {
+              "id": "obs_public_packet",
+              "text_range": "公开包",
+              "label": "检查公开包",
+              "discoverability": "obvious",
+              "depth": 1,
+              "effects": [
+                {
+                  "set": {
+                    "clues.public_packet_ready": true
+                  }
+                }
+              ],
+              "unlocks_choices": [
+                "choice_publish_truth"
+              ],
+              "opens_fragment": {
+                "id": "frag_public_packet",
+                "title": "检查公开包",
+                "body": "公开包能把公司拖到灯下。即使遮住名单，林曾经越界的事实仍会被看见。",
+                "evidence_tags": [
+                  "truth",
+                  "public"
+                ],
+                "nested_anchors": []
+              }
+            },
+            {
+              "id": "obs_offline_archive",
+              "text_range": "离线存储",
+              "label": "检查离线存储",
+              "discoverability": "obvious",
+              "depth": 1,
+              "effects": [
+                {
+                  "set": {
+                    "clues.archive_ready": true
+                  }
+                }
+              ],
+              "unlocks_choices": [
+                "choice_keep_archive"
+              ],
+              "opens_fragment": {
+                "id": "frag_offline_archive",
+                "title": "检查离线存储",
+                "body": "离线存储会保住证据，但它不会自动替任何人说话。",
+                "evidence_tags": [
+                  "archive",
+                  "delay"
+                ],
+                "nested_anchors": []
+              }
+            },
+            {
+              "id": "obs_send_to_chen",
+              "text_range": "发给陈",
+              "label": "检查发给陈的草稿",
+              "discoverability": "subtle",
+              "depth": 1,
+              "effects": [
+                {
+                  "set": {
+                    "clues.chen_message_ready": true
+                  }
+                }
+              ],
+              "unlocks_choices": [
+                "choice_confront_final"
+              ],
+              "opens_fragment": {
+                "id": "frag_send_to_chen",
+                "title": "检查发给陈的草稿",
+                "body": "草稿里只有一句话：这次你不能再停顿。",
+                "evidence_tags": [
+                  "chen",
+                  "confront"
                 ],
                 "nested_anchors": []
               }
@@ -599,7 +1784,7 @@
           "description": "公司会被迫回应，林的污点也会一起暴露。",
           "requirements": [
             {
-              "state": "clues.raw_recording",
+              "state": "clues.public_packet_ready",
               "equals": true
             }
           ],
@@ -621,7 +1806,7 @@
           "description": "你保住证据，也选择暂时替所有人守住秘密。",
           "requirements": [
             {
-              "state": "clues.final_message",
+              "state": "clues.archive_ready",
               "equals": true
             }
           ],
@@ -643,7 +1828,7 @@
           "description": "你逼他解释那两句话，但公司可能正在监听。",
           "requirements": [
             {
-              "state": "clues.edited_recording",
+              "state": "clues.chen_message_ready",
               "equals": true
             }
           ],

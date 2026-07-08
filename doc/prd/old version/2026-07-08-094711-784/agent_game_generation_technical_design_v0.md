@@ -1,6 +1,6 @@
 # Agent Game Generation Technical Design V0
 
-版本：V0.2
+版本：V0.1  
 日期：2026-07-08  
 文档类型：技术设计文档  
 文件名规则：英文文件名，便于后续工程引用  
@@ -1159,13 +1159,11 @@ generated/missing_phone_v0/game.json
 - 前端结局页展示基础行动画像，包括关键观察、关键行动、状态回声和结局标签。
 - `tests/test_demo_contract.py` 提供最小 unittest 回归入口。
 - `README.md` 记录生成、校验、测试和本地启动流程。
-- deterministic demo 已扩展为 3 章 x 每章 3 个主场景，共 9 个主场景。
-- 测试已覆盖 V0.2 schema、9 场景结构、每章 3 场景、每场景 observe 解锁 action。
 
 当前技术状态：
 
 ```text
-Medium-length playable vertical slice with basic runtime resilience: achieved
+Playable demo vertical slice with basic runtime resilience: achieved
 Production-grade generation pipeline: not achieved
 ```
 
@@ -1179,7 +1177,6 @@ Production-grade generation pipeline: not achieved
 - repair loop 目前只报告错误，还没有自动局部重写。
 - 缺少模型输出 fixtures 和失败样本测试。
 - 缺少 prompt 版本管理。
-- deterministic demo 规模已扩到 9 场景，但仍是手写结构，不证明 agent 能稳定生成同等规模内容。
 
 ### 21.2 Runtime Robustness
 
@@ -1210,7 +1207,7 @@ Production-grade generation pipeline: not achieved
 2. 增加显式 JSON schema 或 contract fixture，减少生成器和前端之间的隐式耦合。
 3. 增加 Playwright 或等价浏览器测试，验证章节复盘、结局画像、刷新恢复和移动视口。
 4. 增加内容 QA 测试，检查隐藏 observe 是否公平可发现、choice 是否有真实代价。
-5. 将 9 场景 demo 抽成更清晰的 contract fixture，区分“手写黄金样例”和“生成器输出样例”。
+5. 扩展 generator 内容结构到 3 章 x 每章 3 个主场景，并保持 validator 可解释。
 
 ## 23. V0.1 Implementation Delta
 
@@ -1228,23 +1225,3 @@ Production-grade generation pipeline: not achieved
 - 局部自动 repair。
 - 产品级移动端兼容测试。
 - 更长内容规模和内部用户数据。
-
-## 24. V0.2 Implementation Delta
-
-本轮 V0.2 的工程变化：
-
-- PRD 和技术文档旧版已归档到 `doc/prd/old version/2026-07-08-094711-784`。
-- `gamegen/demo_agent.py` 的 deterministic demo 从 3 个 scene 扩展到 9 个 scene：
-  - 第一章：锁屏、云端控制台、联系人追踪。
-  - 第二章：旧员工入口、废弃站台、储物柜后的维护间。
-  - 第三章：解密备份、最后留言串、发布页。
-- `scripts/smoke_playthrough.py` 的主路径升级为穿过 9 场景后抵达 `ending_publish`。
-- `tests/test_demo_contract.py` 增加 V0.2 结构约束：schema、9 场景、每章 3 场景、每场景 observe 解锁 action。
-- `generated/missing_phone_v0/*` 已由 V0.2 generator 重新生成。
-
-本轮没有解决：
-
-- 自动 repair。
-- 显式 JSON schema。
-- 浏览器自动化测试进入常规 test suite。
-- 真实用户测试与内容节奏数据。

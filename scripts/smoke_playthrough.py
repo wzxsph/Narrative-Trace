@@ -86,16 +86,33 @@ def main() -> None:
     runtime.open_anchor("obs_unsent_sms")
     runtime.open_anchor("obs_0213_log")
     runtime.choose("choice_go_station")
+    runtime.open_anchor("obs_session_token")
+    runtime.choose("choice_freeze_wipe")
+    runtime.open_anchor("obs_taxi_order")
+    runtime.choose("choice_leave_for_station")
+    runtime.open_anchor("obs_station_entry_code")
+    runtime.choose("choice_enter_service_corridor")
     runtime.open_anchor("obs_ticket")
     runtime.open_anchor("obs_locker_code")
     runtime.choose("choice_open_locker")
+    runtime.open_anchor("obs_backup_drive")
+    runtime.choose("choice_take_backup_to_safehouse")
     runtime.open_anchor("obs_raw_recording")
+    runtime.choose("choice_compare_context")
+    runtime.open_anchor("obs_victim_list")
+    runtime.choose("choice_prepare_public_packet")
+    runtime.open_anchor("obs_public_packet")
     runtime.choose("choice_publish_truth")
     if runtime.ending_id != "ending_publish":
         raise AssertionError(f"Expected ending_publish, got {runtime.ending_id}")
-    print("Smoke playthrough passed: choice_go_station -> choice_open_locker -> ending_publish")
+    print(
+        "Smoke playthrough passed: "
+        "choice_go_station -> choice_freeze_wipe -> choice_leave_for_station -> "
+        "choice_enter_service_corridor -> choice_open_locker -> "
+        "choice_take_backup_to_safehouse -> choice_compare_context -> "
+        "choice_prepare_public_packet -> ending_publish"
+    )
 
 
 if __name__ == "__main__":
     main()
-
