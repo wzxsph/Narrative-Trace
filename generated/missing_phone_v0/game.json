@@ -1,5 +1,5 @@
 {
-  "schema_version": "game_writer_demo_v0_4",
+  "schema_version": "game_writer_demo_v0_5",
   "project": {
     "id": "missing_phone",
     "title": "失踪者的手机",
@@ -134,9 +134,19 @@
                           }
                         }
                       ]
+                    },
+                    "unlock_guidance": {
+                      "id": "guide_choice_from_observe",
+                      "title": "行动栏刷新",
+                      "text": "底部行动栏多出了一条去向。不是所有行动都会一开始出现，有些必须先被证据照亮。"
                     }
                   }
                 ]
+              },
+              "guidance": {
+                "id": "guide_first_observe",
+                "title": "锁屏记录展开",
+                "text": "你按下这段停在屏幕上的文字，记录向下展开。被标出的异常词，往往不止一层。"
               }
             },
             {

@@ -50,10 +50,10 @@ class DemoContractTest(unittest.TestCase):
     runtime.choose("choice_publish_truth")
     self.assertEqual(runtime.ending_id, "ending_publish")
 
-  def test_v04_demo_shape_is_three_chapters_with_three_scenes_each(self) -> None:
+  def test_v05_demo_shape_is_three_chapters_with_three_scenes_each(self) -> None:
     game = load_game()
     chapters = Counter(scene["chapter"] for scene in game["scenes"])
-    self.assertEqual(game["schema_version"], "game_writer_demo_v0_4")
+    self.assertEqual(game["schema_version"], "game_writer_demo_v0_5")
     self.assertEqual(len(game["scenes"]), 9)
     self.assertEqual(len(chapters), 3)
     self.assertTrue(all(count == 3 for count in chapters.values()))
@@ -64,6 +64,24 @@ class DemoContractTest(unittest.TestCase):
         any(block.get("observe_anchors") for block in scene.get("background_blocks", [])),
         scene["id"],
       )
+
+  def test_first_chapter_includes_diegetic_guidance(self) -> None:
+    game = load_game()
+    first_scene = next(scene for scene in game["scenes"] if scene["id"] == "ch01_phone_lock")
+    anchors = {
+      anchor["id"]: anchor
+      for block in first_scene["background_blocks"]
+      for anchor in flatten_anchors(block["observe_anchors"])
+    }
+
+    first_observe = anchors["obs_unsent_sms"].get("guidance", {})
+    choice_unlock = anchors["obs_0213_log"].get("unlock_guidance", {})
+    self.assertEqual(first_observe.get("id"), "guide_first_observe")
+    self.assertTrue(first_observe.get("title"))
+    self.assertTrue(first_observe.get("text"))
+    self.assertEqual(choice_unlock.get("id"), "guide_choice_from_observe")
+    self.assertTrue(choice_unlock.get("title"))
+    self.assertTrue(choice_unlock.get("text"))
 
   def test_every_scene_has_observe_unlocked_action(self) -> None:
     game = load_game()
@@ -106,6 +124,9 @@ class DemoContractTest(unittest.TestCase):
     app_js = APP_JS_PATH.read_text(encoding="utf-8")
     self.assertIn("SAVE_KEY", app_js)
     self.assertIn("restoreProgress", app_js)
+    self.assertIn("activeGuidance", app_js)
+    self.assertIn("renderGuidance", app_js)
+    self.assertIn("newly-unlocked", app_js)
     self.assertIn("renderChapterReview", app_js)
     self.assertIn("renderChapterFlow", app_js)
     self.assertIn("chapter-flow-node", app_js)

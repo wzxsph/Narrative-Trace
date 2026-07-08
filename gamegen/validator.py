@@ -28,6 +28,7 @@ def validate_game(game: dict[str, Any]) -> list[ValidationMessage]:
     ending_ids = {ending.get("id") for ending in endings if isinstance(ending, dict)}
     choice_ids: set[str] = set()
     observe_ids: set[str] = set()
+    guidance_ids: set[str] = set()
     state_writes: set[str] = set()
     state_reads: set[str] = set()
     observe_unlocked_choices_by_scene: dict[str, set[str]] = {}
@@ -87,6 +88,7 @@ def validate_game(game: dict[str, Any]) -> list[ValidationMessage]:
                     location=f"{scene_id}.{block.get('id', 'block')}",
                     messages=messages,
                     observe_ids=observe_ids,
+                    guidance_ids=guidance_ids,
                     state_writes=state_writes,
                     unlocked_choices=unlocked,
                     depth_expected=1,
@@ -120,6 +122,7 @@ def validate_anchor(
     location: str,
     messages: list[ValidationMessage],
     observe_ids: set[str],
+    guidance_ids: set[str],
     state_writes: set[str],
     unlocked_choices: set[str],
     depth_expected: int,
@@ -146,6 +149,8 @@ def validate_anchor(
     collect_effect_writes(anchor.get("effects", []), state_writes)
     for choice_id in anchor.get("unlocks_choices", []):
         unlocked_choices.add(choice_id)
+    validate_guidance(anchor.get("guidance"), anchor_location, "guidance", guidance_ids, messages)
+    validate_guidance(anchor.get("unlock_guidance"), anchor_location, "unlock_guidance", guidance_ids, messages)
 
     fragment = anchor.get("opens_fragment")
     if not isinstance(fragment, dict):
@@ -162,10 +167,37 @@ def validate_anchor(
             location=f"{anchor_location}.{fragment.get('id', 'fragment')}",
             messages=messages,
             observe_ids=observe_ids,
+            guidance_ids=guidance_ids,
             state_writes=state_writes,
             unlocked_choices=unlocked_choices,
             depth_expected=depth_expected + 1,
         )
+
+
+def validate_guidance(
+    guidance: Any,
+    anchor_location: str,
+    field_name: str,
+    guidance_ids: set[str],
+    messages: list[ValidationMessage],
+) -> None:
+    if guidance is None:
+        return
+    location = f"{anchor_location}.{field_name}"
+    if not isinstance(guidance, dict):
+        messages.append(ValidationMessage("error", location, "Guidance must be an object"))
+        return
+    guidance_id = guidance.get("id")
+    if not guidance_id:
+        messages.append(ValidationMessage("error", location, "Guidance missing id"))
+    elif guidance_id in guidance_ids:
+        messages.append(ValidationMessage("error", location, "Duplicate guidance id"))
+    else:
+        guidance_ids.add(guidance_id)
+    if not guidance.get("title"):
+        messages.append(ValidationMessage("error", location, "Guidance missing title"))
+    if not guidance.get("text"):
+        messages.append(ValidationMessage("error", location, "Guidance missing text"))
 
 
 def collect_effect_writes(effects: list[dict[str, Any]], state_writes: set[str]) -> None:

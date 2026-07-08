@@ -184,6 +184,28 @@ h2 {
   line-height: 1.58;
 }
 
+.guidance-panel {
+  margin-bottom: 14px;
+  padding: 12px;
+  border: 1px solid #bed7d1;
+  border-left: 4px solid #2f8f83;
+  border-radius: 8px;
+  background: #eef8f5;
+}
+
+.guidance-panel h2 {
+  margin-bottom: 6px;
+  color: #145c54;
+  font-size: 0.9rem;
+}
+
+.guidance-panel p {
+  margin-bottom: 0;
+  color: #31453f;
+  font-size: 0.88rem;
+  line-height: 1.55;
+}
+
 .anchor-button {
   display: inline;
   min-height: 28px;
@@ -286,6 +308,12 @@ h2 {
 .choice-button.locked {
   cursor: not-allowed;
   opacity: 0.48;
+}
+
+.choice-button.newly-unlocked {
+  border-color: #2f8f83;
+  background: #e4f3ef;
+  box-shadow: inset 4px 0 0 #2f8f83;
 }
 
 .choice-title {

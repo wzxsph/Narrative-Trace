@@ -23,6 +23,9 @@ const runtime = {
   state: {},
   openedAnchors: new Set(),
   unlockedChoices: new Set(),
+  activeGuidance: null,
+  seenGuidance: new Set(),
+  highlightedChoices: new Set(),
   visitedScenes: new Set(),
   chosenChoices: [],
   choiceOutcomes: [],
@@ -66,6 +69,9 @@ function resetGame(options = {}) {
   runtime.state = cloneInitialState();
   runtime.openedAnchors = new Set();
   runtime.unlockedChoices = new Set();
+  runtime.activeGuidance = null;
+  runtime.seenGuidance = new Set();
+  runtime.highlightedChoices = new Set();
   runtime.visitedScenes = new Set();
   runtime.chosenChoices = [];
   runtime.choiceOutcomes = [];
@@ -135,6 +141,7 @@ function renderOutcome() {
 function renderStory(scene) {
   dom.storyArea.innerHTML = "";
   renderStateEchoes(scene);
+  renderGuidance();
   scene.background_blocks.forEach((block) => {
     const wrapper = document.createElement("article");
     wrapper.className = "background-block";
@@ -146,6 +153,23 @@ function renderStory(scene) {
     });
     dom.storyArea.appendChild(wrapper);
   });
+}
+
+function renderGuidance() {
+  const guidance = runtime.activeGuidance;
+  if (!guidance) {
+    return;
+  }
+  const wrapper = document.createElement("aside");
+  wrapper.className = "guidance-panel";
+
+  const title = document.createElement("h2");
+  title.textContent = guidance.title || "系统痕迹";
+  const body = document.createElement("p");
+  body.textContent = guidance.text || "";
+
+  wrapper.append(title, body);
+  dom.storyArea.appendChild(wrapper);
 }
 
 function renderStateEchoes(scene) {
@@ -242,9 +266,30 @@ function openAnchor(anchor) {
   runtime.openedAnchors.add(anchor.id);
   if (firstOpen) {
     applyEffects(anchor.effects || []);
-    (anchor.unlocks_choices || []).forEach((choiceId) => runtime.unlockedChoices.add(choiceId));
+    const unlockedChoiceIds = anchor.unlocks_choices || [];
+    unlockedChoiceIds.forEach((choiceId) => runtime.unlockedChoices.add(choiceId));
+    runtime.highlightedChoices = new Set(unlockedChoiceIds);
+    maybeShowGuidance(anchor, unlockedChoiceIds);
   }
   render();
+}
+
+function maybeShowGuidance(anchor, unlockedChoiceIds) {
+  const candidates = [];
+  if (anchor.guidance) {
+    candidates.push(anchor.guidance);
+  }
+  if (unlockedChoiceIds.length && anchor.unlock_guidance) {
+    candidates.push(anchor.unlock_guidance);
+  }
+  const nextGuidance = candidates.find(
+    (guidance) => guidance?.id && !runtime.seenGuidance.has(guidance.id)
+  );
+  if (!nextGuidance) {
+    return;
+  }
+  runtime.activeGuidance = nextGuidance;
+  runtime.seenGuidance.add(nextGuidance.id);
 }
 
 function renderChoices(scene) {
@@ -258,6 +303,9 @@ function renderChoices(scene) {
     const button = document.createElement("button");
     button.type = "button";
     button.className = "choice-button";
+    if (runtime.highlightedChoices.has(choice.id)) {
+      button.classList.add("newly-unlocked");
+    }
 
     const title = document.createElement("span");
     title.className = "choice-title";
@@ -305,6 +353,8 @@ function choose(choice) {
   applyEffects(choice.effects || []);
   runtime.chosenChoices.push(choice.id);
   runtime.choiceOutcomes.push(choice.outcome || "");
+  runtime.activeGuidance = null;
+  runtime.highlightedChoices = new Set();
 
   const target = choice.next_scene;
   if (findEnding(target)) {
@@ -666,6 +716,9 @@ function saveProgress() {
     state: runtime.state,
     openedAnchors: Array.from(runtime.openedAnchors),
     unlockedChoices: Array.from(runtime.unlockedChoices),
+    activeGuidance: runtime.activeGuidance,
+    seenGuidance: Array.from(runtime.seenGuidance),
+    highlightedChoices: Array.from(runtime.highlightedChoices),
     visitedScenes: Array.from(runtime.visitedScenes),
     chosenChoices: runtime.chosenChoices,
     choiceOutcomes: runtime.choiceOutcomes,
@@ -692,6 +745,9 @@ function restoreProgress() {
     runtime.state = payload.state;
     runtime.openedAnchors = new Set(payload.openedAnchors);
     runtime.unlockedChoices = new Set(payload.unlockedChoices);
+    runtime.activeGuidance = payload.activeGuidance || null;
+    runtime.seenGuidance = new Set(payload.seenGuidance || []);
+    runtime.highlightedChoices = new Set(payload.highlightedChoices || []);
     runtime.visitedScenes = new Set(payload.visitedScenes);
     runtime.chosenChoices = payload.chosenChoices;
     runtime.choiceOutcomes = payload.choiceOutcomes;
@@ -732,6 +788,11 @@ function isValidSave(payload) {
     typeof payload.state === "object" &&
     Array.isArray(payload.openedAnchors) &&
     Array.isArray(payload.unlockedChoices) &&
+    (payload.activeGuidance === undefined ||
+      payload.activeGuidance === null ||
+      typeof payload.activeGuidance === "object") &&
+    (payload.seenGuidance === undefined || Array.isArray(payload.seenGuidance)) &&
+    (payload.highlightedChoices === undefined || Array.isArray(payload.highlightedChoices)) &&
     Array.isArray(payload.visitedScenes) &&
     Array.isArray(payload.chosenChoices) &&
     Array.isArray(payload.choiceOutcomes)

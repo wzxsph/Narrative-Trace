@@ -1,6 +1,6 @@
 # Agent Game Generation Technical Design V0
 
-版本：V0.5
+版本：V0.4
 日期：2026-07-08  
 文档类型：技术设计文档  
 文件名规则：英文文件名，便于后续工程引用  
@@ -1164,8 +1164,6 @@ generated/missing_phone_v0/game.json
 - `state_echoes` 支持场景根据隐藏状态显示叙事回声。
 - validator、path map、state registry 和测试已覆盖 `state_echoes`。
 - 章节复盘屏新增基础 flowchart runtime，展示本章节点、到达状态和分支标签。
-- 第一章新增可选 `guidance` / `unlock_guidance` 内容字段，运行时可显示叙事内轻教学并高亮新出现的 action。
-- validator 校验 guidance 的 `id`、`title`、`text`，测试覆盖首章轻教学契约。
 
 当前技术状态：
 
@@ -1173,7 +1171,6 @@ generated/missing_phone_v0/game.json
 Medium-length playable vertical slice with basic runtime resilience: achieved
 Basic relationship echo runtime: achieved
 Basic chapter flow review runtime: achieved
-Diegetic first-chapter guidance runtime: achieved
 Production-grade generation pipeline: not achieved
 ```
 
@@ -1194,7 +1191,6 @@ Production-grade generation pipeline: not achieved
 - 当前前端已有本地单存档，但没有多存档、版本迁移、损坏存档提示或云端同步。
 - 已有基础章节 flowchart 复盘，但还不是完整 flowchart 级路径复盘。
 - 已有基础 `state_echoes` 渲染，但还没有复杂优先级、互斥回声或节奏控制。
-- 已有第一章叙事内轻教学，但还没有用户测试数据证明提示强度刚好。
 - 缺少移动端真实设备测试。
 - 缺少无障碍键盘导航和屏幕阅读器检查。
 
@@ -1219,7 +1215,7 @@ Production-grade generation pipeline: not achieved
 
 1. 将 `repair_game.py` 从报告工具升级为可修复 broken anchor / missing choice / missing next_scene 的局部 repair。
 2. 增加显式 JSON schema 或 contract fixture，减少生成器和前端之间的隐式耦合。
-3. 增加 Playwright 或等价浏览器测试，验证轻教学、高亮、章节复盘、结局画像、刷新恢复和移动视口。
+3. 增加 Playwright 或等价浏览器测试，验证章节复盘、结局画像、刷新恢复和移动视口。
 4. 增加内容 QA 测试，检查隐藏 observe 是否公平可发现、choice 是否有真实代价。
 5. 将 9 场景 demo 抽成更清晰的 contract fixture，区分“手写黄金样例”和“生成器输出样例”。
 
@@ -1294,22 +1290,3 @@ Production-grade generation pipeline: not achieved
 - 未解锁分支原因说明。
 - 第一章轻教学。
 - 内部用户测试记录模板。
-
-## 27. V0.5 Implementation Delta
-
-本轮 V0.5 的工程变化：
-
-- PRD 和技术文档旧版已归档到 `doc/prd/old version/2026-07-08-101914-651`。
-- `gamegen/demo_agent.py` 将 schema 升级为 `game_writer_demo_v0_5`，并为首章关键 observe 增加 `guidance` / `unlock_guidance`。
-- `src/app.js` 新增 `activeGuidance`、`seenGuidance`、`highlightedChoices`、`renderGuidance()` 和 `maybeShowGuidance()`。
-- `src/styles.css` 新增 `.guidance-panel` 与 `.choice-button.newly-unlocked` 样式。
-- `gamegen/validator.py` 增加 guidance 字段校验。
-- `tests/test_demo_contract.py` 增加首章叙事内轻教学契约检查。
-- `generated/missing_phone_v0/game.json` 和 `game.yaml` 已由 V0.5 generator 重新生成。
-
-本轮没有解决：
-
-- 内部用户测试记录模板。
-- 自动化浏览器测试进入常规 test suite。
-- 全章节路径图的锁定原因说明。
-- guidance 的强弱是否刚好，仍需真实试玩反馈。

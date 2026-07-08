@@ -64,7 +64,7 @@ def apply_llm_polish(game: dict[str, Any], brief: dict[str, Any], client: LLMCli
 def deterministic_demo_game(brief: dict[str, Any]) -> dict[str, Any]:
     project = brief["project"]
     return {
-        "schema_version": "game_writer_demo_v0_4",
+        "schema_version": "game_writer_demo_v0_5",
         "project": {
             "id": project["id"],
             "title": project["title"],
@@ -179,8 +179,10 @@ def make_anchor(
     nested: list[dict[str, Any]] | None = None,
     title: str | None = None,
     discoverability: str = "obvious",
+    guidance: dict[str, str] | None = None,
+    unlock_guidance: dict[str, str] | None = None,
 ) -> dict[str, Any]:
-    return {
+    anchor = {
         "id": anchor_id,
         "text_range": text_range,
         "label": label,
@@ -196,6 +198,11 @@ def make_anchor(
             "nested_anchors": nested or [],
         },
     }
+    if guidance:
+        anchor["guidance"] = guidance
+    if unlock_guidance:
+        anchor["unlock_guidance"] = unlock_guidance
+    return anchor
 
 
 def make_choice(
@@ -277,8 +284,18 @@ def scene_phone_lock() -> dict[str, Any]:
                             )
                         ],
                         discoverability="subtle",
+                        unlock_guidance={
+                            "id": "guide_choice_from_observe",
+                            "title": "行动栏刷新",
+                            "text": "底部行动栏多出了一条去向。不是所有行动都会一开始出现，有些必须先被证据照亮。",
+                        },
                     )
                 ],
+                guidance={
+                    "id": "guide_first_observe",
+                    "title": "锁屏记录展开",
+                    "text": "你按下这段停在屏幕上的文字，记录向下展开。被标出的异常词，往往不止一层。",
+                },
             ),
             make_anchor(
                 "obs_remote_wipe",
