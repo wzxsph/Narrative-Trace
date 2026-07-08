@@ -1345,6 +1345,6 @@ endings:
 generation:
   provider: "offline"
   model: "deterministic_demo_v0"
-  agent_graph: "v0_29"
+  agent_graph: "v0_30"
   plan_schema_version: "generation_plan_v0_1"
   state_schema_design_version: "state_schema_design_v0_1"

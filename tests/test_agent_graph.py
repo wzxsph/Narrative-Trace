@@ -44,6 +44,7 @@ class AgentGraphTest(unittest.TestCase):
       self.assertEqual(nodes[0], "load_brief")
       self.assertIn("plan_story_structure", nodes)
       self.assertIn("design_state_schema", nodes)
+      self.assertIn("validate_state_schema_design", nodes)
       self.assertIn("draft_skeleton", nodes)
       self.assertIn("validate_schema", nodes)
       self.assertIn("validate_structure", nodes)
@@ -72,6 +73,9 @@ class AgentGraphTest(unittest.TestCase):
       self.assertIn("relationships.chen.trust", variable_keys)
       self.assertIn("relationships.lin.bond", variable_keys)
       self.assertIn("pressure.company_alert", variable_keys)
+
+      state_schema_events = [event for event in trace if event["node"] == "validate_state_schema_design"]
+      self.assertEqual(state_schema_events[-1]["status"], "ok")
 
   def test_repair_node_applies_supported_structural_repairs(self) -> None:
     brief = load_brief(BRIEF_PATH)

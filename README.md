@@ -120,7 +120,14 @@ python3 scripts/run_generation_agent.py \
   --provider offline
 ```
 
-该入口会执行 `load_brief -> plan_story_structure -> design_state_schema -> draft_skeleton -> optional_llm_polish -> validate_schema -> validate_structure -> validate_content_qa -> repair_if_needed -> export_artifacts -> write_agent_trace`，并导出 `generation_plan.json`、`state_schema_design.json` 与 `agent_trace.jsonl`。
+该入口会执行 `load_brief -> plan_story_structure -> design_state_schema -> validate_state_schema_design -> draft_skeleton -> optional_llm_polish -> validate_schema -> validate_structure -> validate_content_qa -> repair_if_needed -> export_artifacts -> write_agent_trace`，并导出 `generation_plan.json`、`state_schema_design.json` 与 `agent_trace.jsonl`。
+
+校验状态设计 artifact：
+
+```bash
+python3 scripts/validate_state_schema_design.py \
+  generated/missing_phone_agent_v0/state_schema_design.json
+```
 
 归档真实模型输出样本：
 

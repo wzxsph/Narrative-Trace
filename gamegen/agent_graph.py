@@ -17,6 +17,7 @@ from .demo_agent import (
 )
 from .llm_client import LLMClient, LLMConfig
 from .schema_contract import validate_against_default_schema
+from .state_schema_design import StateSchemaDesignMessage, validate_state_schema_design
 from .validator import ValidationMessage, validate_game
 
 
@@ -61,6 +62,7 @@ class AgentState:
     generation_plan: dict[str, Any] | None = None
     state_schema_design: dict[str, Any] | None = None
     game: dict[str, Any] | None = None
+    state_schema_messages: list[StateSchemaDesignMessage] = field(default_factory=list)
     schema_errors: list[str] = field(default_factory=list)
     validation_messages: list[ValidationMessage] = field(default_factory=list)
     content_qa_messages: list[ContentQAMessage] = field(default_factory=list)
@@ -73,9 +75,10 @@ class AgentState:
         self.trace_events.append(TraceEvent(node=node, status=status, summary=summary, metrics=metrics))
 
     def blocking_error_count(self) -> int:
+        state_schema_errors = sum(1 for message in self.state_schema_messages if message.level == "error")
         validation_errors = sum(1 for message in self.validation_messages if message.level == "error")
         content_errors = sum(1 for message in self.content_qa_messages if message.level == "error")
-        return len(self.schema_errors) + validation_errors + content_errors
+        return state_schema_errors + len(self.schema_errors) + validation_errors + content_errors
 
 
 class GenerationAgentGraph:
@@ -84,6 +87,7 @@ class GenerationAgentGraph:
         self.load_brief(state)
         self.plan_story_structure(state)
         self.design_state_schema(state)
+        self.validate_state_schema_design(state)
         self.draft_skeleton(state)
         self.optional_llm_polish(state)
 
@@ -122,7 +126,7 @@ class GenerationAgentGraph:
         generation = state.game.setdefault("generation", {})
         generation["provider"] = "offline"
         generation["model"] = OFFLINE_MODEL_ID
-        generation["agent_graph"] = "v0_29"
+        generation["agent_graph"] = "v0_30"
         generation["plan_schema_version"] = state.generation_plan["plan_schema_version"]
         generation["state_schema_design_version"] = state.state_schema_design["schema_version"]
         state.add_trace(
@@ -161,6 +165,22 @@ class GenerationAgentGraph:
             variables=len(state.state_schema_design["variables"]),
             relationship_axes=len(state.state_schema_design["relationship_axes"]),
         )
+
+    def validate_state_schema_design(self, state: AgentState) -> None:
+        if state.state_schema_design is None:
+            raise AgentRunError("validate_state_schema_design requires state schema design")
+        state.state_schema_messages = validate_state_schema_design(state.state_schema_design)
+        errors = sum(1 for message in state.state_schema_messages if message.level == "error")
+        warnings = sum(1 for message in state.state_schema_messages if message.level == "warning")
+        state.add_trace(
+            "validate_state_schema_design",
+            "ok" if errors == 0 else "error",
+            "State schema design gate completed",
+            errors=errors,
+            warnings=warnings,
+        )
+        if errors:
+            raise AgentRunError("State schema design failed validation")
 
     def optional_llm_polish(self, state: AgentState) -> None:
         if state.game is None or state.brief is None:
