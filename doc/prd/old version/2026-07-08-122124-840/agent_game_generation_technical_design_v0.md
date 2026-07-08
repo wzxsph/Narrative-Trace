@@ -1,6 +1,6 @@
 # Agent Game Generation Technical Design V0
 
-版本：V0.25
+版本：V0.24
 日期：2026-07-08  
 文档类型：技术设计文档  
 文件名规则：英文文件名，便于后续工程引用  
@@ -1196,7 +1196,6 @@ Corrupt save recovery notice: achieved
 Save version migration skeleton: achieved
 Save contract fixtures and validation gate: achieved
 Browser save contract replay: achieved
-Basic keyboard accessibility browser smoke: achieved
 Conservative local repair tool: achieved
 Explicit JSON Schema contract: achieved
 Schema and validator export gate: achieved
@@ -1226,8 +1225,8 @@ Production-grade generation pipeline: not achieved
 - 已有基础章节 flowchart 复盘和未解锁原因说明，但还不是完整 flowchart 级路径复盘。
 - 已有基础 `state_echoes` 渲染，但还没有复杂优先级、互斥回声或节奏控制。
 - 已有第一章叙事内轻教学，但还没有用户测试数据证明提示强度刚好。
-- 已有浏览器级移动视口 smoke、三主结局 E2E 矩阵、结局恢复/重开验证和基础键盘可访问性 smoke，但缺少真实设备、多浏览器和触控细节测试。
-- 已覆盖路径图键盘开关、Escape 关闭和首个 observe 键盘展开；但缺少完整键盘路径、焦点陷阱审计和屏幕阅读器检查。
+- 已有浏览器级移动视口 smoke、三主结局 E2E 矩阵、结局恢复/重开验证，但缺少真实设备、多浏览器和触控细节测试。
+- 缺少无障碍键盘导航和屏幕阅读器检查。
 
 ### 21.3 Content QA
 
@@ -1713,23 +1712,3 @@ Production-grade generation pipeline: not achieved
 - 多浏览器和真实设备下的存档合同回放。
 - 更大规模 save fixture 覆盖。
 - 多存档、云同步、坏存档导出或错误报告。
-
-## 47. V0.25 Implementation Delta
-
-本轮 V0.25 的工程变化：
-
-- PRD 和技术文档旧版已归档到 `doc/prd/old version/2026-07-08-122124-840`。
-- `index.html` 为路径按钮增加 `aria-controls` 和 `aria-expanded`。
-- `src/app.js` 将路径图开关从内联 click handler 提取为 `openPathPanel()` / `closePathPanel()`。
-- `src/app.js` 新增 `syncPathPanelAccessibility()`，在移动视口下同步 `aria-hidden`、`inert`、`tabIndex` 和 `aria-expanded`。
-- `src/app.js` 支持 Escape 关闭打开的路径图，并在移动视口下恢复焦点到路径按钮。
-- `src/styles.css` 新增 `button:focus-visible`。
-- 新增 `scripts/browser_a11y_smoke.py`，验证移动视口下路径图键盘开关、Escape 关闭和 observe 键盘展开。
-- `tests/test_demo_contract.py` 增加可访问性 hook。
-- `README.md` 同步浏览器可访问性 smoke 命令。
-
-本轮没有解决：
-
-- 完整 WCAG 审计。
-- 屏幕阅读器朗读质量。
-- 全流程键盘路径、焦点陷阱完整性和多浏览器差异。

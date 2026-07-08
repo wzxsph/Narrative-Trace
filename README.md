@@ -14,6 +14,7 @@
 - 模型输出样本校验：`scripts/validate_model_output_archive.py`
 - 存档合同校验：`scripts/validate_save_contract.py`
 - 浏览器存档合同回放：`scripts/browser_save_contract.py`
+- 浏览器可访问性 smoke：`scripts/browser_a11y_smoke.py`
 - Schema 校验：`scripts/validate_json_schema.py`
 - 校验器：`scripts/validate_game.py`
 - 局部修复器：`scripts/repair_game.py`
@@ -42,6 +43,7 @@
 - 浏览器级移动视口 smoke，覆盖轻教学、高亮、章节复盘、未解锁原因、刷新恢复、v1 存档迁移、坏存档 fallback 和恢复提示。
 - 存档合同 fixture 覆盖 v1 复盘迁移、v2 结局恢复、未来版本 fallback 和坏 JSON fallback。
 - 浏览器存档合同回放会逐条把存档 fixture 注入 localStorage，并验证真实 UI 恢复或 fallback。
+- 浏览器可访问性 smoke 覆盖移动视口下路径图键盘开关、Escape 关闭和 observe 键盘展开。
 - 多结局浏览器 E2E 矩阵，覆盖 `ending_publish`、`ending_bury`、`ending_confront` 三条真实 UI 路径，并验证结局刷新恢复与重新开始。
 - 显式 JSON Schema 契约，减少生成器、校验器和前端之间的隐式耦合。
 - 生成失败 fixture，覆盖 schema gate、validator gate 和 repair gate 的典型坏输出。
@@ -131,6 +133,12 @@ python3 scripts/validate_save_contract.py
 
 ```bash
 python3 scripts/browser_save_contract.py
+```
+
+跑浏览器可访问性 smoke：
+
+```bash
+python3 scripts/browser_a11y_smoke.py
 ```
 
 跑测试：

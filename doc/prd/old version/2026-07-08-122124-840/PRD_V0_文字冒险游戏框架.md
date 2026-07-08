@@ -1,6 +1,6 @@
 # PRD V0：文字版底特律式互动叙事游戏框架
 
-版本：V0.25
+版本：V0.24
 日期：2026-07-08  
 文档目标：定义第一版本文字游戏本身的框架、具体形态、用户 UI/UX  
 保留文档：`PRD_AI文字冒险游戏.md` 继续保留，作为后续 AI 创作 Agent 和长期路线参考  
@@ -1032,7 +1032,6 @@ V0 失败时，测试用户会说：
 - 模型输出样本校验脚本：`/home/samsong/Desktop/game_writer/scripts/validate_model_output_archive.py`
 - 存档合同校验脚本：`/home/samsong/Desktop/game_writer/scripts/validate_save_contract.py`
 - 浏览器存档合同回放脚本：`/home/samsong/Desktop/game_writer/scripts/browser_save_contract.py`
-- 浏览器可访问性 smoke 脚本：`/home/samsong/Desktop/game_writer/scripts/browser_a11y_smoke.py`
 - Schema 校验脚本：`/home/samsong/Desktop/game_writer/scripts/validate_json_schema.py`
 - 局部修复脚本：`/home/samsong/Desktop/game_writer/scripts/repair_game.py`
 - 校验脚本：`/home/samsong/Desktop/game_writer/scripts/validate_game.py`
@@ -1068,7 +1067,6 @@ V0 失败时，测试用户会说：
 - 本地保存/恢复：刷新页面后可恢复当前场景、已展开观察、选择路径、章节复盘或结局状态。
 - 存档合同 fixture：覆盖 v1 复盘迁移、v2 结局恢复、未来版本 fallback 和坏 JSON fallback。
 - 浏览器存档合同回放：逐条把存档 fixture 注入 localStorage，验证真实 UI 恢复 review、ending 或 fallback 提示。
-- 基础键盘可访问性：移动视口下路径图可通过键盘打开/关闭，Escape 可关闭路径图，首个 observe 可通过 Tab + Enter 展开。
 - 内容规模达到 3 章 x 每章 3 个主场景，共 9 个主场景。
 - 隐藏关系变量的叙事回声：`relationships.chen.trust`、`relationships.chen.suspicion`、`relationships.lin.bond` 会在后续场景中触发条件文本。
 - 生成产物的结构校验。
@@ -1101,7 +1099,7 @@ V0 失败时，测试用户会说：
 - 第一章轻教学已有基础实现，但还没有通过内部用户测试证明玩家能稳定理解“文字可展开”和“观察会长出行动”。
 - 已建立内部测试记录模板和批次汇总脚本，但尚未实际完成 5 到 8 名内部用户测试，因此第 14 节量化指标尚未验证。
 - 保存/恢复已支持单机本地状态，并已有浏览器 smoke 覆盖章节复盘刷新恢复、v1 存档迁移、坏 JSON 存档 fallback、旧版本存档 fallback 和恢复提示；但还没有多存档、云端同步或复杂版本迁移策略。
-- 浏览器自动化已覆盖核心路径、三主结局路径、结局刷新恢复、重新开始和基础键盘路径，但还没有真实移动设备、多浏览器、触控细节或完整屏幕阅读器验收。
+- 浏览器自动化已覆盖核心路径、三主结局路径、结局刷新恢复和重新开始，但还没有真实移动设备、多浏览器、触控细节和无障碍验收。
 - 内容 QA 已有基础自动检查，但还不能判断“选择是否真的让人犹豫”或“隐藏线索是否在语义上公平”。
 - 结局画像已有自动完整性检查，但还不能判断结局是否有足够情感重量。
 - 已有模型输出样本归档工具和空样本库合同，但还没有沉淀真实 LLM 输出样本，因此不能证明 agent 生成链路在真实模型下稳定。
@@ -1528,22 +1526,3 @@ V0.24 的边界：
 - 浏览器回放仍运行在 Chrome/Chromium headless 移动视口，不等于真实手机或多浏览器。
 - 当前只回放最小合同样本集，不覆盖所有存档状态。
 - 下一步可以把更多字段级迁移样本加入 fixture，并扩展浏览器回放覆盖。
-
-### 17.29 V0.25 版本变更记录
-
-V0.25 相比 V0.24 的实质变化：
-
-- 旧版 V0.24 PRD 和技术文档已归档到 `/home/samsong/Desktop/game_writer/doc/prd/old version/2026-07-08-122124-840`。
-- `index.html` 为路径图按钮增加 `aria-controls="pathPanel"` 和初始 `aria-expanded="false"`。
-- `src/app.js` 新增 `openPathPanel()`、`closePathPanel()`、`syncPathPanelAccessibility()` 和 `isOverlayPathPanel()`。
-- 移动视口下关闭的路径图会设置 `aria-hidden` 和 `inert`，避免隐藏面板进入 Tab 顺序。
-- 移动视口下打开路径图后会聚焦关闭按钮，Escape 会关闭路径图并把焦点还给路径按钮。
-- `src/styles.css` 新增 `button:focus-visible`，让键盘焦点可见。
-- 新增 `scripts/browser_a11y_smoke.py`，验证路径图键盘开关、Escape 关闭和首个 observe 键盘展开。
-- `tests/test_demo_contract.py` 增加路径图可访问性 hook。
-
-V0.25 的边界：
-
-- 这只是基础键盘 smoke，不是完整 WCAG 审计。
-- 尚未验证屏幕阅读器朗读质量、焦点陷阱完整性、色彩对比、减少动态效果偏好或多浏览器。
-- 下一步应补屏幕阅读器语义检查、更多键盘路径和真实设备测试。

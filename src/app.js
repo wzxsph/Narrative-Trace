@@ -63,11 +63,15 @@ init();
 
 async function init() {
   dom.storyArea.appendChild(dom.loadingTemplate.content.cloneNode(true));
-  dom.mapButton.addEventListener("click", () => {
-    dom.pathPanel.classList.add("open");
-    renderPathMap();
+  syncPathPanelAccessibility(false);
+  dom.mapButton.addEventListener("click", openPathPanel);
+  dom.closeMapButton.addEventListener("click", () => closePathPanel());
+  window.addEventListener("resize", () => syncPathPanelAccessibility(dom.pathPanel.classList.contains("open")));
+  window.addEventListener("keydown", (event) => {
+    if (event.key === "Escape" && dom.pathPanel.classList.contains("open")) {
+      closePathPanel();
+    }
   });
-  dom.closeMapButton.addEventListener("click", () => dom.pathPanel.classList.remove("open"));
   try {
     const response = await fetch(GAME_URL, { cache: "no-store" });
     if (!response.ok) {
@@ -85,6 +89,40 @@ async function init() {
     card.innerHTML = `<h2>案件资料未生成</h2><p>请先运行 <code>python3 scripts/generate_game.py</code>。错误：${escapeHtml(error.message)}</p>`;
     dom.storyArea.appendChild(card);
   }
+}
+
+function openPathPanel() {
+  dom.pathPanel.classList.add("open");
+  syncPathPanelAccessibility(true);
+  renderPathMap();
+  if (isOverlayPathPanel()) {
+    dom.closeMapButton.focus();
+  }
+}
+
+function closePathPanel(options = {}) {
+  dom.pathPanel.classList.remove("open");
+  syncPathPanelAccessibility(false);
+  if (options.returnFocus !== false && isOverlayPathPanel()) {
+    dom.mapButton.focus();
+  }
+}
+
+function syncPathPanelAccessibility(isOpen) {
+  const overlay = isOverlayPathPanel();
+  const visibleToAssistiveTech = !overlay || isOpen;
+  dom.mapButton.setAttribute("aria-expanded", String(visibleToAssistiveTech));
+  dom.pathPanel.setAttribute("aria-hidden", String(!visibleToAssistiveTech));
+  dom.closeMapButton.tabIndex = visibleToAssistiveTech ? 0 : -1;
+  if (visibleToAssistiveTech) {
+    dom.pathPanel.removeAttribute("inert");
+  } else {
+    dom.pathPanel.setAttribute("inert", "");
+  }
+}
+
+function isOverlayPathPanel() {
+  return window.matchMedia("(max-width: 860px)").matches;
 }
 
 function resetGame(options = {}) {

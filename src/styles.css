@@ -24,6 +24,11 @@ button {
   font: inherit;
 }
 
+button:focus-visible {
+  outline: 3px solid #9a7b25;
+  outline-offset: 3px;
+}
+
 .shell {
   display: grid;
   grid-template-columns: minmax(320px, 430px) minmax(280px, 380px);
