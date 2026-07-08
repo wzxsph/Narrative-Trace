@@ -1,6 +1,6 @@
 # Agent Game Generation Technical Design V0
 
-版本：V0.16
+版本：V0.15
 日期：2026-07-08  
 文档类型：技术设计文档  
 文件名规则：英文文件名，便于后续工程引用  
@@ -1189,7 +1189,6 @@ Automated content QA hard-error gate: achieved
 Chapter flow locked-branch explanation: achieved
 Ending portrait completeness gate: achieved
 Browser smoke for core mobile path: achieved
-Browser E2E matrix for all current main endings: achieved
 Conservative local repair tool: achieved
 Explicit JSON Schema contract: achieved
 Schema and validator export gate: achieved
@@ -1216,7 +1215,7 @@ Production-grade generation pipeline: not achieved
 - 已有基础章节 flowchart 复盘和未解锁原因说明，但还不是完整 flowchart 级路径复盘。
 - 已有基础 `state_echoes` 渲染，但还没有复杂优先级、互斥回声或节奏控制。
 - 已有第一章叙事内轻教学，但还没有用户测试数据证明提示强度刚好。
-- 已有浏览器级移动视口 smoke 和三主结局 E2E 矩阵，但缺少真实设备、多浏览器和触控细节测试。
+- 已有浏览器级移动视口 smoke，但缺少真实设备测试。
 - 缺少无障碍键盘导航和屏幕阅读器检查。
 
 ### 21.3 Content QA
@@ -1229,8 +1228,8 @@ Production-grade generation pipeline: not achieved
 
 ### 21.4 Engineering Hygiene
 
-- 已引入最小 `tests/`、浏览器 smoke 和三主结局 E2E，但还不是完整测试矩阵。
-- 已有统一 JSON Schema、基础生成失败 fixtures、prompt manifest 和结局路径 E2E，但还需要真实模型输出样本和 provider/model 版本映射。
+- 已引入最小 `tests/`，但还不是完整测试矩阵。
+- 已有统一 JSON Schema、基础生成失败 fixtures 和 prompt manifest，但还需要真实模型输出样本和 provider/model 版本映射。
 - 需要把 generated demo 内容与手写 fixture 的边界定义清楚。
 - 已增加 README，但仍需要持续同步真实命令和产品边界。
 
@@ -1240,9 +1239,9 @@ Production-grade generation pipeline: not achieved
 
 1. 积累真实模型输出 fixtures，并记录对应 prompt/model/provider 版本。
 2. 建立真实模型输出样本的脱敏/归档规则。
-3. 跑一轮内部 playtest 批次，使用 `summarize_playtest_batch.py` 生成 pass/fail 报告。
-4. 增加真实设备与无障碍测试，覆盖触控、滚动、可读性、键盘导航和屏幕阅读器。
-5. 将浏览器 E2E 继续扩展到刷新恢复、失败/遗漏路径、多浏览器和可访问性断言。
+3. 扩展浏览器 E2E 矩阵，覆盖多结局、多路径、章节继续和结局画像。
+4. 跑一轮内部 playtest 批次，使用 `summarize_playtest_batch.py` 生成 pass/fail 报告。
+5. 增加真实设备与无障碍测试，覆盖触控、滚动、可读性、键盘导航和屏幕阅读器。
 
 ## 23. V0.1 Implementation Delta
 
@@ -1525,22 +1524,3 @@ Production-grade generation pipeline: not achieved
 - provider/model 版本记录。
 - LLM 语义 repair prompt 版本管理。
 - prompt 变更审批或 diff 流程。
-
-## 38. V0.16 Implementation Delta
-
-本轮 V0.16 的工程变化：
-
-- PRD 和技术文档旧版已归档到 `doc/prd/old version/2026-07-08-111916-707`。
-- `src/app.js` 为 observe anchor、choice button、章节继续按钮和重开按钮增加稳定 `data-*` 测试标识。
-- 新增 `scripts/browser_e2e_matrix.py`，脚本复用临时静态服务与 Chrome/Chromium headless 移动视口，按结构 id 点击路径。
-- 浏览器 E2E 矩阵覆盖 `ending_publish`、`ending_bury`、`ending_confront` 三个当前主结局。
-- 每条路径验证两次章节复盘、结局标题、结局标签、结局画像区和移动端横向溢出。
-- `tests/test_demo_contract.py` 增加静态契约，确保 E2E 矩阵覆盖全部当前主结局，且前端保留测试标识。
-- `README.md` 增加多结局浏览器 E2E 命令入口。
-
-本轮没有解决：
-
-- 真实 LLM 输出样本库与脱敏归档。
-- 多浏览器、真实移动设备和无障碍测试。
-- 结局文案情感质量、选择犹豫感和隐藏线索公平性的人工判断。
-- E2E 对刷新恢复、失败路径和存档异常的覆盖。

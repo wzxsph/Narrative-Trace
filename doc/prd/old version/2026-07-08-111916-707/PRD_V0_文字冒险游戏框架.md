@@ -1,6 +1,6 @@
 # PRD V0：文字版底特律式互动叙事游戏框架
 
-版本：V0.16
+版本：V0.15
 日期：2026-07-08  
 文档目标：定义第一版本文字游戏本身的框架、具体形态、用户 UI/UX  
 保留文档：`PRD_AI文字冒险游戏.md` 继续保留，作为后续 AI 创作 Agent 和长期路线参考  
@@ -1034,7 +1034,6 @@ V0 失败时，测试用户会说：
 - 内容 QA 脚本：`/home/samsong/Desktop/game_writer/scripts/content_qa_report.py`
 - 冒烟游玩脚本：`/home/samsong/Desktop/game_writer/scripts/smoke_playthrough.py`
 - 浏览器冒烟脚本：`/home/samsong/Desktop/game_writer/scripts/browser_smoke.py`
-- 多结局浏览器 E2E 矩阵：`/home/samsong/Desktop/game_writer/scripts/browser_e2e_matrix.py`
 - 生成失败样本库：`/home/samsong/Desktop/game_writer/examples/fixtures/generation_failures/fixture_cases.json`
 
 它已经覆盖本 PRD 的关键体验闭环：
@@ -1064,7 +1063,6 @@ V0 失败时，测试用户会说：
 - 生成产物的结构校验。
 - 自动内容 QA 检查：关键场景必须有明显 observe 入口，`hidden_optional` 不能解锁章节/全局后果 choice，choice 必须有描述和后果文案，结局必须可达并具备画像标签。
 - 浏览器级移动视口 smoke：验证轻教学、新行动高亮、章节复盘、未解锁原因、刷新恢复和移动端横向溢出。
-- 多路径/多结局浏览器 E2E：使用真实浏览器点击 3 条路径，覆盖 `ending_publish`、`ending_bury`、`ending_confront`，并检查章节复盘、结局标签、结局画像区和移动端横向溢出。
 - 局部 repair：能修复常见生成硬伤，包括坏 `start_scene_id`、坏 `next_scene`、缺失 anchor 文本、错误 observe depth、坏 unlock choice 引用。
 - 显式 JSON Schema 契约：验证游戏数据的字段形状、必填项、枚举、递归 observe 结构和基础类型。
 - 生成导出门禁：`generate_game.py` 默认在写文件前通过 JSON Schema 和结构 validator，失败时阻断导出。
@@ -1085,11 +1083,10 @@ V0 失败时，测试用户会说：
 - 内容规模已达到 3 章 x 每章 3 个主场景，但真实阅读时长、节奏和质量尚未通过用户测试证明能稳定达到 15 到 20 分钟以上。
 - 章节复盘已从轻量列表升级为基础 flowchart，并能解释未解锁分支缺少的证据；但还不是完整 Detroit 式全路径图，缺少节点坐标、二周目提示和跨章路径关系。
 - 隐藏状态已经影响 choice、章节复盘、场景回声和结局画像，但 NPC 关系回声仍是基础实现，尚未通过用户测试证明“可感知且不黑箱”。
-- 结局行动画像已能被三条浏览器路径稳定抵达并展示基本结构，但还没有充分回答“保护了谁、伤害了谁、相信了什么、哪些 observe 改变路径”。
+- 结局行动画像已具备基本结构，但还没有充分回答“保护了谁、伤害了谁、相信了什么、哪些 observe 改变路径”。
 - 第一章轻教学已有基础实现，但还没有通过内部用户测试证明玩家能稳定理解“文字可展开”和“观察会长出行动”。
 - 已建立内部测试记录模板和批次汇总脚本，但尚未实际完成 5 到 8 名内部用户测试，因此第 14 节量化指标尚未验证。
 - 保存/恢复已支持单机本地状态，并已有浏览器 smoke 覆盖章节复盘刷新恢复；但还没有多存档、云端同步、版本迁移或异常恢复 UI。
-- 浏览器自动化已覆盖核心路径与三主结局路径，但还没有真实移动设备、多浏览器、触控细节和无障碍验收。
 - 内容 QA 已有基础自动检查，但还不能判断“选择是否真的让人犹豫”或“隐藏线索是否在语义上公平”。
 - 结局画像已有自动完整性检查，但还不能判断结局是否有足够情感重量。
 
@@ -1123,7 +1120,7 @@ V0 失败时，测试用户会说：
 
 - 内容生产流程稳定，能持续生成多章内容而不崩坏。
 - 前端 UI 在移动端真实设备上验证触控、滚动、可读性。
-- 路径图、结局画像、新手引导形成更强闭环，并通过真实玩家数据验证它们不是“看起来完整”。
+- 路径图、结局画像、新手引导形成更强闭环。
 - 保存/重开能力从本地单存档升级到可解释、可恢复、可迁移的产品级存档。
 - 有一轮内部测试数据，证明 observe/choice/路径图确实被用户理解。
 - 有更严格的语义内容 QA，避免隐藏内容变成乱点找按钮。
@@ -1361,20 +1358,3 @@ V0.15 的边界：
 - 当前 prompt manifest 主要记录 deterministic demo 和可选 LLM polish 的元数据，不包含真实模型输出日志。
 - prompt manifest 不存 API key，不读取 `.env`，不记录供应商私密配置。
 - 下一步应把真实 LLM 输出样本和 prompt/model/provider 版本绑定起来。
-
-### 17.20 V0.16 版本变更记录
-
-V0.16 相比 V0.15 的实质变化：
-
-- 旧版 V0.15 PRD 和技术文档已归档到 `/home/samsong/Desktop/game_writer/doc/prd/old version/2026-07-08-111916-707`。
-- 前端 observe anchor、choice button、章节继续按钮和重开按钮增加稳定 `data-*` 测试标识。
-- 新增 `scripts/browser_e2e_matrix.py`，用真实浏览器和 390x844 移动视口跑多路径/多结局 E2E。
-- E2E 矩阵覆盖 3 个主结局：`ending_publish`、`ending_bury`、`ending_confront`。
-- 每条路径都会真实点击 observe 解锁 choice，穿过两次章节复盘，并在结局页检查标题、画像区、结局标签和横向溢出。
-- 单元测试新增 E2E 矩阵覆盖当前全部主结局的静态契约。
-
-V0.16 的边界：
-
-- 浏览器 E2E 证明当前 demo 的三主结局可达，不证明结局文案有足够情感重量。
-- 它覆盖 Chrome/Chromium headless 移动视口，不等于真实手机、多浏览器或无障碍验收。
-- 下一步仍应优先积累真实模型输出样本、跑内部用户测试，并补真实设备/无障碍验证。

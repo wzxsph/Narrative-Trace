@@ -242,6 +242,7 @@ function renderTextWithAnchors(text, anchors) {
     const button = document.createElement("button");
     button.type = "button";
     button.className = `anchor-button ${runtime.openedAnchors.has(range.anchor.id) ? "opened" : ""}`;
+    button.dataset.anchorId = range.anchor.id;
     button.textContent = text.slice(range.index, range.end);
     button.title = range.anchor.label;
     button.addEventListener("click", () => openAnchor(range.anchor));
@@ -328,6 +329,7 @@ function renderChoices(scene) {
     const button = document.createElement("button");
     button.type = "button";
     button.className = "choice-button";
+    button.dataset.choiceId = choice.id;
     if (runtime.highlightedChoices.has(choice.id)) {
       button.classList.add("newly-unlocked");
     }
@@ -473,6 +475,7 @@ function renderChapterReview() {
   const continueButton = document.createElement("button");
   continueButton.type = "button";
   continueButton.className = "choice-button continue-button";
+  continueButton.dataset.action = "continue-review";
   const title = document.createElement("span");
   title.className = "choice-title";
   title.textContent = `进入${nextScene.chapter}`;
@@ -527,6 +530,7 @@ function renderChapterFlowNode(scene, index, total) {
     const branchState = buildChoiceBranchState(choice);
     const branch = document.createElement("li");
     branch.className = branchState.className;
+    branch.dataset.choiceId = choice.id;
     branch.textContent = `${choice.label} · ${branchState.note}`;
     branchList.appendChild(branch);
   });
@@ -624,6 +628,7 @@ function renderEnding() {
   const restart = document.createElement("button");
   restart.className = "restart-button";
   restart.type = "button";
+  restart.dataset.action = "restart";
   restart.textContent = "重新开始";
   restart.addEventListener("click", () => {
     resetGame();

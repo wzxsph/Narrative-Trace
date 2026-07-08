@@ -16,6 +16,7 @@
 - 内容 QA：`scripts/content_qa_report.py`
 - 冒烟游玩：`scripts/smoke_playthrough.py`
 - 浏览器冒烟：`scripts/browser_smoke.py`
+- 多结局浏览器 E2E：`scripts/browser_e2e_matrix.py`
 - 内部测试汇总：`scripts/summarize_playtest_batch.py`
 - Demo 内容：`generated/missing_phone_v0/game.json`
 - 生成失败样本：`examples/fixtures/generation_failures/fixture_cases.json`
@@ -33,6 +34,7 @@
 - 隐藏关系变量在后续场景触发叙事回声。
 - 本地刷新恢复进度。
 - 浏览器级移动视口 smoke，覆盖轻教学、高亮、章节复盘、未解锁原因和刷新恢复。
+- 多结局浏览器 E2E 矩阵，覆盖 `ending_publish`、`ending_bury`、`ending_confront` 三条真实 UI 路径。
 - 显式 JSON Schema 契约，减少生成器、校验器和前端之间的隐式耦合。
 - 生成失败 fixture，覆盖 schema gate、validator gate 和 repair gate 的典型坏输出。
 - Prompt manifest 和 generation trace 记录 `prompt_set`，让后续真实模型输出可追溯到生成策略。
@@ -83,6 +85,12 @@ python3 scripts/repair_game.py generated/missing_phone_v0/game.json --out /tmp/r
 
 ```bash
 python3 scripts/browser_smoke.py
+```
+
+跑多结局浏览器 E2E：
+
+```bash
+python3 scripts/browser_e2e_matrix.py
 ```
 
 跑测试：

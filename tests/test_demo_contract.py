@@ -131,10 +131,24 @@ class DemoContractTest(unittest.TestCase):
     self.assertIn("renderChapterFlow", app_js)
     self.assertIn("buildChoiceBranchState", app_js)
     self.assertIn("describeRequirement", app_js)
+    self.assertIn("dataset.anchorId", app_js)
+    self.assertIn("dataset.choiceId", app_js)
+    self.assertIn("continue-review", app_js)
     self.assertIn("未解锁：", app_js)
     self.assertIn("chapter-flow-node", app_js)
     self.assertIn("renderStateEchoes", app_js)
     self.assertIn("buildStateEchoes", app_js)
+
+  def test_browser_e2e_matrix_covers_all_main_endings(self) -> None:
+    from scripts.browser_e2e_matrix import PATHS
+
+    game = load_game()
+    expected_endings = {ending["id"] for ending in game["endings"]}
+    matrix_endings = {path.expected_ending for path in PATHS}
+    self.assertEqual(matrix_endings, expected_endings)
+    for path in PATHS:
+      self.assertTrue(any(step.kind == "observe" for step in path.steps), path.name)
+      self.assertTrue(any(step.kind == "choice" for step in path.steps), path.name)
 
 
 def flatten_anchors(anchors: list[dict]) -> list[dict]:
