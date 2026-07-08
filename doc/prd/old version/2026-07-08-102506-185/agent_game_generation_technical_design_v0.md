@@ -1,6 +1,6 @@
 # Agent Game Generation Technical Design V0
 
-版本：V0.6
+版本：V0.5
 日期：2026-07-08  
 文档类型：技术设计文档  
 文件名规则：英文文件名，便于后续工程引用  
@@ -1166,7 +1166,6 @@ generated/missing_phone_v0/game.json
 - 章节复盘屏新增基础 flowchart runtime，展示本章节点、到达状态和分支标签。
 - 第一章新增可选 `guidance` / `unlock_guidance` 内容字段，运行时可显示叙事内轻教学并高亮新出现的 action。
 - validator 校验 guidance 的 `id`、`title`、`text`，测试覆盖首章轻教学契约。
-- 新增内部 playtest 记录模板、批次 JSON 模板和汇总脚本，用于验证 PRD 第 14 节成功指标。
 
 当前技术状态：
 
@@ -1175,7 +1174,6 @@ Medium-length playable vertical slice with basic runtime resilience: achieved
 Basic relationship echo runtime: achieved
 Basic chapter flow review runtime: achieved
 Diegetic first-chapter guidance runtime: achieved
-Internal playtest metric pipeline: achieved
 Production-grade generation pipeline: not achieved
 ```
 
@@ -1203,10 +1201,10 @@ Production-grade generation pipeline: not achieved
 ### 21.3 Content QA
 
 - 当前 validator 偏结构，较少判断 choice 是否真的有犹豫点。
-- 已有内部 playtest 记录模板和汇总脚本，但还没有真实用户批次数据。
-- 缺少“隐藏内容是否公平可发现”的自动 QA 检查；人工 QA 已有模板入口，但尚未实际执行。
+- 缺少“隐藏内容是否公平可发现”的自动/人工 QA 表。
 - 结局画像已有前端呈现，但缺少完整性检查。
 - 关系回声已有覆盖测试，但缺少人工 QA 判断文案是否自然、是否过度解释数值。
+- 缺少内部用户测试记录。
 
 ### 21.4 Engineering Hygiene
 
@@ -1222,8 +1220,8 @@ Production-grade generation pipeline: not achieved
 1. 将 `repair_game.py` 从报告工具升级为可修复 broken anchor / missing choice / missing next_scene 的局部 repair。
 2. 增加显式 JSON schema 或 contract fixture，减少生成器和前端之间的隐式耦合。
 3. 增加 Playwright 或等价浏览器测试，验证轻教学、高亮、章节复盘、结局画像、刷新恢复和移动视口。
-4. 跑一轮内部 playtest 批次，使用 `summarize_playtest_batch.py` 生成 pass/fail 报告。
-5. 增加内容 QA 测试，检查隐藏 observe 是否公平可发现、choice 是否有真实代价。
+4. 增加内容 QA 测试，检查隐藏 observe 是否公平可发现、choice 是否有真实代价。
+5. 将 9 场景 demo 抽成更清晰的 contract fixture，区分“手写黄金样例”和“生成器输出样例”。
 
 ## 23. V0.1 Implementation Delta
 
@@ -1315,21 +1313,3 @@ Production-grade generation pipeline: not achieved
 - 自动化浏览器测试进入常规 test suite。
 - 全章节路径图的锁定原因说明。
 - guidance 的强弱是否刚好，仍需真实试玩反馈。
-
-## 28. V0.6 Implementation Delta
-
-本轮 V0.6 的工程变化：
-
-- PRD 和技术文档旧版已归档到 `doc/prd/old version/2026-07-08-102506-185`。
-- 新增 `doc/testing/internal_playtest_record_template.md`，把第 14 节定性问题和量化指标变成可填写记录。
-- 新增 `examples/playtests/internal_playtest_batch_template.json`，定义内部测试批次数据契约。
-- 新增 `scripts/summarize_playtest_batch.py`，计算第 14 节 6 个量化指标并输出 pass/fail。
-- 新增 `tests/test_playtest_summary.py`，覆盖达标批次、关键隐藏点卡死失败和空模板 INVALID。
-- `README.md` 增加内部测试模板与汇总脚本入口。
-
-本轮没有解决：
-
-- 真实 5 到 8 人内部用户测试。
-- 自动化浏览器测试进入常规 test suite。
-- 全章节路径图的锁定原因说明。
-- 内容 QA 的自动化公平性检测。

@@ -1,6 +1,6 @@
 # PRD V0：文字版底特律式互动叙事游戏框架
 
-版本：V0.6
+版本：V0.5
 日期：2026-07-08  
 文档目标：定义第一版本文字游戏本身的框架、具体形态、用户 UI/UX  
 保留文档：`PRD_AI文字冒险游戏.md` 继续保留，作为后续 AI 创作 Agent 和长期路线参考  
@@ -1054,9 +1054,6 @@ V0 失败时，测试用户会说：
 - 隐藏关系变量的叙事回声：`relationships.chen.trust`、`relationships.chen.suspicion`、`relationships.lin.bond` 会在后续场景中触发条件文本。
 - 生成产物的结构校验。
 - 基础测试入口：`/home/samsong/Desktop/game_writer/tests/test_demo_contract.py`
-- 内部测试记录模板：`/home/samsong/Desktop/game_writer/doc/testing/internal_playtest_record_template.md`
-- 内部测试批次模板：`/home/samsong/Desktop/game_writer/examples/playtests/internal_playtest_batch_template.json`
-- 内部测试汇总脚本：`/home/samsong/Desktop/game_writer/scripts/summarize_playtest_batch.py`
 - 运行说明：`/home/samsong/Desktop/game_writer/README.md`
 
 ### 17.2 当前 Demo 与完整 V0 的差距
@@ -1070,14 +1067,14 @@ V0 失败时，测试用户会说：
 - 隐藏状态已经影响 choice、章节复盘、场景回声和结局画像，但 NPC 关系回声仍是基础实现，尚未通过用户测试证明“可感知且不黑箱”。
 - 结局行动画像已具备基本结构，但还没有充分回答“保护了谁、伤害了谁、相信了什么、哪些 observe 改变路径”。
 - 第一章轻教学已有基础实现，但还没有通过内部用户测试证明玩家能稳定理解“文字可展开”和“观察会长出行动”。
-- 已建立内部测试记录模板和批次汇总脚本，但尚未实际完成 5 到 8 名内部用户测试，因此第 14 节量化指标尚未验证。
+- 尚未经过 5 到 8 名内部用户测试，因此第 14 节量化指标尚未验证。
 - 保存/恢复已支持单机本地状态，但还没有多存档、云端同步、版本迁移或异常恢复 UI。
 
 ### 17.3 下一轮产品优先级
 
 下一轮不要先扩技术栈，应优先补强体验闭环：
 
-1. 组织 5 到 8 名内部用户测试，填充 playtest 批次数据，用第 14 节指标判断 demo 是否真正跑通。
+1. 建立内部测试记录模板，用用户反馈验证第 14 节成功标准，尤其是轻教学是否真的被理解。
 2. 检查 9 场景内容节奏，删掉只是在“加长度”的场景，保留真正改变理解或行动的场景。
 3. 继续打磨关系回声文案，确保它是文本暗示，不是数值播报。
 4. 将章节基础 flowchart 继续升级为更完整的路径复盘，包括未解锁分支原因与跨章影响。
@@ -1180,19 +1177,3 @@ V0.5 的边界：
 - 轻教学不是新手教程系统，也不是帮助中心。
 - 当前只覆盖第一章关键路径，不代表所有章节都需要提示。
 - 真正的问题仍要由内部用户测试回答：玩家是否自然理解了“文字可以展开”和“观察会改变行动栏”。
-
-### 17.10 V0.6 版本变更记录
-
-V0.6 相比 V0.5 的实质变化：
-
-- 旧版 V0.5 PRD 和技术文档已归档到 `/home/samsong/Desktop/game_writer/doc/prd/old version/2026-07-08-102506-185`。
-- 新增内部 playtest 记录模板，直接对齐第 14 节定性问题和量化指标。
-- 新增 playtest 批次 JSON 模板，用于汇总 5 到 8 名内部测试用户结果。
-- 新增 `scripts/summarize_playtest_batch.py`，把“第一分钟理解”“observe 解锁 choice”“路径图重玩意愿”“关键隐藏点卡死”等指标计算成 pass/fail。
-- 新增 `tests/test_playtest_summary.py`，确保汇总脚本不会把空模板误判为真实数据，也能识别关键隐藏点卡死失败。
-
-V0.6 的边界：
-
-- V0.6 只是具备测试机制，不代表已经完成用户测试。
-- 批次模板里的空值必须由真实观察记录填充；模板本身运行汇总脚本会得到 INVALID。
-- 下一轮产品判断不应继续靠主观感觉，应优先跑 5 到 8 人内部测试。

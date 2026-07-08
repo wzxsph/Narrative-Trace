@@ -1,0 +1,26 @@
+{
+  "schema_version": "game_writer_playtest_batch_v0_1",
+  "project_id": "missing_phone",
+  "build_schema_version": "game_writer_demo_v0_5",
+  "session_date": "YYYY-MM-DD",
+  "facilitator": "",
+  "participants": [
+    {
+      "id": "p01",
+      "duration_minutes": 0,
+      "first_minute_understood_expandable_text": null,
+      "chapter1_key_observe_found_ratio": null,
+      "can_name_observe_unlock_choice": null,
+      "can_name_choice_echo": null,
+      "opened_path_map_and_wants_replay": null,
+      "blocked_by_hidden_key_point": null,
+      "qualitative_quotes": {
+        "positive": [],
+        "confused": [],
+        "friction": [],
+        "replay_interest": []
+      },
+      "notes": ""
+    }
+  ]
+}

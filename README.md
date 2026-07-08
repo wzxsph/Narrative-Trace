@@ -10,6 +10,7 @@
 - 生成器：`scripts/generate_game.py`
 - 校验器：`scripts/validate_game.py`
 - 冒烟游玩：`scripts/smoke_playthrough.py`
+- 内部测试汇总：`scripts/summarize_playtest_batch.py`
 - Demo 内容：`generated/missing_phone_v0/game.json`
 
 当前 demo 已覆盖：
@@ -24,6 +25,7 @@
 - 章节结束基础 flowchart 复盘、路径图、结局行动画像。
 - 隐藏关系变量在后续场景触发叙事回声。
 - 本地刷新恢复进度。
+- 内部 playtest 记录模板和 PRD 第 14 节指标汇总脚本。
 - 冒烟路径穿过 9 个主场景并抵达 `ending_publish`。
 
 ## Quick Start
@@ -53,6 +55,12 @@ python3 scripts/smoke_playthrough.py generated/missing_phone_v0/game.json
 
 ```bash
 python3 -m unittest discover -s tests -v
+```
+
+批次模板位于 `examples/playtests/internal_playtest_batch_template.json`。填完真实批次数据后运行：
+
+```bash
+python3 scripts/summarize_playtest_batch.py path/to/playtest_batch.json
 ```
 
 启动本地静态服务：
