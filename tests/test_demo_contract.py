@@ -123,7 +123,9 @@ class DemoContractTest(unittest.TestCase):
   def test_static_runtime_includes_save_review_and_portrait_hooks(self) -> None:
     app_js = APP_JS_PATH.read_text(encoding="utf-8")
     self.assertIn("SAVE_KEY", app_js)
+    self.assertIn("SAVE_VERSION = 2", app_js)
     self.assertIn("restoreProgress", app_js)
+    self.assertIn("migrateSavePayload", app_js)
     self.assertIn("recoveryNotice", app_js)
     self.assertIn("renderRecoveryNotice", app_js)
     self.assertIn("save-recovery", app_js)

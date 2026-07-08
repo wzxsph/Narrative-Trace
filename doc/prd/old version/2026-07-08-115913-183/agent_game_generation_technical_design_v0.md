@@ -1,6 +1,6 @@
 # Agent Game Generation Technical Design V0
 
-版本：V0.22
+版本：V0.21
 日期：2026-07-08  
 文档类型：技术设计文档  
 文件名规则：英文文件名，便于后续工程引用  
@@ -1193,7 +1193,6 @@ Browser E2E matrix for all current main endings: achieved
 Ending persistence and restart browser E2E: achieved
 Corrupt save fallback browser smoke: achieved
 Corrupt save recovery notice: achieved
-Save version migration skeleton: achieved
 Conservative local repair tool: achieved
 Explicit JSON Schema contract: achieved
 Schema and validator export gate: achieved
@@ -1219,7 +1218,7 @@ Production-grade generation pipeline: not achieved
 
 ### 21.2 Runtime Robustness
 
-- 当前前端已有本地单存档，且浏览器 E2E 已覆盖结局态刷新恢复和重新开始，浏览器 smoke 已覆盖 v1 存档迁移、坏 JSON / 旧版本存档 fallback 与可见恢复提示；但没有多存档、复杂字段迁移或云端同步。
+- 当前前端已有本地单存档，且浏览器 E2E 已覆盖结局态刷新恢复和重新开始，浏览器 smoke 已覆盖坏 JSON / 旧版本存档 fallback 与可见恢复提示；但没有多存档、版本迁移或云端同步。
 - 已有基础章节 flowchart 复盘和未解锁原因说明，但还不是完整 flowchart 级路径复盘。
 - 已有基础 `state_echoes` 渲染，但还没有复杂优先级、互斥回声或节奏控制。
 - 已有第一章叙事内轻教学，但还没有用户测试数据证明提示强度刚好。
@@ -1650,22 +1649,3 @@ Production-grade generation pipeline: not achieved
 - 存档版本迁移。
 - 多存档、云同步和损坏存档备份。
 - 错误报告、坏存档导出或更复杂的恢复动作。
-
-## 44. V0.22 Implementation Delta
-
-本轮 V0.22 的工程变化：
-
-- PRD 和技术文档旧版已归档到 `doc/prd/old version/2026-07-08-115913-183`。
-- `src/app.js` 将 `SAVE_VERSION` 从 1 升级到 2。
-- `src/app.js` 新增 `migrateSavePayload()`。
-- `restoreProgress()` 从“直接校验版本”改为“先迁移，再校验”。
-- 当前迁移规则支持 v1 save payload 原样升级为 v2 save payload。
-- `scripts/browser_smoke.py` 增加 v1 章节复盘存档迁移测试，确认降级后的 v1 存档刷新后仍恢复复盘页。
-- `tests/test_demo_contract.py` 增加迁移函数和版本号静态 hook。
-- `README.md` 同步 v1 存档迁移覆盖范围。
-
-本轮没有解决：
-
-- 字段级复杂迁移。
-- 存档合同 fixture。
-- 多存档、云同步和坏存档导出。

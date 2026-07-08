@@ -112,6 +112,20 @@ def run_browser_smoke() -> dict[str, object]:
             assert_condition("本章路径图" in restored_text, "Review state did not restore after reload")
             assert_no_horizontal_overflow(page)
 
+            page.evaluate(
+                f"""
+                () => {{
+                  const payload = JSON.parse(window.localStorage.getItem('{SAVE_KEY}'));
+                  payload.version = 1;
+                  window.localStorage.setItem('{SAVE_KEY}', JSON.stringify(payload));
+                }}
+                """
+            )
+            page.reload(wait_until="networkidle")
+            migrated_review_text = page.locator(".review-screen").inner_text()
+            assert_condition("本章路径图" in migrated_review_text, "Legacy v1 save did not migrate to review state")
+            assert_no_horizontal_overflow(page)
+
             page.evaluate(f"window.localStorage.setItem('{SAVE_KEY}', 'not-json')")
             page.reload(wait_until="networkidle")
             corrupt_notice = assert_start_scene_restored(
@@ -135,6 +149,7 @@ def run_browser_smoke() -> dict[str, object]:
                 "highlighted_choices": highlighted,
                 "flow_nodes": flow_nodes,
                 "locked_branches": locked_branches,
+                "legacy_save_migrated": True,
                 "corrupt_save_recovered": True,
                 "invalid_save_recovered": True,
                 "corrupt_save_notice": corrupt_notice,
@@ -184,6 +199,7 @@ def main() -> int:
     print("Browser smoke passed")
     print(f"- flow_nodes: {result['flow_nodes']}")
     print(f"- locked_branches: {result['locked_branches']}")
+    print(f"- legacy_save_migrated: {result['legacy_save_migrated']}")
     print(f"- corrupt_save_recovered: {result['corrupt_save_recovered']}")
     print(f"- invalid_save_recovered: {result['invalid_save_recovered']}")
     print(f"- corrupt_save_notice: {result['corrupt_save_notice']}")

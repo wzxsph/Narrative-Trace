@@ -1,6 +1,6 @@
 const GAME_URL = "generated/missing_phone_v0/game.json";
 const SAVE_KEY = "game_writer_missing_phone_runtime_v1";
-const SAVE_VERSION = 1;
+const SAVE_VERSION = 2;
 const STATE_LABELS = {
   "clues.archive_ready": "归档包",
   "clues.backup_copy": "备份副本",
@@ -821,7 +821,7 @@ function restoreProgress() {
     return false;
   }
   try {
-    const payload = JSON.parse(raw);
+    const payload = migrateSavePayload(JSON.parse(raw));
     if (!isValidSave(payload)) {
       runtime.recoveryNotice = makeRecoveryNotice("旧进度与当前案件不兼容，已为你开启新局。");
       clearProgress();
@@ -852,6 +852,22 @@ function makeRecoveryNotice(text) {
     title: "进度已重置",
     text,
   };
+}
+
+function migrateSavePayload(payload) {
+  if (!payload || typeof payload !== "object") {
+    return null;
+  }
+  if (payload.version === SAVE_VERSION) {
+    return payload;
+  }
+  if (payload.version === 1 && SAVE_VERSION === 2) {
+    return {
+      ...payload,
+      version: SAVE_VERSION,
+    };
+  }
+  return null;
 }
 
 function isValidSave(payload) {
