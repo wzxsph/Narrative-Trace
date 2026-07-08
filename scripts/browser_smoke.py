@@ -83,10 +83,21 @@ def run_browser_smoke() -> dict[str, object]:
             assert_no_horizontal_overflow(page)
 
             page.get_by_role("button", name="未发送短信").click()
+            assert_single_active_observe_chain(page, "obs_unsent_sms")
             first_guidance = page.locator(".guidance-panel").inner_text()
             assert_condition("锁屏记录展开" in first_guidance, "First observe guidance missing")
 
+            page.get_by_role("button", name="远程清除").click()
+            assert_single_active_observe_chain(page, "obs_remote_wipe")
+            assert_condition(
+                page.locator('.background-block > .evidence-card[data-anchor-id="obs_unsent_sms"]').count() == 0,
+                "Sibling observe should close the previously displayed top-level card",
+            )
+
+            page.get_by_role("button", name="未发送短信").click()
+            assert_single_active_observe_chain(page, "obs_unsent_sms")
             page.locator(".evidence-card .anchor-button", has_text="02:13").first.click()
+            assert_single_active_observe_chain(page, "obs_unsent_sms", "obs_0213_log")
             second_guidance = page.locator(".guidance-panel").inner_text()
             assert_condition("行动栏刷新" in second_guidance, "Choice unlock guidance missing")
             highlighted = page.locator(".choice-button.newly-unlocked").all_inner_texts()
@@ -174,6 +185,23 @@ def assert_no_horizontal_overflow(page: object) -> None:
     assert_condition(
         overflow["scrollWidth"] <= max_width and overflow["bodyScrollWidth"] <= max_width,
         f"Mobile viewport has horizontal overflow: {overflow}",
+    )
+
+
+def assert_single_active_observe_chain(page: object, *anchor_ids: str) -> None:
+    top_level_cards = page.locator(".background-block > .evidence-card")
+    assert_condition(top_level_cards.count() == 1, "Only one top-level observe card should be visible")
+    for anchor_id in anchor_ids:
+        assert_condition(
+            page.locator(f'.evidence-card[data-anchor-id="{anchor_id}"]').count() == 1,
+            f"Expected active observe card missing: {anchor_id}",
+        )
+    visible_card_ids = page.locator(".evidence-card").evaluate_all(
+        "(cards) => cards.map((card) => card.dataset.anchorId)"
+    )
+    assert_condition(
+        visible_card_ids == list(anchor_ids),
+        f"Visible observe cards should match the active chain: {visible_card_ids}",
     )
 
 

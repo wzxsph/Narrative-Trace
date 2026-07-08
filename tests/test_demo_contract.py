@@ -129,6 +129,8 @@ class DemoContractTest(unittest.TestCase):
     self.assertIn("recoveryNotice", app_js)
     self.assertIn("renderRecoveryNotice", app_js)
     self.assertIn("save-recovery", app_js)
+    self.assertIn("activeAnchorPathByScene", app_js)
+    self.assertIn("findAnchorPath", app_js)
     self.assertIn("activeGuidance", app_js)
     self.assertIn("renderGuidance", app_js)
     self.assertIn("newly-unlocked", app_js)

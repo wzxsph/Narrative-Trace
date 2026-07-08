@@ -47,6 +47,7 @@ const runtime = {
   sceneId: "",
   state: {},
   openedAnchors: new Set(),
+  activeAnchorPathByScene: {},
   unlockedChoices: new Set(),
   activeGuidance: null,
   seenGuidance: new Set(),
@@ -132,6 +133,7 @@ function resetGame(options = {}) {
   runtime.sceneId = runtime.game.start_scene_id;
   runtime.state = cloneInitialState();
   runtime.openedAnchors = new Set();
+  runtime.activeAnchorPathByScene = {};
   runtime.unlockedChoices = new Set();
   runtime.activeGuidance = null;
   runtime.seenGuidance = new Set();
@@ -210,13 +212,14 @@ function renderStory(scene) {
   renderRecoveryNotice();
   renderStateEchoes(scene);
   renderGuidance();
+  const activePath = getActiveAnchorPath(scene.id);
   scene.background_blocks.forEach((block) => {
     const wrapper = document.createElement("article");
     wrapper.className = "background-block";
-    wrapper.appendChild(renderTextWithAnchors(block.text, block.observe_anchors));
+    wrapper.appendChild(renderTextWithAnchors(block.text, block.observe_anchors, activePath));
     block.observe_anchors.forEach((anchor) => {
-      if (runtime.openedAnchors.has(anchor.id)) {
-        wrapper.appendChild(renderFragment(anchor));
+      if (activePath[0] === anchor.id) {
+        wrapper.appendChild(renderFragment(anchor, activePath.slice(1)));
       }
     });
     dom.storyArea.appendChild(wrapper);
@@ -283,7 +286,7 @@ function renderStateEchoes(scene) {
   dom.storyArea.appendChild(wrapper);
 }
 
-function renderTextWithAnchors(text, anchors) {
+function renderTextWithAnchors(text, anchors, activePath = []) {
   const fragment = document.createDocumentFragment();
   const ranges = [];
   anchors.forEach((anchor) => {
@@ -302,7 +305,13 @@ function renderTextWithAnchors(text, anchors) {
     fragment.append(document.createTextNode(text.slice(cursor, range.index)));
     const button = document.createElement("button");
     button.type = "button";
-    button.className = `anchor-button ${runtime.openedAnchors.has(range.anchor.id) ? "opened" : ""}`;
+    button.className = "anchor-button";
+    if (runtime.openedAnchors.has(range.anchor.id)) {
+      button.classList.add("opened");
+    }
+    if (activePath.includes(range.anchor.id)) {
+      button.classList.add("active");
+    }
     button.dataset.anchorId = range.anchor.id;
     button.textContent = text.slice(range.index, range.end);
     button.title = range.anchor.label;
@@ -314,10 +323,11 @@ function renderTextWithAnchors(text, anchors) {
   return fragment;
 }
 
-function renderFragment(anchor) {
+function renderFragment(anchor, activePath = []) {
   const fragmentData = anchor.opens_fragment;
   const card = document.createElement("section");
   card.className = `evidence-card depth-${anchor.depth}`;
+  card.dataset.anchorId = anchor.id;
 
   const title = document.createElement("h3");
   title.textContent = fragmentData.title;
@@ -325,14 +335,14 @@ function renderFragment(anchor) {
 
   const body = document.createElement("p");
   body.className = "evidence-body";
-  body.appendChild(renderTextWithAnchors(fragmentData.body, fragmentData.nested_anchors || []));
+  body.appendChild(renderTextWithAnchors(fragmentData.body, fragmentData.nested_anchors || [], activePath));
   card.appendChild(body);
 
-  (fragmentData.nested_anchors || []).forEach((child) => {
-    if (runtime.openedAnchors.has(child.id)) {
-      card.appendChild(renderFragment(child));
-    }
-  });
+  const activeChildId = activePath[0];
+  const activeChild = (fragmentData.nested_anchors || []).find((child) => child.id === activeChildId);
+  if (activeChild) {
+    card.appendChild(renderFragment(activeChild, activePath.slice(1)));
+  }
 
   if (fragmentData.evidence_tags?.length) {
     const tags = document.createElement("div");
@@ -350,6 +360,11 @@ function renderFragment(anchor) {
 
 function openAnchor(anchor) {
   runtime.recoveryNotice = null;
+  const scene = currentScene();
+  const activePath = findAnchorPath(scene, anchor.id);
+  if (activePath.length) {
+    runtime.activeAnchorPathByScene[scene.id] = activePath;
+  }
   const firstOpen = !runtime.openedAnchors.has(anchor.id);
   runtime.openedAnchors.add(anchor.id);
   if (firstOpen) {
@@ -360,6 +375,35 @@ function openAnchor(anchor) {
     maybeShowGuidance(anchor, unlockedChoiceIds);
   }
   render();
+}
+
+function getActiveAnchorPath(sceneId) {
+  const path = runtime.activeAnchorPathByScene?.[sceneId];
+  return Array.isArray(path) ? path : [];
+}
+
+function findAnchorPath(scene, anchorId) {
+  for (const block of scene.background_blocks || []) {
+    const path = findAnchorPathInAnchors(block.observe_anchors || [], anchorId, []);
+    if (path.length) {
+      return path;
+    }
+  }
+  return [];
+}
+
+function findAnchorPathInAnchors(anchors, anchorId, parents) {
+  for (const anchor of anchors) {
+    const path = [...parents, anchor.id];
+    if (anchor.id === anchorId) {
+      return path;
+    }
+    const nestedPath = findAnchorPathInAnchors(anchor.opens_fragment?.nested_anchors || [], anchorId, path);
+    if (nestedPath.length) {
+      return nestedPath;
+    }
+  }
+  return [];
 }
 
 function maybeShowGuidance(anchor, unlockedChoiceIds) {
@@ -382,6 +426,7 @@ function maybeShowGuidance(anchor, unlockedChoiceIds) {
 
 function renderChoices(scene) {
   dom.choiceArea.innerHTML = "";
+  dom.choiceArea.classList.remove("compact", "cozy");
   let visibleCount = 0;
   scene.choices.forEach((choice) => {
     if (!isChoiceVisible(choice)) {
@@ -414,6 +459,9 @@ function renderChoices(scene) {
     empty.textContent = "当前没有稳妥行动。";
     dom.choiceArea.appendChild(empty);
   }
+  dom.choiceArea.dataset.choiceCount = String(visibleCount);
+  dom.choiceArea.classList.toggle("compact", visibleCount >= 4);
+  dom.choiceArea.classList.toggle("cozy", visibleCount > 0 && visibleCount <= 2);
 }
 
 function isChoiceVisible(choice) {
@@ -840,6 +888,7 @@ function saveProgress() {
     sceneId: runtime.sceneId,
     state: runtime.state,
     openedAnchors: Array.from(runtime.openedAnchors),
+    activeAnchorPathByScene: runtime.activeAnchorPathByScene,
     unlockedChoices: Array.from(runtime.unlockedChoices),
     activeGuidance: runtime.activeGuidance,
     seenGuidance: Array.from(runtime.seenGuidance),
@@ -871,6 +920,7 @@ function restoreProgress() {
     runtime.sceneId = payload.sceneId;
     runtime.state = payload.state;
     runtime.openedAnchors = new Set(payload.openedAnchors);
+    runtime.activeAnchorPathByScene = payload.activeAnchorPathByScene || {};
     runtime.unlockedChoices = new Set(payload.unlockedChoices);
     runtime.activeGuidance = payload.activeGuidance || null;
     runtime.seenGuidance = new Set(payload.seenGuidance || []);
@@ -940,6 +990,7 @@ function isValidSave(payload) {
     typeof payload.state === "object" &&
     !Array.isArray(payload.state) &&
     Array.isArray(payload.openedAnchors) &&
+    isValidActiveAnchorPathByScene(payload.activeAnchorPathByScene) &&
     Array.isArray(payload.unlockedChoices) &&
     (payload.activeGuidance === undefined ||
       payload.activeGuidance === null ||
@@ -949,6 +1000,20 @@ function isValidSave(payload) {
     Array.isArray(payload.visitedScenes) &&
     Array.isArray(payload.chosenChoices) &&
     Array.isArray(payload.choiceOutcomes)
+  );
+}
+
+function isValidActiveAnchorPathByScene(value) {
+  if (value === undefined) {
+    return true;
+  }
+  return (
+    value &&
+    typeof value === "object" &&
+    !Array.isArray(value) &&
+    Object.values(value).every(
+      (path) => Array.isArray(path) && path.every((anchorId) => typeof anchorId === "string")
+    )
   );
 }
 
