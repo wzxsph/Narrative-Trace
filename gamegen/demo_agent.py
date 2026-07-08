@@ -64,7 +64,7 @@ def apply_llm_polish(game: dict[str, Any], brief: dict[str, Any], client: LLMCli
 def deterministic_demo_game(brief: dict[str, Any]) -> dict[str, Any]:
     project = brief["project"]
     return {
-        "schema_version": "game_writer_demo_v0_3",
+        "schema_version": "game_writer_demo_v0_4",
         "project": {
             "id": project["id"],
             "title": project["title"],

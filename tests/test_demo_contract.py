@@ -50,10 +50,10 @@ class DemoContractTest(unittest.TestCase):
     runtime.choose("choice_publish_truth")
     self.assertEqual(runtime.ending_id, "ending_publish")
 
-  def test_v03_demo_shape_is_three_chapters_with_three_scenes_each(self) -> None:
+  def test_v04_demo_shape_is_three_chapters_with_three_scenes_each(self) -> None:
     game = load_game()
     chapters = Counter(scene["chapter"] for scene in game["scenes"])
-    self.assertEqual(game["schema_version"], "game_writer_demo_v0_3")
+    self.assertEqual(game["schema_version"], "game_writer_demo_v0_4")
     self.assertEqual(len(game["scenes"]), 9)
     self.assertEqual(len(chapters), 3)
     self.assertTrue(all(count == 3 for count in chapters.values()))
@@ -107,6 +107,8 @@ class DemoContractTest(unittest.TestCase):
     self.assertIn("SAVE_KEY", app_js)
     self.assertIn("restoreProgress", app_js)
     self.assertIn("renderChapterReview", app_js)
+    self.assertIn("renderChapterFlow", app_js)
+    self.assertIn("chapter-flow-node", app_js)
     self.assertIn("renderStateEchoes", app_js)
     self.assertIn("buildStateEchoes", app_js)
 

@@ -1,5 +1,5 @@
 {
-  "schema_version": "game_writer_demo_v0_3",
+  "schema_version": "game_writer_demo_v0_4",
   "project": {
     "id": "missing_phone",
     "title": "失踪者的手机",

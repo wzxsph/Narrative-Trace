@@ -366,6 +366,8 @@ function renderChapterReview() {
   body.className = "review-body";
   body.textContent = review.outcome || "这个选择把故事推向了下一章。";
 
+  screen.append(heading, body, renderChapterFlow(fromScene));
+
   appendProfileSection(
     screen,
     "已展开观察",
@@ -391,7 +393,6 @@ function renderChapterReview() {
     ""
   );
 
-  screen.prepend(heading, body);
   dom.storyArea.appendChild(screen);
 
   const continueButton = document.createElement("button");
@@ -406,6 +407,74 @@ function renderChapterReview() {
   continueButton.append(title, description);
   continueButton.addEventListener("click", continueFromReview);
   dom.choiceArea.appendChild(continueButton);
+}
+
+function renderChapterFlow(fromScene) {
+  const chapterScenes = runtime.game.scenes.filter((scene) => scene.chapter === fromScene.chapter);
+  const flow = document.createElement("section");
+  flow.className = "chapter-flow";
+
+  const title = document.createElement("h3");
+  title.textContent = "本章路径图";
+  flow.appendChild(title);
+
+  const nodes = document.createElement("ol");
+  nodes.className = "chapter-flow-nodes";
+  chapterScenes.forEach((scene, index) => {
+    nodes.appendChild(renderChapterFlowNode(scene, index, chapterScenes.length));
+  });
+  flow.appendChild(nodes);
+  return flow;
+}
+
+function renderChapterFlowNode(scene, index, total) {
+  const item = document.createElement("li");
+  const visited = runtime.visitedScenes.has(scene.id);
+  const isCurrent = scene.id === runtime.review?.fromSceneId;
+  item.className = `chapter-flow-node ${visited ? "visited" : "missed"} ${isCurrent ? "current" : ""}`;
+
+  const marker = document.createElement("span");
+  marker.className = "flow-marker";
+  marker.textContent = String(index + 1);
+
+  const body = document.createElement("div");
+  body.className = "flow-body";
+
+  const title = document.createElement("h4");
+  title.textContent = scene.title;
+  const meta = document.createElement("p");
+  meta.className = "flow-meta";
+  meta.textContent = buildFlowMeta(scene, visited);
+
+  const branchList = document.createElement("ul");
+  branchList.className = "flow-branches";
+  scene.choices.forEach((choice) => {
+    const branch = document.createElement("li");
+    branch.className = runtime.chosenChoices.includes(choice.id) ? "chosen" : "unchosen";
+    branch.textContent = choice.label;
+    branchList.appendChild(branch);
+  });
+
+  body.append(title, meta, branchList);
+  item.append(marker, body);
+  if (index < total - 1) {
+    const connector = document.createElement("span");
+    connector.className = "flow-connector";
+    connector.textContent = "↓";
+    item.appendChild(connector);
+  }
+  return item;
+}
+
+function buildFlowMeta(scene, visited) {
+  if (!visited) {
+    return "未到达。";
+  }
+  const anchors = collectAnchors(scene);
+  const opened = anchors.filter((anchor) => runtime.openedAnchors.has(anchor.id)).length;
+  const choices = scene.choices.length;
+  const chosen = scene.choices.filter((choice) => runtime.chosenChoices.includes(choice.id)).length;
+  return `观察 ${opened}/${anchors.length}，行动 ${chosen}/${choices}`;
 }
 
 function continueFromReview() {

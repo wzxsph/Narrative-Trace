@@ -1,6 +1,6 @@
 # Agent Game Generation Technical Design V0
 
-版本：V0.4
+版本：V0.3
 日期：2026-07-08  
 文档类型：技术设计文档  
 文件名规则：英文文件名，便于后续工程引用  
@@ -1163,14 +1163,12 @@ generated/missing_phone_v0/game.json
 - 测试已覆盖 V0.2 schema、9 场景结构、每章 3 场景、每场景 observe 解锁 action。
 - `state_echoes` 支持场景根据隐藏状态显示叙事回声。
 - validator、path map、state registry 和测试已覆盖 `state_echoes`。
-- 章节复盘屏新增基础 flowchart runtime，展示本章节点、到达状态和分支标签。
 
 当前技术状态：
 
 ```text
 Medium-length playable vertical slice with basic runtime resilience: achieved
 Basic relationship echo runtime: achieved
-Basic chapter flow review runtime: achieved
 Production-grade generation pipeline: not achieved
 ```
 
@@ -1189,7 +1187,7 @@ Production-grade generation pipeline: not achieved
 ### 21.2 Runtime Robustness
 
 - 当前前端已有本地单存档，但没有多存档、版本迁移、损坏存档提示或云端同步。
-- 已有基础章节 flowchart 复盘，但还不是完整 flowchart 级路径复盘。
+- 已有章节结束复盘屏，但还不是完整 flowchart 级路径复盘。
 - 已有基础 `state_echoes` 渲染，但还没有复杂优先级、互斥回声或节奏控制。
 - 缺少移动端真实设备测试。
 - 缺少无障碍键盘导航和屏幕阅读器检查。
@@ -1274,19 +1272,3 @@ Production-grade generation pipeline: not achieved
 - 第一章叙事内轻教学。
 - 关系回声文案的人工 QA 和用户测试。
 - 回声优先级、互斥规则和复杂冲突处理。
-
-## 26. V0.4 Implementation Delta
-
-本轮 V0.4 的工程变化：
-
-- PRD 和技术文档旧版已归档到 `doc/prd/old version/2026-07-08-101018-737`。
-- `src/app.js` 新增 `renderChapterFlow()`、`renderChapterFlowNode()`、`buildFlowMeta()`。
-- `src/styles.css` 新增 `.chapter-flow`、`.chapter-flow-node`、`.flow-branches` 等样式。
-- `tests/test_demo_contract.py` 增加章节 flow review hook 检查。
-
-本轮没有解决：
-
-- 空间化全分支 flowchart。
-- 未解锁分支原因说明。
-- 第一章轻教学。
-- 内部用户测试记录模板。
