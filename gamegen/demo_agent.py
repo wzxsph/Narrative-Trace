@@ -6,6 +6,7 @@ from pathlib import Path
 from typing import Any
 
 from .llm_client import LLMClient, LLMConfig
+from .prompt_manifest import active_prompt_set_id
 from .schema_contract import validate_against_default_schema
 from .validator import build_path_map, validate_game, write_validation_report
 
@@ -1212,6 +1213,7 @@ def export_game(game: dict[str, Any], out_dir: str | Path) -> None:
     trace = {
         "provider": game.get("generation", {}).get("provider", "offline"),
         "schema": "schemas/game.schema.json",
+        "prompt_set": active_prompt_set_id(),
         "artifacts": ["game.json", "game.yaml", "path_map.json", "state_registry.json", "validation_report.md"],
     }
     (output / "generation_trace.jsonl").write_text(json.dumps(trace, ensure_ascii=False) + "\n", encoding="utf-8")

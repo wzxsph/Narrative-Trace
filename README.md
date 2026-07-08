@@ -9,6 +9,7 @@
 - 玩家端：`index.html`、`src/app.js`、`src/styles.css`
 - 生成器：`scripts/generate_game.py`
 - JSON Schema：`schemas/game.schema.json`
+- Prompt Manifest：`prompts/manifest.json`
 - Schema 校验：`scripts/validate_json_schema.py`
 - 校验器：`scripts/validate_game.py`
 - 局部修复器：`scripts/repair_game.py`
@@ -34,6 +35,7 @@
 - 浏览器级移动视口 smoke，覆盖轻教学、高亮、章节复盘、未解锁原因和刷新恢复。
 - 显式 JSON Schema 契约，减少生成器、校验器和前端之间的隐式耦合。
 - 生成失败 fixture，覆盖 schema gate、validator gate 和 repair gate 的典型坏输出。
+- Prompt manifest 和 generation trace 记录 `prompt_set`，让后续真实模型输出可追溯到生成策略。
 - 内部 playtest 记录模板和 PRD 第 14 节指标汇总脚本。
 - 自动内容 QA 检查，覆盖隐藏 observe 可发现性、choice 代价文案和结局画像完整性硬伤。
 - 局部 repair 可修复常见生成硬伤：坏 `start_scene_id`、坏 `next_scene`、缺失 anchor 文本、错误 observe depth、坏 unlock choice 引用。

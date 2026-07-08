@@ -1,0 +1,38 @@
+{
+  "schema_version": "game_writer_prompt_manifest_v0_1",
+  "active_prompt_set": "demo_agent_v0_15",
+  "prompt_sets": [
+    {
+      "id": "demo_agent_v0_15",
+      "purpose": "Offline deterministic demo generation plus optional first-scene LLM polish.",
+      "owner": "game_writer",
+      "created_for_prd_version": "V0.15",
+      "generator_entrypoint": "gamegen.demo_agent.generate_game",
+      "schema_contract": "schemas/game.schema.json",
+      "notes": [
+        "The core 9-scene demo remains deterministic.",
+        "The optional LLM polish pass may rewrite only the first background block while preserving anchor substrings.",
+        "Prompt metadata is stored for traceability; secrets and .env values must never be written here."
+      ],
+      "prompts": [
+        {
+          "id": "first_scene_llm_polish_v0_1",
+          "kind": "optional_llm_polish",
+          "system_summary": "Polish one vertical mobile text adventure scene and return JSON only without changing IDs, structure, choices, or state keys.",
+          "user_task_summary": "Rewrite the first background block in concise Chinese while preserving all required anchor substrings exactly.",
+          "allowed_mutations": [
+            "game.scenes[0].background_blocks[0].text"
+          ],
+          "forbidden_mutations": [
+            "ids",
+            "choices",
+            "state keys",
+            "requirements",
+            "effects",
+            "anchor substrings"
+          ]
+        }
+      ]
+    }
+  ]
+}

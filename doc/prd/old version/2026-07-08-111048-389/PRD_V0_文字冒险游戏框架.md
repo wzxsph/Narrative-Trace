@@ -1,6 +1,6 @@
 # PRD V0：文字版底特律式互动叙事游戏框架
 
-版本：V0.15
+版本：V0.14
 日期：2026-07-08  
 文档目标：定义第一版本文字游戏本身的框架、具体形态、用户 UI/UX  
 保留文档：`PRD_AI文字冒险游戏.md` 继续保留，作为后续 AI 创作 Agent 和长期路线参考  
@@ -1027,7 +1027,6 @@ V0 失败时，测试用户会说：
 - 生成内容：`/home/samsong/Desktop/game_writer/generated/missing_phone_v0/game.json`
 - 生成脚本：`/home/samsong/Desktop/game_writer/scripts/generate_game.py`
 - JSON Schema：`/home/samsong/Desktop/game_writer/schemas/game.schema.json`
-- Prompt Manifest：`/home/samsong/Desktop/game_writer/prompts/manifest.json`
 - Schema 校验脚本：`/home/samsong/Desktop/game_writer/scripts/validate_json_schema.py`
 - 局部修复脚本：`/home/samsong/Desktop/game_writer/scripts/repair_game.py`
 - 校验脚本：`/home/samsong/Desktop/game_writer/scripts/validate_game.py`
@@ -1067,7 +1066,6 @@ V0 失败时，测试用户会说：
 - 显式 JSON Schema 契约：验证游戏数据的字段形状、必填项、枚举、递归 observe 结构和基础类型。
 - 生成导出门禁：`generate_game.py` 默认在写文件前通过 JSON Schema 和结构 validator，失败时阻断导出。
 - 生成失败 fixture：用 mutation case 覆盖 schema gate、validator gate、repair gate 的典型坏输出。
-- Prompt 版本管理：`generation_trace.jsonl` 记录 `prompt_set`，为未来真实 LLM 输出样本提供追溯维度。
 - 基础测试入口：`/home/samsong/Desktop/game_writer/tests/test_demo_contract.py`
 - 内部测试记录模板：`/home/samsong/Desktop/game_writer/doc/testing/internal_playtest_record_template.md`
 - 内部测试批次模板：`/home/samsong/Desktop/game_writer/examples/playtests/internal_playtest_batch_template.json`
@@ -1342,19 +1340,3 @@ V0.14 的边界：
 - 当前 fixture 是基于 deterministic demo 的 mutation 样本，不是真实 LLM 输出日志。
 - fixture 只覆盖硬结构失败，不覆盖剧情质量和语义修复。
 - 下一步应积累真实模型输出样本，并建立 prompt 版本与失败样本的对应关系。
-
-### 17.19 V0.15 版本变更记录
-
-V0.15 相比 V0.14 的实质变化：
-
-- 旧版 V0.14 PRD 和技术文档已归档到 `/home/samsong/Desktop/game_writer/doc/prd/old version/2026-07-08-111048-389`。
-- 新增 `prompts/manifest.json`，记录当前 active prompt set、适用生成入口、schema contract 和可选 LLM polish 的边界。
-- 新增 `gamegen/prompt_manifest.py`，提供 prompt manifest 读取和 active prompt set 校验。
-- `generation_trace.jsonl` 增加 `prompt_set` 字段，记录本次导出使用的 prompt set。
-- 新增 `tests/test_prompt_manifest.py`，覆盖 active prompt set 已声明、导出 trace 记录 prompt set、未声明 active prompt set 会失败。
-
-V0.15 的边界：
-
-- 当前 prompt manifest 主要记录 deterministic demo 和可选 LLM polish 的元数据，不包含真实模型输出日志。
-- prompt manifest 不存 API key，不读取 `.env`，不记录供应商私密配置。
-- 下一步应把真实 LLM 输出样本和 prompt/model/provider 版本绑定起来。

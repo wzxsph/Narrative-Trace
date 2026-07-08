@@ -1,6 +1,6 @@
 # Agent Game Generation Technical Design V0
 
-版本：V0.15
+版本：V0.14
 日期：2026-07-08  
 文档类型：技术设计文档  
 文件名规则：英文文件名，便于后续工程引用  
@@ -1175,7 +1175,6 @@ generated/missing_phone_v0/game.json
 - 新增显式 JSON Schema 和 schema 校验脚本。
 - `export_game()` 已将 JSON Schema 和结构 validator 接入默认导出门禁。
 - 新增生成失败 fixture，覆盖 schema gate、validator gate、repair gate 的典型坏输出。
-- 新增 prompt manifest，generation trace 记录 active `prompt_set`。
 
 当前技术状态：
 
@@ -1193,7 +1192,6 @@ Conservative local repair tool: achieved
 Explicit JSON Schema contract: achieved
 Schema and validator export gate: achieved
 Generation failure fixtures: achieved
-Prompt manifest traceability: achieved
 Production-grade generation pipeline: not achieved
 ```
 
@@ -1206,7 +1204,7 @@ Production-grade generation pipeline: not achieved
 - 当前 LLM 只做可选 polish，不是真正多阶段生成。
 - repair loop 已能修复常见确定性结构错误，但还不是 LLM 驱动的语义局部重写。
 - 已有生成失败 mutation fixtures，但还缺少真实模型输出样本库。
-- 已有 prompt manifest 和 trace 记录，但还缺少真实模型输出样本与 prompt/model/provider 版本映射。
+- 缺少 prompt 版本管理。
 - deterministic demo 规模已扩到 9 场景，但仍是手写结构，不证明 agent 能稳定生成同等规模内容。
 
 ### 21.2 Runtime Robustness
@@ -1229,7 +1227,7 @@ Production-grade generation pipeline: not achieved
 ### 21.4 Engineering Hygiene
 
 - 已引入最小 `tests/`，但还不是完整测试矩阵。
-- 已有统一 JSON Schema、基础生成失败 fixtures 和 prompt manifest，但还需要真实模型输出样本和 provider/model 版本映射。
+- 已有统一 JSON Schema 文件和基础生成失败 fixtures，但还需要真实模型输出样本和 prompt 版本映射。
 - 需要把 generated demo 内容与手写 fixture 的边界定义清楚。
 - 已增加 README，但仍需要持续同步真实命令和产品边界。
 
@@ -1238,7 +1236,7 @@ Production-grade generation pipeline: not achieved
 下一轮建议按这个顺序推进：
 
 1. 积累真实模型输出 fixtures，并记录对应 prompt/model/provider 版本。
-2. 建立真实模型输出样本的脱敏/归档规则。
+2. 增加 prompt 版本管理，让失败样本能追溯到生成策略。
 3. 扩展浏览器 E2E 矩阵，覆盖多结局、多路径、章节继续和结局画像。
 4. 跑一轮内部 playtest 批次，使用 `summarize_playtest_batch.py` 生成 pass/fail 报告。
 5. 增加真实设备与无障碍测试，覆盖触控、滚动、可读性、键盘导航和屏幕阅读器。
@@ -1506,21 +1504,3 @@ Production-grade generation pipeline: not achieved
 - prompt/model/provider 版本映射。
 - LLM 语义 repair prompt 版本管理。
 - 内容质量失败样本，例如“选择没有犹豫点”或“隐藏线索语义不公平”。
-
-## 37. V0.15 Implementation Delta
-
-本轮 V0.15 的工程变化：
-
-- PRD 和技术文档旧版已归档到 `doc/prd/old version/2026-07-08-111048-389`。
-- 新增 `prompts/manifest.json`，记录 active prompt set、生成入口、schema contract、可选 LLM polish prompt 摘要和允许/禁止修改范围。
-- 新增 `gamegen/prompt_manifest.py`，提供 prompt manifest 读取和 active prompt set 校验。
-- `gamegen/demo_agent.py` 的 `generation_trace.jsonl` 增加 `prompt_set` 字段。
-- 新增 `tests/test_prompt_manifest.py`，覆盖 manifest 声明、trace 写入和非法 active prompt set。
-- `README.md` 增加 Prompt Manifest 入口。
-
-本轮没有解决：
-
-- 真实 LLM 输出样本库。
-- provider/model 版本记录。
-- LLM 语义 repair prompt 版本管理。
-- prompt 变更审批或 diff 流程。
