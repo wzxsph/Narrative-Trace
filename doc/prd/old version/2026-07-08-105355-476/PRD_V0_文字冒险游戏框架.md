@@ -1,6 +1,6 @@
 # PRD V0：文字版底特律式互动叙事游戏框架
 
-版本：V0.12
+版本：V0.11
 日期：2026-07-08  
 文档目标：定义第一版本文字游戏本身的框架、具体形态、用户 UI/UX  
 保留文档：`PRD_AI文字冒险游戏.md` 继续保留，作为后续 AI 创作 Agent 和长期路线参考  
@@ -1026,8 +1026,6 @@ V0 失败时，测试用户会说：
 - 入口：`/home/samsong/Desktop/game_writer/index.html`
 - 生成内容：`/home/samsong/Desktop/game_writer/generated/missing_phone_v0/game.json`
 - 生成脚本：`/home/samsong/Desktop/game_writer/scripts/generate_game.py`
-- JSON Schema：`/home/samsong/Desktop/game_writer/schemas/game.schema.json`
-- Schema 校验脚本：`/home/samsong/Desktop/game_writer/scripts/validate_json_schema.py`
 - 局部修复脚本：`/home/samsong/Desktop/game_writer/scripts/repair_game.py`
 - 校验脚本：`/home/samsong/Desktop/game_writer/scripts/validate_game.py`
 - 内容 QA 脚本：`/home/samsong/Desktop/game_writer/scripts/content_qa_report.py`
@@ -1062,7 +1060,6 @@ V0 失败时，测试用户会说：
 - 自动内容 QA 检查：关键场景必须有明显 observe 入口，`hidden_optional` 不能解锁章节/全局后果 choice，choice 必须有描述和后果文案，结局必须可达并具备画像标签。
 - 浏览器级移动视口 smoke：验证轻教学、新行动高亮、章节复盘、未解锁原因、刷新恢复和移动端横向溢出。
 - 局部 repair：能修复常见生成硬伤，包括坏 `start_scene_id`、坏 `next_scene`、缺失 anchor 文本、错误 observe depth、坏 unlock choice 引用。
-- 显式 JSON Schema 契约：验证游戏数据的字段形状、必填项、枚举、递归 observe 结构和基础类型。
 - 基础测试入口：`/home/samsong/Desktop/game_writer/tests/test_demo_contract.py`
 - 内部测试记录模板：`/home/samsong/Desktop/game_writer/doc/testing/internal_playtest_record_template.md`
 - 内部测试批次模板：`/home/samsong/Desktop/game_writer/examples/playtests/internal_playtest_batch_template.json`
@@ -1288,19 +1285,3 @@ V0.11 的边界：
 - repair 只处理确定性结构硬伤，不重写剧情文案，也不生成新的复杂 choice。
 - 对不可确定的 invalid unlock choice，repair 会删除引用而不是幻想补剧情。
 - 这仍不是完整 LLM repair loop；下一步需要 prompt 版本、失败样本 fixtures 和显式 schema。
-
-### 17.16 V0.12 版本变更记录
-
-V0.12 相比 V0.11 的实质变化：
-
-- 旧版 V0.11 PRD 和技术文档已归档到 `/home/samsong/Desktop/game_writer/doc/prd/old version/2026-07-08-105355-476`。
-- 新增 `schemas/game.schema.json`，作为玩家端游戏数据的显式 JSON Schema。
-- 新增 `scripts/validate_json_schema.py`，使用 Draft 2020-12 JSON Schema 校验生成物。
-- 新增 `tests/test_json_schema_contract.py`，覆盖当前生成物通过 schema、缺少必填字段失败、非法 `consequence_level` 失败、observe fragment 缺 `nested_anchors` 失败。
-- README 增加 schema 文件和 schema 校验命令。
-
-V0.12 的边界：
-
-- JSON Schema 只验证字段形状、类型、必填项和枚举。
-- `start_scene_id` 是否真实存在、choice/observe ID 是否互相指向、隐藏内容是否公平，仍由 `validate_game.py` 和 `content_qa_report.py` 负责。
-- 这不是完整内容质量保证，但它减少了前端、生成器、repair 和 validator 之间的隐式契约。

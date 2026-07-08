@@ -1,0 +1,418 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://game-writer.local/schemas/game.schema.json",
+  "title": "Game Writer Demo Game",
+  "type": "object",
+  "additionalProperties": true,
+  "required": [
+    "schema_version",
+    "project",
+    "start_scene_id",
+    "initial_state",
+    "scenes",
+    "endings"
+  ],
+  "properties": {
+    "schema_version": {
+      "type": "string",
+      "pattern": "^game_writer_demo_v[0-9]+_[0-9]+$"
+    },
+    "project": {
+      "$ref": "#/$defs/project"
+    },
+    "start_scene_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "initial_state": {
+      "type": "object",
+      "additionalProperties": {
+        "type": ["boolean", "number", "string"]
+      }
+    },
+    "generation": {
+      "type": "object"
+    },
+    "scenes": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/scene"
+      }
+    },
+    "endings": {
+      "type": "array",
+      "minItems": 3,
+      "items": {
+        "$ref": "#/$defs/ending"
+      }
+    }
+  },
+  "$defs": {
+    "project": {
+      "type": "object",
+      "additionalProperties": true,
+      "required": ["id", "title", "theme_question", "interface"],
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "title": {
+          "type": "string",
+          "minLength": 1
+        },
+        "theme_question": {
+          "type": "string",
+          "minLength": 1
+        },
+        "interface": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "scene": {
+      "type": "object",
+      "additionalProperties": true,
+      "required": [
+        "id",
+        "chapter",
+        "title",
+        "task",
+        "pressure",
+        "required_for_demo",
+        "state_echoes",
+        "background_blocks",
+        "choices"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "chapter": {
+          "type": "string",
+          "minLength": 1
+        },
+        "title": {
+          "type": "string",
+          "minLength": 1
+        },
+        "task": {
+          "type": "string",
+          "minLength": 1
+        },
+        "pressure": {
+          "type": "string",
+          "minLength": 1
+        },
+        "required_for_demo": {
+          "type": "boolean"
+        },
+        "state_echoes": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/state_echo"
+          }
+        },
+        "background_blocks": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/background_block"
+          }
+        },
+        "choices": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/choice"
+          }
+        }
+      }
+    },
+    "background_block": {
+      "type": "object",
+      "additionalProperties": true,
+      "required": ["id", "text", "observe_anchors"],
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "text": {
+          "type": "string",
+          "minLength": 1
+        },
+        "observe_anchors": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/observe_anchor"
+          }
+        }
+      }
+    },
+    "observe_anchor": {
+      "type": "object",
+      "additionalProperties": true,
+      "required": [
+        "id",
+        "text_range",
+        "label",
+        "discoverability",
+        "depth",
+        "effects",
+        "unlocks_choices",
+        "opens_fragment"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "text_range": {
+          "type": "string",
+          "minLength": 1
+        },
+        "label": {
+          "type": "string",
+          "minLength": 1
+        },
+        "discoverability": {
+          "enum": ["obvious", "subtle", "hidden_optional"]
+        },
+        "depth": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 3
+        },
+        "effects": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/effect"
+          }
+        },
+        "unlocks_choices": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "guidance": {
+          "$ref": "#/$defs/guidance"
+        },
+        "unlock_guidance": {
+          "$ref": "#/$defs/guidance"
+        },
+        "opens_fragment": {
+          "$ref": "#/$defs/observe_fragment"
+        }
+      }
+    },
+    "observe_fragment": {
+      "type": "object",
+      "additionalProperties": true,
+      "required": ["id", "title", "body", "evidence_tags", "nested_anchors"],
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "title": {
+          "type": "string",
+          "minLength": 1
+        },
+        "body": {
+          "type": "string",
+          "minLength": 1
+        },
+        "evidence_tags": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "nested_anchors": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/observe_anchor"
+          }
+        }
+      }
+    },
+    "choice": {
+      "type": "object",
+      "additionalProperties": true,
+      "required": [
+        "id",
+        "label",
+        "description",
+        "requirements",
+        "effects",
+        "next_scene",
+        "irreversible",
+        "consequence_level",
+        "outcome"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "label": {
+          "type": "string",
+          "minLength": 1
+        },
+        "description": {
+          "type": "string",
+          "minLength": 1
+        },
+        "requirements": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/condition"
+          }
+        },
+        "effects": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/effect"
+          }
+        },
+        "next_scene": {
+          "type": "string",
+          "minLength": 1
+        },
+        "irreversible": {
+          "type": "boolean"
+        },
+        "consequence_level": {
+          "enum": ["local", "chapter", "global", "ending"]
+        },
+        "outcome": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "ending": {
+      "type": "object",
+      "additionalProperties": true,
+      "required": ["id", "title", "body", "tags"],
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "title": {
+          "type": "string",
+          "minLength": 1
+        },
+        "body": {
+          "type": "string",
+          "minLength": 1
+        },
+        "tags": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      }
+    },
+    "state_echo": {
+      "type": "object",
+      "additionalProperties": true,
+      "required": ["id", "label", "text", "requirements"],
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "label": {
+          "type": "string",
+          "minLength": 1
+        },
+        "text": {
+          "type": "string",
+          "minLength": 1
+        },
+        "requirements": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/condition"
+          }
+        }
+      }
+    },
+    "guidance": {
+      "type": "object",
+      "additionalProperties": true,
+      "required": ["id", "title", "text"],
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "title": {
+          "type": "string",
+          "minLength": 1
+        },
+        "text": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "condition": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["state"],
+      "properties": {
+        "state": {
+          "type": "string",
+          "minLength": 1
+        },
+        "equals": {
+          "type": ["boolean", "number", "string"]
+        },
+        "min": {
+          "type": "number"
+        }
+      },
+      "oneOf": [
+        {
+          "required": ["equals"]
+        },
+        {
+          "required": ["min"]
+        }
+      ]
+    },
+    "effect": {
+      "type": "object",
+      "additionalProperties": false,
+      "minProperties": 1,
+      "properties": {
+        "set": {
+          "$ref": "#/$defs/state_update"
+        },
+        "add": {
+          "$ref": "#/$defs/state_update"
+        }
+      }
+    },
+    "state_update": {
+      "type": "object",
+      "minProperties": 1,
+      "additionalProperties": {
+        "type": ["boolean", "number", "string"]
+      }
+    }
+  }
+}

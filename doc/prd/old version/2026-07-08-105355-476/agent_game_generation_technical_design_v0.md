@@ -1,6 +1,6 @@
 # Agent Game Generation Technical Design V0
 
-版本：V0.12
+版本：V0.11
 日期：2026-07-08  
 文档类型：技术设计文档  
 文件名规则：英文文件名，便于后续工程引用  
@@ -1172,7 +1172,6 @@ generated/missing_phone_v0/game.json
 - 章节 flowchart 分支可显示已选择、可选未走、已解锁未选、未解锁原因。
 - 新增浏览器级 smoke，覆盖移动视口、轻教学、高亮、章节复盘、未解锁原因和刷新恢复。
 - `repair_game.py` 已从 report-only 升级为保守局部修复器。
-- 新增显式 JSON Schema 和 schema 校验脚本。
 
 当前技术状态：
 
@@ -1187,7 +1186,6 @@ Chapter flow locked-branch explanation: achieved
 Ending portrait completeness gate: achieved
 Browser smoke for core mobile path: achieved
 Conservative local repair tool: achieved
-Explicit JSON Schema contract: achieved
 Production-grade generation pipeline: not achieved
 ```
 
@@ -1223,7 +1221,7 @@ Production-grade generation pipeline: not achieved
 ### 21.4 Engineering Hygiene
 
 - 已引入最小 `tests/`，但还不是完整测试矩阵。
-- 已有统一 JSON Schema 文件，但还需要生成物 fixtures 和更多失败样本。
+- 需要统一 JSON schema 文件。
 - 需要把 generated demo 内容与手写 fixture 的边界定义清楚。
 - 已增加 README，但仍需要持续同步真实命令和产品边界。
 
@@ -1231,8 +1229,8 @@ Production-grade generation pipeline: not achieved
 
 下一轮建议按这个顺序推进：
 
-1. 增加模型输出 fixtures 和失败样本测试，验证 repair loop 的真实输入输出。
-2. 将 JSON Schema 纳入生成脚本默认验证链路，失败时阻断导出。
+1. 增加显式 JSON schema 或 contract fixture，减少生成器和前端之间的隐式耦合。
+2. 增加模型输出 fixtures 和失败样本测试，验证 repair loop 的真实输入输出。
 3. 扩展浏览器 E2E 矩阵，覆盖多结局、多路径、章节继续和结局画像。
 4. 跑一轮内部 playtest 批次，使用 `summarize_playtest_batch.py` 生成 pass/fail 报告。
 5. 增加真实设备与无障碍测试，覆盖触控、滚动、可读性、键盘导航和屏幕阅读器。
@@ -1444,19 +1442,3 @@ Production-grade generation pipeline: not achieved
 - 模型输出 fixtures 和失败样本库。
 - LLM 语义 repair prompt 版本管理。
 - 新增复杂 choice 或重写剧情文案的能力。
-
-## 34. V0.12 Implementation Delta
-
-本轮 V0.12 的工程变化：
-
-- PRD 和技术文档旧版已归档到 `doc/prd/old version/2026-07-08-105355-476`。
-- 新增 `schemas/game.schema.json`，定义游戏数据的显式 Draft 2020-12 JSON Schema。
-- 新增 `scripts/validate_json_schema.py`，用于校验生成物是否满足 schema contract。
-- 新增 `tests/test_json_schema_contract.py`，覆盖当前生成物通过、缺少必填字段失败、非法 `consequence_level` 失败、observe fragment 缺 `nested_anchors` 失败。
-- `README.md` 增加 schema 文件和 schema 校验命令。
-
-本轮没有解决：
-
-- 模型输出 fixtures 和失败样本库。
-- schema 尚未接入 `generate_game.py` 的默认导出阻断链路。
-- JSON Schema 不验证跨引用和语义质量；这些仍由 validator、content QA 和 playtest 处理。
