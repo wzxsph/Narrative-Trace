@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import json
 import os
+import re
 import urllib.error
 import urllib.request
 from dataclasses import dataclass
@@ -30,20 +31,26 @@ class LLMConfig:
     model: str = "default"
     temperature: float = 0.7
     timeout_seconds: int = 120
+    thinking_type: str = ""
 
     @classmethod
     def from_env(cls) -> "LLMConfig | None":
         load_env()
         base_url = os.getenv("LLM_BASE_URL", "").rstrip("/")
-        api_key = os.getenv("LLM_API_KEY", "")
+        api_key = "".join(os.getenv("LLM_API_KEY", "").split())
         if not base_url or not api_key:
             return None
+        model = os.getenv("LLM_MODEL", "default")
+        thinking_type = os.getenv("LLM_THINKING_TYPE", "")
+        if not thinking_type and model == "Minimax-M3":
+            thinking_type = "disabled"
         return cls(
             base_url=base_url,
             api_key=api_key,
-            model=os.getenv("LLM_MODEL", "default"),
+            model=model,
             temperature=float(os.getenv("LLM_TEMPERATURE", "0.7")),
             timeout_seconds=int(os.getenv("LLM_TIMEOUT_SECONDS", "120")),
+            thinking_type=thinking_type,
         )
 
 
@@ -60,6 +67,8 @@ class LLMClient:
             ],
             "temperature": self.config.temperature,
         }
+        if self.config.thinking_type:
+            payload["thinking"] = {"type": self.config.thinking_type}
         request = urllib.request.Request(
             f"{self.config.base_url}/chat/completions",
             data=json.dumps(payload).encode("utf-8"),
@@ -97,6 +106,17 @@ def parse_json_response(text: str) -> dict[str, Any]:
         if lines and lines[-1].startswith("```"):
             lines = lines[:-1]
         stripped = "\n".join(lines).strip()
+    stripped = re.sub(r"(?is)<think>.*?</think>", "", stripped).strip()
+    decoder = json.JSONDecoder()
+    for index, char in enumerate(stripped):
+        if char != "{":
+            continue
+        try:
+            value, _ = decoder.raw_decode(stripped[index:])
+        except json.JSONDecodeError:
+            continue
+        if isinstance(value, dict):
+            return value
     try:
         value = json.loads(stripped)
     except json.JSONDecodeError as exc:
@@ -104,4 +124,3 @@ def parse_json_response(text: str) -> dict[str, Any]:
     if not isinstance(value, dict):
         raise RuntimeError("LLM JSON response must be an object")
     return value
-

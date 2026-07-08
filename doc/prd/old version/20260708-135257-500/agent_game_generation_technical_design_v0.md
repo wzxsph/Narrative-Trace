@@ -1,6 +1,6 @@
 # Agent Game Generation Technical Design V0
 
-版本：V0.36
+版本：V0.35
 日期：2026-07-08  
 文档类型：技术设计文档  
 文件名规则：英文文件名，便于后续工程引用  
@@ -2499,64 +2499,4 @@ V0.35 必须满足：
 - 真正的人类审稿工作台。
 - LLM 语义审稿和可玩性审稿。
 - scene artifact 多版本 diff、review comment、rollback。
-- 使用 LangGraph 原生 runtime 替换当前轻量 graph。
-
-## 58. V0.36 Env-Backed LLM Smoke Gate
-
-V0.35 之前所有验收都以 `--provider offline` 为主，虽然代码支持 `.env` 中的 OpenAI-compatible 配置，但没有把真实 `.env` 调用纳入固定验证矩阵。V0.36 增加最小 LLM smoke gate，用来确认：
-
-- `.env` 能被加载。
-- `LLM_BASE_URL` / `LLM_API_KEY` 可用。
-- 当前 provider 能返回可解析 JSON。
-- smoke 输出不泄露密钥。
-
-### 58.1 New Script
-
-新增：
-
-```bash
-python3 scripts/llm_env_smoke_test.py
-```
-
-该脚本只发送一个极小 JSON 请求：
-
-```json
-{"ok":"game_writer_llm_smoke_ok"}
-```
-
-验收条件：
-
-- 模型返回 JSON object。
-- 返回值必须精确匹配 expected value。
-- stdout 只输出 model id，不输出 base url、api key、Authorization header。
-- 缺少 `.env` 或 provider 返回非 JSON 时失败。
-
-### 58.2 Boundary
-
-V0.36 的 smoke gate 只验证连通性和响应格式，不让 LLM 参与结构生成，不修改 game，不替代 offline deterministic validation。
-
-真实内容生成仍必须满足：
-
-- state schema gate。
-- scene blueprint gate。
-- scene artifact gate。
-- release gate。
-- blueprint alignment gate。
-- JSON schema / graph validator / content QA。
-
-### 58.3 Acceptance
-
-V0.36 必须满足：
-
-- 本地存在 `.env` 且 `.gitignore` 忽略 `.env`。
-- `LLMConfig.from_env()` 能加载当前 `.env`。
-- `scripts/llm_env_smoke_test.py` 真实调用 `.env` 配置并通过。
-- 单测覆盖缺 env 时脚本失败且不输出 secret。
-- 完整 offline agent 验证矩阵仍通过。
-
-本轮仍不宣称完成：
-
-- LLM 自动生成 scene artifact。
-- LLM 参与主线结构生成。
-- LLM 语义审稿和可玩性审稿。
 - 使用 LangGraph 原生 runtime 替换当前轻量 graph。

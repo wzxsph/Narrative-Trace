@@ -158,6 +158,12 @@ python3 scripts/validate_blueprint_alignment.py \
   generated/missing_phone_agent_v0/game.json
 ```
 
+使用 `.env` 进行最小 LLM 连通性测试：
+
+```bash
+python3 scripts/llm_env_smoke_test.py
+```
+
 归档真实模型输出样本：
 
 ```bash

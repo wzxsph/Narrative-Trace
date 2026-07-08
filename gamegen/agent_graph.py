@@ -173,7 +173,7 @@ class GenerationAgentGraph:
         generation = state.game.setdefault("generation", {})
         generation["provider"] = "offline"
         generation["model"] = OFFLINE_MODEL_ID
-        generation["agent_graph"] = "v0_35"
+        generation["agent_graph"] = "v0_36"
         generation["plan_schema_version"] = state.generation_plan["plan_schema_version"]
         generation["state_schema_design_version"] = state.state_schema_design["schema_version"]
         generation["scene_blueprint_version"] = state.scene_blueprint_design["schema_version"]
