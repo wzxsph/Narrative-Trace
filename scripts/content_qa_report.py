@@ -24,6 +24,7 @@ def load_game(path: str | Path) -> dict[str, Any]:
 
 def run_content_qa(game: dict[str, Any]) -> list[ContentQAMessage]:
     messages: list[ContentQAMessage] = []
+    initial_state = game.get("initial_state", {})
     choices_by_id = {
         choice.get("id"): (scene, choice)
         for scene in game.get("scenes", [])
@@ -76,6 +77,14 @@ def run_content_qa(game: dict[str, Any]) -> list[ContentQAMessage]:
                 choice_scene, choice = choice_ref
                 if choice_scene.get("id") != scene_id:
                     messages.append(ContentQAMessage("warning", location, f"Unlocked choice '{choice_id}' is outside current scene"))
+                else:
+                    validate_unlock_requirements(
+                        location,
+                        choice,
+                        item.get("path_effects", []),
+                        initial_state,
+                        messages,
+                    )
                 if discoverability == "hidden_optional" and choice.get("consequence_level") != "local":
                     messages.append(
                         ContentQAMessage(
@@ -109,15 +118,75 @@ def collect_scene_anchors(scene: dict[str, Any]) -> list[dict[str, Any]]:
     anchors: list[dict[str, Any]] = []
     for block in scene.get("background_blocks", []):
         for anchor in block.get("observe_anchors", []):
-            collect_anchor(anchor, anchors, parent_id=block.get("id", "block"))
+            collect_anchor(anchor, anchors, parent_id=block.get("id", "block"), inherited_effects=[])
     return anchors
 
 
-def collect_anchor(anchor: dict[str, Any], anchors: list[dict[str, Any]], parent_id: str) -> None:
-    anchors.append({"anchor": anchor, "parent_id": parent_id})
+def collect_anchor(
+    anchor: dict[str, Any],
+    anchors: list[dict[str, Any]],
+    parent_id: str,
+    inherited_effects: list[dict[str, Any]],
+) -> None:
+    path_effects = [*inherited_effects, *anchor.get("effects", [])]
+    anchors.append({"anchor": anchor, "parent_id": parent_id, "path_effects": path_effects})
     fragment = anchor.get("opens_fragment", {})
     for child in fragment.get("nested_anchors", []):
-        collect_anchor(child, anchors, parent_id=anchor.get("id", parent_id))
+        collect_anchor(
+            child,
+            anchors,
+            parent_id=anchor.get("id", parent_id),
+            inherited_effects=path_effects,
+        )
+
+
+def validate_unlock_requirements(
+    location: str,
+    choice: dict[str, Any],
+    path_effects: list[dict[str, Any]],
+    initial_state: dict[str, Any],
+    messages: list[ContentQAMessage],
+) -> None:
+    requirements = choice.get("requirements", [])
+    if not requirements:
+        return
+    projected_state = apply_effects_to_state(initial_state, path_effects)
+    unmet = [requirement for requirement in requirements if not state_matches(projected_state, requirement)]
+    if unmet:
+        missing = ", ".join(requirement.get("state", "<missing-state>") for requirement in unmet)
+        messages.append(
+            ContentQAMessage(
+                "error",
+                location,
+                f"Observe unlocks choice '{choice.get('id', '<missing-choice-id>')}' but cumulative observe effects do not satisfy choice requirements: {missing}",
+            )
+        )
+
+
+def apply_effects_to_state(initial_state: dict[str, Any], effects: list[dict[str, Any]]) -> dict[str, Any]:
+    state = dict(initial_state)
+    for effect in effects:
+        for key, value in effect.get("set", {}).items():
+            state[key] = value
+        for key, value in effect.get("add", {}).items():
+            state[key] = to_number(state.get(key, 0)) + to_number(value)
+    return state
+
+
+def state_matches(state: dict[str, Any], requirement: dict[str, Any]) -> bool:
+    current = state.get(requirement.get("state"))
+    if "equals" in requirement:
+        return current == requirement["equals"]
+    if "min" in requirement:
+        return to_number(current) >= to_number(requirement["min"])
+    return bool(current)
+
+
+def to_number(value: Any) -> float:
+    try:
+        return float(value or 0)
+    except (TypeError, ValueError):
+        return 0.0
 
 
 def validate_choice(scene_id: str, choice: dict[str, Any], messages: list[ContentQAMessage]) -> None:

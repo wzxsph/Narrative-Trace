@@ -162,9 +162,7 @@
                   }
                 }
               ],
-              "unlocks_choices": [
-                "choice_delay_wipe"
-              ],
+              "unlocks_choices": [],
               "opens_fragment": {
                 "id": "frag_remote_wipe",
                 "title": "查看远程清除来源",
@@ -892,9 +890,7 @@
                   }
                 }
               ],
-              "unlocks_choices": [
-                "choice_enter_service_corridor"
-              ],
+              "unlocks_choices": [],
               "opens_fragment": {
                 "id": "frag_camera_blind_spot",
                 "title": "确认摄像头盲区",
@@ -1316,9 +1312,7 @@
                   }
                 }
               ],
-              "unlocks_choices": [
-                "choice_take_backup_to_safehouse"
-              ],
+              "unlocks_choices": [],
               "opens_fragment": {
                 "id": "frag_audio_key",
                 "title": "检查录音钥匙",

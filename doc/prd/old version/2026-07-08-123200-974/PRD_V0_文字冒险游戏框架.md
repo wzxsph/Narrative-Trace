@@ -1,6 +1,6 @@
 # PRD V0：文字版底特律式互动叙事游戏框架
 
-版本：V0.26
+版本：V0.25
 日期：2026-07-08  
 文档目标：定义第一版本文字游戏本身的框架、具体形态、用户 UI/UX  
 保留文档：`PRD_AI文字冒险游戏.md` 继续保留，作为后续 AI 创作 Agent 和长期路线参考  
@@ -1033,8 +1033,6 @@ V0 失败时，测试用户会说：
 - 存档合同校验脚本：`/home/samsong/Desktop/game_writer/scripts/validate_save_contract.py`
 - 浏览器存档合同回放脚本：`/home/samsong/Desktop/game_writer/scripts/browser_save_contract.py`
 - 浏览器可访问性 smoke 脚本：`/home/samsong/Desktop/game_writer/scripts/browser_a11y_smoke.py`
-- 浏览器遗漏路径回放脚本：`/home/samsong/Desktop/game_writer/scripts/browser_omission_paths.py`
-- 体验截图目录：`/home/samsong/Desktop/game_writer/screenshots`
 - Schema 校验脚本：`/home/samsong/Desktop/game_writer/scripts/validate_json_schema.py`
 - 局部修复脚本：`/home/samsong/Desktop/game_writer/scripts/repair_game.py`
 - 校验脚本：`/home/samsong/Desktop/game_writer/scripts/validate_game.py`
@@ -1077,7 +1075,6 @@ V0 失败时，测试用户会说：
 - 自动内容 QA 检查：关键场景必须有明显 observe 入口，`hidden_optional` 不能解锁章节/全局后果 choice，choice 必须有描述和后果文案，结局必须可达并具备画像标签。
 - 浏览器级移动视口 smoke：验证轻教学、新行动高亮、章节复盘、未解锁原因、刷新恢复、v1 存档迁移、坏存档 fallback、恢复提示和移动端横向溢出。
 - 多路径/多结局浏览器 E2E：使用真实浏览器点击 3 条路径，覆盖 `ending_publish`、`ending_bury`、`ending_confront`，并检查章节复盘、结局标签、结局画像区、结局刷新恢复、重新开始和移动端横向溢出。
-- 遗漏路径浏览器回放：当玩家只看到浅层 observe、没有取得关键证据时，相关 choice 保持不可见，章节复盘必须显示缺失证据而不是误报“已解锁未选”。
 - 局部 repair：能修复常见生成硬伤，包括坏 `start_scene_id`、坏 `next_scene`、缺失 anchor 文本、错误 observe depth、坏 unlock choice 引用。
 - 显式 JSON Schema 契约：验证游戏数据的字段形状、必填项、枚举、递归 observe 结构和基础类型。
 - 生成导出门禁：`generate_game.py` 默认在写文件前通过 JSON Schema 和结构 validator，失败时阻断导出。
@@ -1104,7 +1101,7 @@ V0 失败时，测试用户会说：
 - 第一章轻教学已有基础实现，但还没有通过内部用户测试证明玩家能稳定理解“文字可展开”和“观察会长出行动”。
 - 已建立内部测试记录模板和批次汇总脚本，但尚未实际完成 5 到 8 名内部用户测试，因此第 14 节量化指标尚未验证。
 - 保存/恢复已支持单机本地状态，并已有浏览器 smoke 覆盖章节复盘刷新恢复、v1 存档迁移、坏 JSON 存档 fallback、旧版本存档 fallback 和恢复提示；但还没有多存档、云端同步或复杂版本迁移策略。
-- 浏览器自动化已覆盖核心路径、三主结局路径、遗漏关键证据路径、结局刷新恢复、重新开始和基础键盘路径，但还没有真实移动设备、多浏览器、触控细节或完整屏幕阅读器验收。
+- 浏览器自动化已覆盖核心路径、三主结局路径、结局刷新恢复、重新开始和基础键盘路径，但还没有真实移动设备、多浏览器、触控细节或完整屏幕阅读器验收。
 - 内容 QA 已有基础自动检查，但还不能判断“选择是否真的让人犹豫”或“隐藏线索是否在语义上公平”。
 - 结局画像已有自动完整性检查，但还不能判断结局是否有足够情感重量。
 - 已有模型输出样本归档工具和空样本库合同，但还没有沉淀真实 LLM 输出样本，因此不能证明 agent 生成链路在真实模型下稳定。
@@ -1550,21 +1547,3 @@ V0.25 的边界：
 - 这只是基础键盘 smoke，不是完整 WCAG 审计。
 - 尚未验证屏幕阅读器朗读质量、焦点陷阱完整性、色彩对比、减少动态效果偏好或多浏览器。
 - 下一步应补屏幕阅读器语义检查、更多键盘路径和真实设备测试。
-
-### 17.30 V0.26 版本变更记录
-
-V0.26 相比 V0.25 的实质变化：
-
-- 旧版 V0.25 PRD 和技术文档已归档到 `/home/samsong/Desktop/game_writer/doc/prd/old version/2026-07-08-123200-974`。
-- README 从工具清单整理为体验入口，增加产品说明、截图、快速运行、验证命令和产品边界。
-- 新增 `/home/samsong/Desktop/game_writer/screenshots`，沉淀 4 张真实浏览器体验截图：首屏、observe 解锁 choice、章节复盘、结局画像。
-- `gamegen/demo_agent.py` 收紧 `unlocks_choices`，避免浅层 observe 声称解锁仍缺条件的 choice。
-- `scripts/content_qa_report.py` 增加 unlock contract：observe 声称解锁当前场景 choice 时，累计 observe effects 必须满足该 choice requirements。
-- `src/app.js` 的章节复盘不再把未满足 requirements 的 choice 误报为“已解锁未选”；如果只是线索指向但仍缺条件，会显示“线索已指向，仍缺”。
-- 新增 `scripts/browser_omission_paths.py`，验证玩家遗漏关键观察时 choice 不出现，复盘明确说明缺少的证据。
-
-V0.26 的边界：
-
-- 这轮是展示收口和误报修复，不是新玩法扩展。
-- 截图来自 Chrome/Chromium headless 移动视口，不等于真实手机视觉验收。
-- 遗漏路径回放只覆盖第一章典型浅层线索遗漏，不代表所有语义公平性都已由自动化证明。

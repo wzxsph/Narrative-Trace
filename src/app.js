@@ -616,8 +616,11 @@ function buildChoiceBranchState(choice) {
   if (!choice.requirements?.length) {
     return { className: "available", note: "可选未走" };
   }
-  if (runtime.unlockedChoices.has(choice.id) || isChoiceVisible(choice)) {
+  if (isChoiceVisible(choice)) {
     return { className: "unlocked", note: "已解锁未选" };
+  }
+  if (runtime.unlockedChoices.has(choice.id)) {
+    return { className: "pending", note: `线索已指向，仍缺：${describeRequirements(choice.requirements)}` };
   }
   return { className: "locked", note: `未解锁：${describeRequirements(choice.requirements)}` };
 }

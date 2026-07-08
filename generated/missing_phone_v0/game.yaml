@@ -125,7 +125,7 @@ scenes:
               - add:
                   pressure.company_alert: 1
             unlocks_choices:
-              - "choice_delay_wipe"
+
             opens_fragment:
               id: "frag_remote_wipe"
               title: "查看远程清除来源"
@@ -583,7 +583,7 @@ scenes:
               - set:
                   clues.camera_blind_spot: true
             unlocks_choices:
-              - "choice_enter_service_corridor"
+
             opens_fragment:
               id: "frag_camera_blind_spot"
               title: "确认摄像头盲区"
@@ -847,7 +847,7 @@ scenes:
               - set:
                   clues.lin_audio_key: true
             unlocks_choices:
-              - "choice_take_backup_to_safehouse"
+
             opens_fragment:
               id: "frag_audio_key"
               title: "检查录音钥匙"

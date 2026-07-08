@@ -1,6 +1,6 @@
 # Agent Game Generation Technical Design V0
 
-版本：V0.26
+版本：V0.25
 日期：2026-07-08  
 文档类型：技术设计文档  
 文件名规则：英文文件名，便于后续工程引用  
@@ -1226,7 +1226,7 @@ Production-grade generation pipeline: not achieved
 - 已有基础章节 flowchart 复盘和未解锁原因说明，但还不是完整 flowchart 级路径复盘。
 - 已有基础 `state_echoes` 渲染，但还没有复杂优先级、互斥回声或节奏控制。
 - 已有第一章叙事内轻教学，但还没有用户测试数据证明提示强度刚好。
-- 已有浏览器级移动视口 smoke、三主结局 E2E 矩阵、遗漏路径 E2E、结局恢复/重开验证和基础键盘可访问性 smoke，但缺少真实设备、多浏览器和触控细节测试。
+- 已有浏览器级移动视口 smoke、三主结局 E2E 矩阵、结局恢复/重开验证和基础键盘可访问性 smoke，但缺少真实设备、多浏览器和触控细节测试。
 - 已覆盖路径图键盘开关、Escape 关闭和首个 observe 键盘展开；但缺少完整键盘路径、焦点陷阱审计和屏幕阅读器检查。
 
 ### 21.3 Content QA
@@ -1733,23 +1733,3 @@ Production-grade generation pipeline: not achieved
 - 完整 WCAG 审计。
 - 屏幕阅读器朗读质量。
 - 全流程键盘路径、焦点陷阱完整性和多浏览器差异。
-
-## 48. V0.26 Implementation Delta
-
-本轮 V0.26 的工程变化：
-
-- PRD 和技术文档旧版已归档到 `doc/prd/old version/2026-07-08-123200-974`。
-- `README.md` 重写为面向展示和接手的入口文档，包含体验截图、快速运行、验证命令和产品边界。
-- 新增 `screenshots/`，保存首屏、observe 解锁 choice、章节复盘和结局画像 4 张真实浏览器截图。
-- `gamegen/demo_agent.py` 修正不严谨的 `unlocks_choices`，避免浅层 observe 声称解锁仍缺 requirements 的 choice。
-- `scripts/content_qa_report.py` 增加 unlock contract：当前场景 observe 声称解锁 choice 时，累计 observe effects 必须满足该 choice requirements。
-- `tests/test_content_qa.py` 增加 unlock contract 回归用例。
-- `src/app.js` 将章节复盘分支状态拆分为 `unlocked` 与 `pending`，避免把“线索指向但证据不足”误报成“已解锁未选”。
-- `src/styles.css` 增加 `.flow-branches li.pending` 样式。
-- 新增 `scripts/browser_omission_paths.py`，用真实浏览器验证遗漏关键 observe 后 choice 不可见，复盘显示缺失证据。
-
-本轮没有解决：
-
-- 全量语义公平性自动判断。
-- 真实用户 playtest。
-- 真实移动设备和多浏览器截图验收。

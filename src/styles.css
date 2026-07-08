@@ -585,6 +585,12 @@ h2 {
   color: #725312;
 }
 
+.flow-branches li.pending {
+  border: 1px dashed #d7b35b;
+  background: #fff7df;
+  color: #725312;
+}
+
 .flow-branches li.locked {
   border: 1px dashed #c8b6b9;
   background: #f6edef;

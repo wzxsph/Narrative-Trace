@@ -38,9 +38,7 @@
           "id": "obs_remote_wipe",
           "label": "查看远程清除来源",
           "depth": 1,
-          "unlocks_choices": [
-            "choice_delay_wipe"
-          ]
+          "unlocks_choices": []
         },
         {
           "id": "obs_pause_window",
@@ -317,9 +315,7 @@
           "id": "obs_camera_blind_spot",
           "label": "确认摄像头盲区",
           "depth": 1,
-          "unlocks_choices": [
-            "choice_enter_service_corridor"
-          ]
+          "unlocks_choices": []
         }
       ],
       "state_echoes": [
@@ -518,9 +514,7 @@
           "id": "obs_audio_key",
           "label": "检查录音钥匙",
           "depth": 1,
-          "unlocks_choices": [
-            "choice_take_backup_to_safehouse"
-          ]
+          "unlocks_choices": []
         },
         {
           "id": "obs_red_bracelet",

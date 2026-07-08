@@ -47,6 +47,21 @@ class ContentQATest(unittest.TestCase):
       any("hidden_optional observe must not unlock" in message.message for message in messages)
     )
 
+  def test_observe_unlock_must_satisfy_choice_requirements(self) -> None:
+    game = copy.deepcopy(load_game())
+    first_scene = game["scenes"][0]
+    anchors = {
+      anchor["id"]: anchor
+      for block in first_scene["background_blocks"]
+      for anchor in flatten_anchors(block["observe_anchors"])
+    }
+    anchors["obs_remote_wipe"]["unlocks_choices"] = ["choice_delay_wipe"]
+
+    messages = run_content_qa(game)
+    self.assertTrue(
+      any("cumulative observe effects do not satisfy" in message.message for message in messages)
+    )
+
   def test_main_scene_must_have_obvious_observe_entry(self) -> None:
     game = copy.deepcopy(load_game())
     first_scene = game["scenes"][0]

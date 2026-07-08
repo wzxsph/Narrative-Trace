@@ -2,58 +2,56 @@
 
 竖屏文字冒险游戏与 AI 辅助创作流水线的 V0 工程仓库。
 
-当前产品准则以 `/home/samsong/Desktop/game_writer/doc/prd` 为准；执行项目时先读 `agent.md`。
+当前项目不是“AI 实时随机写剧情”，而是一个确定性叙事结构实验：玩家在手机竖屏界面中阅读场景、展开隐藏观察、解锁行动、承担后果，并在章节复盘和结局画像里看到世界如何记住自己。
+
+产品准则以 `/home/samsong/Desktop/game_writer/doc/prd` 为准；执行项目时先读 `/home/samsong/Desktop/game_writer/agent.md`。
+
+## Experience
+
+首屏是一个竖屏手机阅读界面，核心由场景文字、observe anchor 和底部 choice 组成。
+
+![Start screen](screenshots/01-start-screen.jpg)
+
+观察不是补充说明，而是会改写玩家理解、写入隐藏状态，并在证据足够时长出新的行动。
+
+![Observe unlocks choice](screenshots/02-observe-unlocks-choice.jpg)
+
+章节结束后会进入复盘：展示已走路径、关键行动、状态回声，以及未解锁分支缺少的证据。
+
+![Chapter review flow](screenshots/03-chapter-review-flow.jpg)
+
+结局页不是只显示一个结论，而是回看关键观察、关键行动、最终立场和结局标签。
+
+![Ending portrait](screenshots/04-ending-portrait.jpg)
 
 ## Current Slice
 
 - 玩家端：`index.html`、`src/app.js`、`src/styles.css`
-- 生成器：`scripts/generate_game.py`
-- JSON Schema：`schemas/game.schema.json`
-- Prompt Manifest：`prompts/manifest.json`
-- 模型输出样本归档：`scripts/archive_model_output_sample.py`
-- 模型输出样本校验：`scripts/validate_model_output_archive.py`
-- 存档合同校验：`scripts/validate_save_contract.py`
-- 浏览器存档合同回放：`scripts/browser_save_contract.py`
-- 浏览器可访问性 smoke：`scripts/browser_a11y_smoke.py`
-- Schema 校验：`scripts/validate_json_schema.py`
-- 校验器：`scripts/validate_game.py`
-- 局部修复器：`scripts/repair_game.py`
-- 内容 QA：`scripts/content_qa_report.py`
-- 冒烟游玩：`scripts/smoke_playthrough.py`
-- 浏览器冒烟：`scripts/browser_smoke.py`
-- 多结局浏览器 E2E：`scripts/browser_e2e_matrix.py`
-- 内部测试汇总：`scripts/summarize_playtest_batch.py`
 - Demo 内容：`generated/missing_phone_v0/game.json`
-- 生成失败样本：`examples/fixtures/generation_failures/fixture_cases.json`
-- 模型输出样本库：`examples/fixtures/model_outputs/sample_manifest.json`
-- 存档合同样本：`examples/fixtures/save_contract/save_cases.json`
+- 生成器：`scripts/generate_game.py`
+- Schema：`schemas/game.schema.json`
+- 校验器：`scripts/validate_game.py`
+- 内容 QA：`scripts/content_qa_report.py`
+- 浏览器 smoke：`scripts/browser_smoke.py`
+- 多结局 E2E：`scripts/browser_e2e_matrix.py`
+- 遗漏路径 E2E：`scripts/browser_omission_paths.py`
+- 存档合同：`examples/fixtures/save_contract/save_cases.json`
+- 存档合同回放：`scripts/browser_save_contract.py`
+- 可访问性 smoke：`scripts/browser_a11y_smoke.py`
+- 内部测试模板：`doc/testing/internal_playtest_record_template.md`
 
 当前 demo 已覆盖：
 
-- 竖屏手机 UI。
 - 3 章 x 每章 3 个主场景，共 9 个主场景。
-- 背景文字中的 observe anchor。
-- 最多三层嵌套观察。
-- observe 写入隐藏状态并解锁行动。
+- 最多三层嵌套 observe。
+- observe 写入隐藏状态并解锁 choice。
 - choice 写入状态并进入后续章节或结局。
 - 第一章叙事内轻教学和新行动高亮。
-- 章节结束基础 flowchart 复盘、未解锁原因、路径图、结局行动画像。
+- 章节结束 flowchart 复盘、未解锁原因、路径图、结局行动画像。
 - 隐藏关系变量在后续场景触发叙事回声。
-- 本地刷新恢复进度。
-- 浏览器级移动视口 smoke，覆盖轻教学、高亮、章节复盘、未解锁原因、刷新恢复、v1 存档迁移、坏存档 fallback 和恢复提示。
-- 存档合同 fixture 覆盖 v1 复盘迁移、v2 结局恢复、未来版本 fallback 和坏 JSON fallback。
-- 浏览器存档合同回放会逐条把存档 fixture 注入 localStorage，并验证真实 UI 恢复或 fallback。
-- 浏览器可访问性 smoke 覆盖移动视口下路径图键盘开关、Escape 关闭和 observe 键盘展开。
-- 多结局浏览器 E2E 矩阵，覆盖 `ending_publish`、`ending_bury`、`ending_confront` 三条真实 UI 路径，并验证结局刷新恢复与重新开始。
-- 显式 JSON Schema 契约，减少生成器、校验器和前端之间的隐式耦合。
-- 生成失败 fixture，覆盖 schema gate、validator gate 和 repair gate 的典型坏输出。
-- Prompt manifest 和 generation trace 记录 `prompt_set`、`provider`、`model`，让后续真实模型输出可追溯到生成策略。
-- 模型输出样本归档工具会脱敏 API key、bearer token、认证字段、`.env` token 和邮箱，并写入 provider/model/prompt_set 元数据。
-- 模型输出样本校验门禁会检查 manifest、文件引用、prompt_set 声明、checksum 和未脱敏敏感信息。
-- 内部 playtest 记录模板和 PRD 第 14 节指标汇总脚本。
-- 自动内容 QA 检查，覆盖隐藏 observe 可发现性、choice 代价文案和结局画像完整性硬伤。
-- 局部 repair 可修复常见生成硬伤：坏 `start_scene_id`、坏 `next_scene`、缺失 anchor 文本、错误 observe depth、坏 unlock choice 引用。
-- 冒烟路径穿过 9 个主场景并抵达 `ending_publish`。
+- 本地刷新恢复、v1 存档迁移、坏存档 fallback 和恢复提示。
+- 三条主结局浏览器路径：`ending_publish`、`ending_bury`、`ending_confront`。
+- 遗漏关键观察时，行动保持隐藏，章节复盘解释缺少哪条证据。
 
 ## Quick Start
 
@@ -66,46 +64,53 @@ python3 scripts/generate_game.py \
   --provider offline
 ```
 
-生成导出会先通过 JSON Schema 和结构 validator；不通过时不会写出半成品。
+启动本地静态服务：
 
-校验结构：
+```bash
+python3 -m http.server 4173
+```
+
+打开：
+
+```text
+http://127.0.0.1:4173/
+```
+
+## Verification
+
+推荐提交前跑：
 
 ```bash
 python3 scripts/validate_json_schema.py generated/missing_phone_v0/game.json
 python3 scripts/validate_game.py generated/missing_phone_v0/game.json
-```
-
-跑冒烟路径：
-
-```bash
-python3 scripts/smoke_playthrough.py generated/missing_phone_v0/game.json
-```
-
-跑内容 QA：
-
-```bash
 python3 scripts/content_qa_report.py generated/missing_phone_v0/game.json
+python3 scripts/smoke_playthrough.py generated/missing_phone_v0/game.json
+python3 scripts/validate_save_contract.py
+python3 scripts/browser_smoke.py
+python3 scripts/browser_save_contract.py
+python3 scripts/browser_a11y_smoke.py
+python3 scripts/browser_omission_paths.py
+python3 scripts/browser_e2e_matrix.py
+python3 -m unittest discover -s tests -v
 ```
 
-尝试局部修复生成内容：
+可选修复检查：
 
 ```bash
 python3 scripts/repair_game.py generated/missing_phone_v0/game.json --out /tmp/repaired_game.json
 ```
 
-跑浏览器 smoke：
+## AI Pipeline
 
-```bash
-python3 scripts/browser_smoke.py
-```
+当前 AI Agent 路线仍是辅助创作，不是全自动作者。仓库里已经有：
 
-跑多结局浏览器 E2E：
+- Prompt manifest：`prompts/manifest.json`
+- 生成 trace：`generated/missing_phone_v0/generation_trace.jsonl`
+- 生成失败 fixture：`examples/fixtures/generation_failures/fixture_cases.json`
+- 模型输出样本归档：`scripts/archive_model_output_sample.py`
+- 模型输出样本校验：`scripts/validate_model_output_archive.py`
 
-```bash
-python3 scripts/browser_e2e_matrix.py
-```
-
-归档一份真实模型输出样本：
+归档真实模型输出样本：
 
 ```bash
 python3 scripts/archive_model_output_sample.py \
@@ -117,72 +122,30 @@ python3 scripts/archive_model_output_sample.py \
   --notes "invalid JSON returned by optional polish"
 ```
 
-校验模型输出样本库：
+校验样本库：
 
 ```bash
 python3 scripts/validate_model_output_archive.py
 ```
 
-校验存档合同样本：
+## Product Boundary
 
-```bash
-python3 scripts/validate_save_contract.py
-```
-
-跑浏览器存档合同回放：
-
-```bash
-python3 scripts/browser_save_contract.py
-```
-
-跑浏览器可访问性 smoke：
-
-```bash
-python3 scripts/browser_a11y_smoke.py
-```
-
-跑测试：
-
-```bash
-python3 -m unittest discover -s tests -v
-```
-
-批次模板位于 `examples/playtests/internal_playtest_batch_template.json`。填完真实批次数据后运行：
-
-```bash
-python3 scripts/summarize_playtest_batch.py path/to/playtest_batch.json
-```
-
-启动本地静态服务：
-
-```bash
-python3 -m http.server 4173
-```
-
-浏览器打开：
+当前状态是：
 
 ```text
-http://127.0.0.1:4173/
+中等长度可运行工程纵切 / medium-length playable vertical slice
 ```
 
-## Optional LLM Polish
-
-复制 `.env.example` 并填写 OpenAI-compatible 配置后，可使用可选 LLM polish。不要把 `.env` 或 API key 写入日志、PRD 或提交记录。
-
-```bash
-cp .env.example .env
-```
-
-## Iteration Loop
-
-每轮迭代遵循：
+还不是：
 
 ```text
-s1 完成/修复目前已有的 PRD 内容，更新 log
-s2 测试是否跑通已有 PRD 内容
-s3 如果没跑通或效果不及预期，返回 s1
-s4 深度评估距离完整产品级产品的距离，更新 PRD 与技术文档
-s5 返回 s1
+可发布 MVP / shippable MVP
 ```
+
+仍缺少真实 5 到 8 人 playtest、真实移动设备验收、多浏览器验收、屏幕阅读器质量验证、真实 LLM 输出样本库，以及更强的语义内容 QA。
+
+## Iteration Rule
+
+每次有意义的迭代都要写入 `/home/samsong/Desktop/game_writer/log`，时间戳保留到毫秒。
 
 更新 PRD 或技术文档前，先把旧版快照归档到 `/home/samsong/Desktop/game_writer/doc/prd/old version`。
