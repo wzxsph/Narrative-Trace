@@ -145,6 +145,38 @@ def reset_page(page: object, base_url: str) -> None:
     page.wait_for_selector('button[data-anchor-id="obs_unsent_sms"]')
 
 
+def assert_ending_screen(page: object, path: PathSpec) -> tuple[str, list[str]]:
+    page.wait_for_selector(".ending-screen")
+    ending_text = page.locator(".ending-screen").inner_text()
+    title_text = page.locator("#sceneTitle").inner_text()
+    tags = page.locator(".ending-screen .tag").all_inner_texts()
+    profile_sections = page.locator(".ending-screen .profile-section h3").all_inner_texts()
+
+    assert_condition(title_text == path.expected_title, f"Unexpected ending title for {path.name}: {title_text}")
+    assert_condition(path.expected_title in ending_text, f"Ending body missing title for {path.name}")
+    for tag in path.expected_tags:
+        assert_condition(tag in tags, f"Ending tag missing for {path.name}: {tag}")
+    for section_title in ("关键观察", "关键行动", "最终立场", "结局标签"):
+        assert_condition(section_title in profile_sections, f"Ending profile section missing: {section_title}")
+    assert_no_horizontal_overflow(page)
+    return title_text, tags
+
+
+def assert_ending_restores_after_reload(page: object, path: PathSpec) -> None:
+    page.reload(wait_until="networkidle")
+    assert_ending_screen(page, path)
+
+
+def restart_from_ending(page: object) -> None:
+    restart = page.locator('[data-action="restart"]')
+    assert_condition(restart.count() == 1, "Restart button missing on ending screen")
+    restart.click()
+    page.wait_for_selector('button[data-anchor-id="obs_unsent_sms"]')
+    assert_condition(page.locator(".ending-screen").count() == 0, "Ending screen should be cleared after restart")
+    assert_condition(page.locator("#sceneTitle").inner_text() == "锁屏上的半句话", "Restart did not return to first scene")
+    assert_no_horizontal_overflow(page)
+
+
 def run_path(page: object, base_url: str, path: PathSpec) -> dict[str, object]:
     reset_page(page, base_url)
     reviews_seen = 0
@@ -161,19 +193,10 @@ def run_path(page: object, base_url: str, path: PathSpec) -> dict[str, object]:
             reviews_seen += continue_if_review(page)
         assert_no_horizontal_overflow(page)
 
-    page.wait_for_selector(".ending-screen")
-    ending_text = page.locator(".ending-screen").inner_text()
-    title_text = page.locator("#sceneTitle").inner_text()
-    tags = page.locator(".ending-screen .tag").all_inner_texts()
-    profile_sections = page.locator(".ending-screen .profile-section h3").all_inner_texts()
-
-    assert_condition(title_text == path.expected_title, f"Unexpected ending title for {path.name}: {title_text}")
-    assert_condition(path.expected_title in ending_text, f"Ending body missing title for {path.name}")
-    for tag in path.expected_tags:
-        assert_condition(tag in tags, f"Ending tag missing for {path.name}: {tag}")
-    for section_title in ("关键观察", "关键行动", "最终立场", "结局标签"):
-        assert_condition(section_title in profile_sections, f"Ending profile section missing: {section_title}")
+    title_text, tags = assert_ending_screen(page, path)
     assert_condition(reviews_seen == 2, f"{path.name} should pass two chapter reviews, saw {reviews_seen}")
+    assert_ending_restores_after_reload(page, path)
+    restart_from_ending(page)
 
     return {
         "name": path.name,
@@ -183,6 +206,8 @@ def run_path(page: object, base_url: str, path: PathSpec) -> dict[str, object]:
         "observes": len(observed),
         "choices": len(chosen),
         "tags": tags,
+        "ending_restored": True,
+        "restart_ok": True,
     }
 
 
@@ -220,7 +245,8 @@ def main() -> int:
     for result in results:
         print(
             f"- {result['ending']}: {result['title']} "
-            f"({result['observes']} observes, {result['choices']} choices, {result['reviews_seen']} reviews)"
+            f"({result['observes']} observes, {result['choices']} choices, "
+            f"{result['reviews_seen']} reviews, restored, restart)"
         )
     return 0
 

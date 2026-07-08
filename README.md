@@ -37,7 +37,7 @@
 - 隐藏关系变量在后续场景触发叙事回声。
 - 本地刷新恢复进度。
 - 浏览器级移动视口 smoke，覆盖轻教学、高亮、章节复盘、未解锁原因和刷新恢复。
-- 多结局浏览器 E2E 矩阵，覆盖 `ending_publish`、`ending_bury`、`ending_confront` 三条真实 UI 路径。
+- 多结局浏览器 E2E 矩阵，覆盖 `ending_publish`、`ending_bury`、`ending_confront` 三条真实 UI 路径，并验证结局刷新恢复与重新开始。
 - 显式 JSON Schema 契约，减少生成器、校验器和前端之间的隐式耦合。
 - 生成失败 fixture，覆盖 schema gate、validator gate 和 repair gate 的典型坏输出。
 - Prompt manifest 和 generation trace 记录 `prompt_set`、`provider`、`model`，让后续真实模型输出可追溯到生成策略。

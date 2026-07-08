@@ -1,6 +1,6 @@
 # Agent Game Generation Technical Design V0
 
-版本：V0.19
+版本：V0.18
 日期：2026-07-08  
 文档类型：技术设计文档  
 文件名规则：英文文件名，便于后续工程引用  
@@ -1190,7 +1190,6 @@ Chapter flow locked-branch explanation: achieved
 Ending portrait completeness gate: achieved
 Browser smoke for core mobile path: achieved
 Browser E2E matrix for all current main endings: achieved
-Ending persistence and restart browser E2E: achieved
 Conservative local repair tool: achieved
 Explicit JSON Schema contract: achieved
 Schema and validator export gate: achieved
@@ -1216,11 +1215,11 @@ Production-grade generation pipeline: not achieved
 
 ### 21.2 Runtime Robustness
 
-- 当前前端已有本地单存档，且浏览器 E2E 已覆盖结局态刷新恢复和重新开始；但没有多存档、版本迁移、损坏存档提示或云端同步。
+- 当前前端已有本地单存档，但没有多存档、版本迁移、损坏存档提示或云端同步。
 - 已有基础章节 flowchart 复盘和未解锁原因说明，但还不是完整 flowchart 级路径复盘。
 - 已有基础 `state_echoes` 渲染，但还没有复杂优先级、互斥回声或节奏控制。
 - 已有第一章叙事内轻教学，但还没有用户测试数据证明提示强度刚好。
-- 已有浏览器级移动视口 smoke、三主结局 E2E 矩阵、结局恢复/重开验证，但缺少真实设备、多浏览器和触控细节测试。
+- 已有浏览器级移动视口 smoke 和三主结局 E2E 矩阵，但缺少真实设备、多浏览器和触控细节测试。
 - 缺少无障碍键盘导航和屏幕阅读器检查。
 
 ### 21.3 Content QA
@@ -1246,7 +1245,7 @@ Production-grade generation pipeline: not achieved
 2. 将真实样本与 schema gate、validator gate、repair gate、content QA 结果关联，形成可回归失败库。
 3. 跑一轮内部 playtest 批次，使用 `summarize_playtest_batch.py` 生成 pass/fail 报告。
 4. 增加真实设备与无障碍测试，覆盖触控、滚动、可读性、键盘导航和屏幕阅读器。
-5. 将浏览器 E2E 继续扩展到失败/遗漏路径、损坏存档、多浏览器和可访问性断言。
+5. 将浏览器 E2E 继续扩展到刷新恢复、失败/遗漏路径、多浏览器和可访问性断言。
 
 ## 23. V0.1 Implementation Delta
 
@@ -1592,20 +1591,3 @@ Production-grade generation pipeline: not achieved
 - 真实模型输出样本仍未入库。
 - 校验门禁不判断样本的重要性、失败类型归因或 repair 是否应当处理。
 - 脱敏规则仍需随着真实样本中出现的敏感形态继续扩展。
-
-## 41. V0.19 Implementation Delta
-
-本轮 V0.19 的工程变化：
-
-- PRD 和技术文档旧版已归档到 `doc/prd/old version/2026-07-08-114202-185`。
-- `scripts/browser_e2e_matrix.py` 新增 `assert_ending_screen()`，复用结局页标题、标签、画像区和横向溢出断言。
-- `scripts/browser_e2e_matrix.py` 新增 `assert_ending_restores_after_reload()`，每条主结局路径抵达结局后刷新页面并验证结局态恢复。
-- `scripts/browser_e2e_matrix.py` 新增 `restart_from_ending()`，每条主结局路径点击“重新开始”并验证返回首场景。
-- E2E 输出增加 `restored` 和 `restart` 标记。
-- `README.md` 同步浏览器 E2E 的结局恢复/重开覆盖范围。
-
-本轮没有解决：
-
-- 损坏存档提示和恢复。
-- 多存档、云同步和版本迁移。
-- 多浏览器、真实移动设备、键盘导航和屏幕阅读器验收。
