@@ -1,0 +1,506 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Narrative Trace README Diagrams</title>
+    <style>
+      :root {
+        --paper: #f6efe2;
+        --paper-light: #fffaf0;
+        --panel: #fbf5e8;
+        --ink: #1f1d19;
+        --soft-ink: #5f584c;
+        --muted: #8a8070;
+        --line: #d8cbb6;
+        --line-strong: #b9aa92;
+        --seal: #9d2f28;
+        --seal-soft: #f3ded7;
+        --green: #2d6a4f;
+        --green-soft: #e2f0de;
+        --blue: #325c80;
+        --blue-soft: #e1ecf3;
+        --gold: #8a681f;
+        --gold-soft: #f3e9c8;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        padding: 32px;
+        background: #e7ddcc;
+        color: var(--ink);
+        font-family: "Noto Serif SC", "Source Han Serif SC", ui-serif, Georgia, "Times New Roman", serif;
+      }
+
+      .canvas-list {
+        display: grid;
+        gap: 32px;
+      }
+
+      .diagram {
+        width: 1120px;
+        min-height: 360px;
+        padding: 32px;
+        border: 1px solid var(--line-strong);
+        border-radius: 18px;
+        background:
+          linear-gradient(90deg, rgba(115, 92, 57, 0.045) 1px, transparent 1px),
+          linear-gradient(180deg, rgba(115, 92, 57, 0.04) 1px, transparent 1px),
+          var(--paper-light);
+        background-size: 28px 28px;
+        box-shadow: 0 20px 48px rgba(54, 45, 31, 0.14);
+      }
+
+      .diagram h1 {
+        margin: 0 0 6px;
+        color: var(--ink);
+        font-size: 30px;
+        line-height: 1.18;
+        letter-spacing: 0;
+      }
+
+      .diagram .subtitle {
+        margin: 0 0 28px;
+        color: var(--soft-ink);
+        font-size: 18px;
+        line-height: 1.45;
+      }
+
+      .flow {
+        display: grid;
+        grid-auto-flow: column;
+        grid-auto-columns: minmax(128px, 1fr);
+        align-items: center;
+        gap: 12px;
+      }
+
+      .node {
+        position: relative;
+        min-height: 106px;
+        padding: 18px 16px;
+        border: 1px solid var(--line-strong);
+        border-left: 5px solid var(--seal);
+        border-radius: 14px;
+        background: var(--panel);
+        box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.55);
+      }
+
+      .node strong,
+      .card strong,
+      .gate strong,
+      .lane strong {
+        display: block;
+        margin-bottom: 8px;
+        color: var(--ink);
+        font-size: 20px;
+        line-height: 1.18;
+      }
+
+      .node span,
+      .card span,
+      .gate span,
+      .lane span {
+        display: block;
+        color: var(--soft-ink);
+        font-size: 15px;
+        line-height: 1.45;
+      }
+
+      .arrow {
+        color: var(--seal);
+        font-size: 28px;
+        font-weight: 800;
+        text-align: center;
+      }
+
+      .stamp {
+        display: inline-block;
+        margin-bottom: 14px;
+        padding: 4px 9px;
+        border: 1px solid var(--seal);
+        border-radius: 999px;
+        color: var(--seal);
+        font-size: 13px;
+        font-weight: 800;
+      }
+
+      .matrix {
+        display: grid;
+        grid-template-columns: 1.05fr 1fr 1fr 1.05fr;
+        gap: 14px;
+      }
+
+      .lane {
+        min-height: 220px;
+        padding: 18px;
+        border: 1px solid var(--line);
+        border-radius: 16px;
+        background: rgba(251, 245, 232, 0.86);
+      }
+
+      .lane ul {
+        display: grid;
+        gap: 10px;
+        margin: 18px 0 0;
+        padding: 0;
+        list-style: none;
+      }
+
+      .lane li {
+        padding: 9px 10px;
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        background: var(--paper-light);
+        color: var(--soft-ink);
+        font-size: 14px;
+      }
+
+      .architecture {
+        display: grid;
+        grid-template-columns: repeat(5, 1fr);
+        gap: 14px;
+      }
+
+      .card {
+        min-height: 182px;
+        padding: 18px;
+        border: 1px solid var(--line-strong);
+        border-radius: 16px;
+        background: var(--panel);
+      }
+
+      .card:nth-child(2) {
+        background: var(--blue-soft);
+        border-color: #9eb7ca;
+      }
+
+      .card:nth-child(3) {
+        background: var(--green-soft);
+        border-color: #9ebf99;
+      }
+
+      .card:nth-child(4) {
+        background: var(--gold-soft);
+        border-color: #d0bd78;
+      }
+
+      .card:nth-child(5) {
+        background: var(--seal-soft);
+        border-color: #d2a19b;
+      }
+
+      .serpentine {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 14px;
+      }
+
+      .step {
+        min-height: 118px;
+        padding: 16px;
+        border: 1px solid var(--line-strong);
+        border-radius: 16px;
+        background: var(--panel);
+      }
+
+      .step .index {
+        display: inline-grid;
+        place-items: center;
+        width: 28px;
+        height: 28px;
+        margin-bottom: 12px;
+        border-radius: 50%;
+        background: var(--ink);
+        color: var(--paper-light);
+        font-size: 14px;
+        font-weight: 800;
+      }
+
+      .step strong {
+        display: block;
+        margin-bottom: 6px;
+        font-size: 18px;
+      }
+
+      .step span {
+        color: var(--soft-ink);
+        font-size: 14px;
+        line-height: 1.45;
+      }
+
+      .gates {
+        display: grid;
+        grid-template-columns: repeat(5, 1fr);
+        gap: 14px;
+      }
+
+      .gate {
+        min-height: 170px;
+        padding: 18px;
+        border: 1px solid var(--line-strong);
+        border-top: 6px solid var(--green);
+        border-radius: 16px;
+        background: var(--panel);
+      }
+
+      .gate.warning {
+        border-top-color: var(--gold);
+      }
+
+      .gate.block {
+        border-top-color: var(--seal);
+      }
+
+      .state-map {
+        display: grid;
+        grid-template-columns: 1fr 1.1fr 1fr;
+        gap: 18px;
+        align-items: stretch;
+      }
+
+      .state-column {
+        padding: 18px;
+        border: 1px solid var(--line-strong);
+        border-radius: 16px;
+        background: var(--panel);
+      }
+
+      .state-column h2 {
+        margin: 0 0 14px;
+        font-size: 22px;
+      }
+
+      .pill-list {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-top: 16px;
+      }
+
+      .pill {
+        padding: 7px 10px;
+        border: 1px solid var(--line-strong);
+        border-radius: 999px;
+        background: var(--paper-light);
+        color: var(--soft-ink);
+        font-size: 14px;
+        font-weight: 700;
+      }
+
+      .boundary {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 18px;
+      }
+
+      .boundary .side {
+        min-height: 260px;
+        padding: 22px;
+        border: 1px solid var(--line-strong);
+        border-radius: 18px;
+        background: var(--panel);
+      }
+
+      .boundary .side.done {
+        border-left: 6px solid var(--green);
+      }
+
+      .boundary .side.todo {
+        border-left: 6px solid var(--gold);
+      }
+
+      .boundary h2 {
+        margin: 0 0 18px;
+        font-size: 24px;
+      }
+
+      .boundary ul {
+        display: grid;
+        gap: 12px;
+        margin: 0;
+        padding-left: 20px;
+        color: var(--soft-ink);
+        font-size: 16px;
+        line-height: 1.45;
+      }
+
+      code {
+        font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+        font-size: 0.92em;
+      }
+    </style>
+  </head>
+  <body>
+    <main class="canvas-list">
+      <section class="diagram" id="game-loop">
+        <span class="stamp">PLAYER LOOP</span>
+        <h1>Observe → Interpretation → Choice → State → Echo → Ending</h1>
+        <p class="subtitle">玩家读到的不是分支数量，而是“有限信息中的行动会被世界记住”。</p>
+        <div class="flow">
+          <div class="node"><strong>Observe</strong><span>展开观察，获得细节和线索。</span></div>
+          <div class="arrow">→</div>
+          <div class="node"><strong>Interpretation</strong><span>玩家重新理解当前局面。</span></div>
+          <div class="arrow">→</div>
+          <div class="node"><strong>Choice</strong><span>底部行动栏出现可承担的选择。</span></div>
+          <div class="arrow">→</div>
+          <div class="node"><strong>State</strong><span>写入 flags、clues、relationship。</span></div>
+          <div class="arrow">→</div>
+          <div class="node"><strong>Echo</strong><span>后续场景、复盘、结局给出回声。</span></div>
+        </div>
+      </section>
+
+      <section class="diagram" id="interaction-map">
+        <span class="stamp">INTERACTION MAP</span>
+        <h1>隐藏不是陷阱，隐藏是理解后的可见行动</h1>
+        <p class="subtitle">Observe 负责改变理解和解锁行动；Choice 负责推进剧情并承担代价。</p>
+        <div class="matrix">
+          <div class="lane">
+            <strong>Scene Text</strong>
+            <span>正文承担氛围、事实和可观察对象。</span>
+            <ul>
+              <li>锁屏短信</li>
+              <li>远程清除提示</li>
+              <li>订单与设备痕迹</li>
+            </ul>
+          </div>
+          <div class="lane">
+            <strong>Observe Chain</strong>
+            <span>同一时刻只展开一条观察链。</span>
+            <ul>
+              <li>顶层 observe</li>
+              <li>嵌套 observe</li>
+              <li>重复查看不重复结算</li>
+            </ul>
+          </div>
+          <div class="lane">
+            <strong>Hidden State</strong>
+            <span>状态隐性存在，但必须有文本暗示。</span>
+            <ul>
+              <li><code>clues</code> / <code>flags</code></li>
+              <li><code>trust</code> / <code>suspicion</code></li>
+              <li><code>ending_tags</code></li>
+            </ul>
+          </div>
+          <div class="lane">
+            <strong>Visible Choice</strong>
+            <span>关键行动必须在底部行动栏可见。</span>
+            <ul>
+              <li>证据足够才出现</li>
+              <li>选项完整可见</li>
+              <li>复盘解释未解锁原因</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <section class="diagram" id="runtime-architecture">
+        <span class="stamp">RUNTIME ARCHITECTURE</span>
+        <h1>从结构化内容到纸墨竖屏体验</h1>
+        <p class="subtitle">运行时不临场编剧情，而是稳定解释 game.json、状态、存档和 UI。</p>
+        <div class="architecture">
+          <div class="card"><strong>Brief</strong><span>主题、角色、章节目标、节点预算。</span></div>
+          <div class="card"><strong>Validation</strong><span>JSON schema、结构校验、内容 QA。</span></div>
+          <div class="card"><strong>Runtime</strong><span>确定性状态机、observe 解锁、choice 跳转。</span></div>
+          <div class="card"><strong>Save</strong><span>localStorage 存档、迁移、坏档恢复。</span></div>
+          <div class="card"><strong>UI</strong><span>纸墨风格、正文滚动、选项固定可见。</span></div>
+        </div>
+      </section>
+
+      <section class="diagram" id="ai-pipeline">
+        <span class="stamp">AI GENERATION PIPELINE</span>
+        <h1>Agent 生成的是可审查 artifact，不是不可控正文洪流</h1>
+        <p class="subtitle">每一步都产出结构化文件，并经过校验与人工可读的 trace。</p>
+        <div class="serpentine">
+          <div class="step"><span class="index">1</span><strong>Load Brief</strong><span>读取题材、主题问题和创作约束。</span></div>
+          <div class="step"><span class="index">2</span><strong>Plan Story</strong><span>规划章节问题、主路径和结局覆盖。</span></div>
+          <div class="step"><span class="index">3</span><strong>State Schema</strong><span>设计 flags、clues、relationships。</span></div>
+          <div class="step"><span class="index">4</span><strong>Scene Blueprint</strong><span>锁定场景预算、入口和关键行动。</span></div>
+          <div class="step"><span class="index">8</span><strong>Write Trace</strong><span>保存每步输入、输出和验证结果。</span></div>
+          <div class="step"><span class="index">7</span><strong>Export Game</strong><span>导出可运行 game.json 和报告。</span></div>
+          <div class="step"><span class="index">6</span><strong>Validate / Repair</strong><span>校验结构、内容 QA、必要时修复。</span></div>
+          <div class="step"><span class="index">5</span><strong>Scene Artifacts</strong><span>生成 observe、choice、effects 草案。</span></div>
+        </div>
+      </section>
+
+      <section class="diagram" id="release-gates">
+        <span class="stamp">RELEASE GATES</span>
+        <h1>从“能生成”到“能交付”的闸门</h1>
+        <p class="subtitle">Demo 不能只看跑通，还要看是否公平、可达、可复盘。</p>
+        <div class="gates">
+          <div class="gate"><strong>Schema</strong><span>所有字段声明完整，无未声明变量。</span></div>
+          <div class="gate"><strong>Structure</strong><span>无孤儿节点、无死 choice、结局可达。</span></div>
+          <div class="gate warning"><strong>Content QA</strong><span>重大状态变化有文本暗示，选择不是伪影响。</span></div>
+          <div class="gate"><strong>Browser E2E</strong><span>三条主结局、复盘、存档恢复可跑通。</span></div>
+          <div class="gate block"><strong>Experience Risk</strong><span>隐藏选项不得制造不公平或黑箱惩罚。</span></div>
+        </div>
+      </section>
+
+      <section class="diagram" id="state-ending-map">
+        <span class="stamp">STATE & ENDING</span>
+        <h1>少数关键选择 + 多个状态变量 = 组合式结局画像</h1>
+        <p class="subtitle">不追求无限分支，而是让玩家看到自己一路留下的证据、关系和立场。</p>
+        <div class="state-map">
+          <div class="state-column">
+            <h2>Hidden State</h2>
+            <span>运行时记录事实和关系，不在 UI 上显示数值条。</span>
+            <div class="pill-list">
+              <span class="pill">clues</span>
+              <span class="pill">flags</span>
+              <span class="pill">timers</span>
+              <span class="pill">trust</span>
+              <span class="pill">suspicion</span>
+            </div>
+          </div>
+          <div class="state-column">
+            <h2>Ending Rules</h2>
+            <span>按照优先级匹配主结局，再叠加行动画像和结局标签。</span>
+            <div class="pill-list">
+              <span class="pill">publish</span>
+              <span class="pill">bury</span>
+              <span class="pill">confront</span>
+              <span class="pill">tags</span>
+            </div>
+          </div>
+          <div class="state-column">
+            <h2>Player Portrait</h2>
+            <span>结局页回放关键观察、关键行动、遗漏证据与最终立场。</span>
+            <div class="pill-list">
+              <span class="pill">observed</span>
+              <span class="pill">chosen</span>
+              <span class="pill">missed</span>
+              <span class="pill">remembered</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="diagram" id="product-boundary">
+        <span class="stamp">PRODUCT BOUNDARY</span>
+        <h1>当前是可玩工程纵切，不是完整商业 MVP</h1>
+        <p class="subtitle">README 只展示当前真实状态，避免把原型包装成已经成熟的产品。</p>
+        <div class="boundary">
+          <div class="side done">
+            <h2>已完成</h2>
+            <ul>
+              <li>3 章可玩 demo 与三条主结局。</li>
+              <li>observe 解锁 choice、复盘、结局画像。</li>
+              <li>基础生成 Agent、结构校验与浏览器 E2E。</li>
+            </ul>
+          </div>
+          <div class="side todo">
+            <h2>仍未完成</h2>
+            <ul>
+              <li>真实 5-8 人 playtest 与移动设备验收。</li>
+              <li>更多真实 LLM 输出样本和语义 QA。</li>
+              <li>多浏览器、屏幕阅读器和发布级稳定性验证。</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+    </main>
+  </body>
+</html>

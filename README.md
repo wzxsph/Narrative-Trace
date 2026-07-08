@@ -46,121 +46,49 @@
 
 ## Game Loop
 
-<table>
-  <tr>
-    <td align="center"><strong>Observe</strong><br><sub>展开观察</sub></td>
-    <td align="center">→</td>
-    <td align="center"><strong>Interpretation</strong><br><sub>改变理解</sub></td>
-    <td align="center">→</td>
-    <td align="center"><strong>Choice</strong><br><sub>承担行动</sub></td>
-    <td align="center">→</td>
-    <td align="center"><strong>State</strong><br><sub>写入痕迹</sub></td>
-    <td align="center">→</td>
-    <td align="center"><strong>Echo</strong><br><sub>后续回声</sub></td>
-    <td align="center">→</td>
-    <td align="center"><strong>Ending</strong><br><sub>组合画像</sub></td>
-  </tr>
-</table>
+<p align="center">
+  <img src="screenshots/readme-diagrams/game-loop.png" width="860" alt="Observe to Interpretation to Choice to State to Echo to Ending player loop">
+</p>
 
 核心规则很简单：正文可以滚动阅读，底部选项应完整可见；隐藏内容不做关键点击陷阱，而是通过 observe 解锁新的可见 choice。
 
 ## Interaction Map
 
-<table>
-  <tr>
-    <th align="center">Scene</th>
-    <th align="center">Observe</th>
-    <th align="center">Hidden State</th>
-    <th align="center">Visible Choice</th>
-    <th align="center">Later Echo</th>
-  </tr>
-  <tr>
-    <td rowspan="3" align="center">场景正文</td>
-    <td>短信、日志、票据</td>
-    <td><code>clues</code> / <code>flags</code></td>
-    <td>解锁行动</td>
-    <td>章节复盘</td>
-  </tr>
-  <tr>
-    <td>NPC 反应</td>
-    <td><code>trust</code> / <code>suspicion</code></td>
-    <td>改变措辞</td>
-    <td>关系回声</td>
-  </tr>
-  <tr>
-    <td>关键遗漏</td>
-    <td>未满足条件</td>
-    <td>保持隐藏</td>
-    <td>显示缺少证据</td>
-  </tr>
-</table>
+<p align="center">
+  <img src="screenshots/readme-diagrams/interaction-map.png" width="860" alt="Interaction map showing scene text, observe chain, hidden state, and visible choice">
+</p>
 
 ## Runtime Architecture
 
-<table>
-  <tr>
-    <th align="center">Content</th>
-    <th align="center">Validation</th>
-    <th align="center">Runtime</th>
-    <th align="center">Player UI</th>
-  </tr>
-  <tr>
-    <td align="center"><code>examples/briefs</code><br><code>game.json</code></td>
-    <td align="center"><code>schemas</code><br><code>scripts/validate_*.py</code></td>
-    <td align="center"><code>src/app.js</code><br><code>localStorage save</code></td>
-    <td align="center"><code>index.html</code><br><code>src/styles.css</code></td>
-  </tr>
-  <tr>
-    <td align="center">叙事素材</td>
-    <td align="center">结构闸门</td>
-    <td align="center">确定性状态机</td>
-    <td align="center">纸墨竖屏界面</td>
-  </tr>
-</table>
+<p align="center">
+  <img src="screenshots/readme-diagrams/runtime-architecture.png" width="860" alt="Runtime architecture from brief to validation, runtime, save, and UI">
+</p>
 
 ## AI Generation Pipeline
 
 当前 Agent 是创作辅助流水线，不是全自动作者。它把主题 brief 编译成结构化 artifact，再经过校验、审查和发布闸门生成可玩的 `game.json`。
 
-<table>
-  <tr>
-    <td align="center"><strong>Brief</strong><br><code>missing_phone.json</code></td>
-    <td align="center">→</td>
-    <td align="center"><strong>Plan</strong><br><code>generation_plan</code></td>
-    <td align="center">→</td>
-    <td align="center"><strong>State</strong><br><code>state_schema</code></td>
-    <td align="center">→</td>
-    <td align="center"><strong>Blueprint</strong><br><code>scene_blueprint</code></td>
-  </tr>
-  <tr>
-    <td align="center" colspan="7">↓</td>
-  </tr>
-  <tr>
-    <td align="center"><strong>Trace</strong><br><code>agent_trace.jsonl</code></td>
-    <td align="center">←</td>
-    <td align="center"><strong>Export</strong><br><code>game.json</code></td>
-    <td align="center">←</td>
-    <td align="center"><strong>Validate / Repair</strong><br>schema + QA</td>
-    <td align="center">←</td>
-    <td align="center"><strong>Artifacts</strong><br><code>scene_artifacts</code></td>
-  </tr>
-</table>
+<p align="center">
+  <img src="screenshots/readme-diagrams/ai-pipeline.png" width="860" alt="AI generation pipeline from brief through artifacts, validation, export, and trace">
+</p>
 
 ## Release Gates
 
-<table>
-  <tr>
-    <td align="center"><strong>Schema</strong><br><sub>字段完整</sub></td>
-    <td align="center">→</td>
-    <td align="center"><strong>Structure</strong><br><sub>无孤儿节点</sub></td>
-    <td align="center">→</td>
-    <td align="center"><strong>Content QA</strong><br><sub>选择有后果</sub></td>
-    <td align="center">→</td>
-    <td align="center"><strong>Browser E2E</strong><br><sub>三结局可达</sub></td>
-    <td align="center">→</td>
-    <td align="center"><strong>A11y Smoke</strong><br><sub>键盘可用</sub></td>
-  </tr>
-</table>
+<p align="center">
+  <img src="screenshots/readme-diagrams/release-gates.png" width="860" alt="Release gates for schema, structure, content QA, browser E2E, and experience risks">
+</p>
+
+## State & Ending
+
+<p align="center">
+  <img src="screenshots/readme-diagrams/state-ending-map.png" width="860" alt="Hidden state and ending rules combine into a player portrait">
+</p>
+
+图源位于 `doc/readme_diagrams/readme_diagrams.html`，重新生成 README 流程图：
+
+```bash
+python3 scripts/render_readme_diagrams.py
+```
 
 ## Quick Start
 
@@ -260,19 +188,8 @@ python3 scripts/validate_model_output_archive.py
 
 ## Product Boundary
 
-<table>
-  <tr>
-    <th align="center">已完成</th>
-    <th align="center">仍未完成</th>
-  </tr>
-  <tr>
-    <td>
-      3 章可玩 demo、observe 解锁 choice、章节复盘、存档恢复、三条主结局、基础 Agent 管线。
-    </td>
-    <td>
-      真实 5-8 人 playtest、真实移动设备验收、多浏览器验收、屏幕阅读器质量验证、更多真实 LLM 输出样本。
-    </td>
-  </tr>
-</table>
+<p align="center">
+  <img src="screenshots/readme-diagrams/product-boundary.png" width="860" alt="Product boundary showing completed vertical slice and remaining MVP gaps">
+</p>
 
 产品准则以 <code>doc/prd</code> 为准；Agent 执行规则见 <code>agent.md</code>。
