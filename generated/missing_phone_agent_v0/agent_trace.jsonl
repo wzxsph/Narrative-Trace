@@ -1,0 +1,9 @@
+{"node": "load_brief", "status": "ok", "summary": "Loaded project brief", "metrics": {"brief_path": "examples/briefs/missing_phone.json", "project_id": "missing_phone"}}
+{"node": "draft_skeleton", "status": "ok", "summary": "Created deterministic structured game skeleton", "metrics": {"scenes": 9, "endings": 3}}
+{"node": "optional_llm_polish", "status": "skipped", "summary": "Provider is offline", "metrics": {}}
+{"node": "validate_schema", "status": "ok", "summary": "JSON Schema gate completed", "metrics": {"errors": 0}}
+{"node": "validate_structure", "status": "ok", "summary": "Graph and state validator gate completed", "metrics": {"errors": 0, "warnings": 0}}
+{"node": "validate_content_qa", "status": "ok", "summary": "Content QA gate completed", "metrics": {"errors": 0, "warnings": 0}}
+{"node": "repair_if_needed", "status": "skipped", "summary": "All validation gates passed; no repair needed", "metrics": {"repair_attempts": 0}}
+{"node": "export_artifacts", "status": "ok", "summary": "Exported game artifacts", "metrics": {"out_dir": "generated/missing_phone_agent_v0"}}
+{"node": "write_agent_trace", "status": "ok", "summary": "Wrote agent trace", "metrics": {"trace_path": "generated/missing_phone_agent_v0/agent_trace.jsonl"}}

@@ -104,11 +104,23 @@ python3 scripts/repair_game.py generated/missing_phone_v0/game.json --out /tmp/r
 
 当前 AI Agent 路线仍是辅助创作，不是全自动作者。仓库里已经有：
 
+- 图式生成 Agent：`scripts/run_generation_agent.py`
 - Prompt manifest：`prompts/manifest.json`
 - 生成 trace：`generated/missing_phone_v0/generation_trace.jsonl`
 - 生成失败 fixture：`examples/fixtures/generation_failures/fixture_cases.json`
 - 模型输出样本归档：`scripts/archive_model_output_sample.py`
 - 模型输出样本校验：`scripts/validate_model_output_archive.py`
+
+运行图式生成 Agent：
+
+```bash
+python3 scripts/run_generation_agent.py \
+  --brief examples/briefs/missing_phone.json \
+  --out generated/missing_phone_agent_v0 \
+  --provider offline
+```
+
+该入口会执行 `load_brief -> draft_skeleton -> optional_llm_polish -> validate_schema -> validate_structure -> validate_content_qa -> repair_if_needed -> export_artifacts -> write_agent_trace`，并导出 `agent_trace.jsonl`。
 
 归档真实模型输出样本：
 

@@ -1,0 +1,326 @@
+{
+  "states": {
+    "relationships.chen.trust": {
+      "writes": [
+        "ch01_phone_lock.choice_call_chen.effects",
+        "ch01_contact_trace.choice_warn_chen.effects",
+        "ch02_station_gate.choice_call_chen_at_gate.effects",
+        "ch03_witness_thread.choice_ask_chen_last_time.effects"
+      ],
+      "reads": [
+        "ch01_cloud_console.echo_cloud_chen_call.requirements",
+        "ch01_contact_trace.echo_contact_chen_trust.requirements",
+        "ch02_station_gate.echo_gate_chen_trust.requirements",
+        "ch02_station_platform.echo_platform_chen_trust.requirements",
+        "ch02_locker_room.echo_locker_chen_trust.requirements",
+        "ch03_witness_thread.echo_witness_chen_trust.requirements",
+        "ch03_publish_decision.echo_publish_chen_trust.requirements"
+      ]
+    },
+    "clues.station_location": {
+      "writes": [
+        "ch01_phone_lock.obs_0213_log.effects"
+      ],
+      "reads": [
+        "ch01_phone_lock.choice_go_station.requirements"
+      ]
+    },
+    "stance.truth_first": {
+      "writes": [
+        "ch01_phone_lock.choice_go_station.effects",
+        "ch01_contact_trace.choice_leave_for_station.effects",
+        "ch02_station_gate.choice_enter_service_corridor.effects",
+        "ch02_locker_room.choice_take_backup_to_safehouse.effects",
+        "ch03_backup_unlock.choice_compare_context.effects",
+        "ch03_witness_thread.choice_prepare_public_packet.effects",
+        "ch03_publish_decision.choice_publish_truth.effects"
+      ],
+      "reads": []
+    },
+    "clues.wipe_pause_window": {
+      "writes": [
+        "ch01_phone_lock.obs_pause_window.effects"
+      ],
+      "reads": [
+        "ch01_phone_lock.choice_delay_wipe.requirements"
+      ]
+    },
+    "pressure.company_alert": {
+      "writes": [
+        "ch01_phone_lock.choice_delay_wipe.effects",
+        "ch01_phone_lock.choice_confront_chen.effects",
+        "ch01_phone_lock.obs_remote_wipe.effects",
+        "ch01_cloud_console.choice_freeze_wipe.effects",
+        "ch01_cloud_console.choice_blind_recording.effects",
+        "ch01_cloud_console.obs_three_devices.effects",
+        "ch02_station_gate.choice_force_gate.effects",
+        "ch02_station_platform.choice_wait_station.effects",
+        "ch02_station_platform.choice_cover_camera.effects",
+        "ch02_locker_room.choice_destroy_locker_camera.effects",
+        "ch03_backup_unlock.choice_skip_context.effects",
+        "ch03_witness_thread.choice_enter_decision_without_more.effects",
+        "ch03_publish_decision.choice_confront_final.effects"
+      ],
+      "reads": []
+    },
+    "clues.chen_trimmed_location": {
+      "writes": [
+        "ch01_phone_lock.obs_trimmed_gap.effects"
+      ],
+      "reads": [
+        "ch01_phone_lock.choice_confront_chen.requirements"
+      ]
+    },
+    "relationships.chen.suspicion": {
+      "writes": [
+        "ch01_phone_lock.choice_confront_chen.effects",
+        "ch02_station_gate.choice_call_chen_at_gate.effects",
+        "ch03_backup_unlock.choice_send_hash_to_chen.effects",
+        "ch03_publish_decision.choice_confront_final.effects"
+      ],
+      "reads": [
+        "ch01_contact_trace.echo_contact_chen_suspicion.requirements",
+        "ch02_station_gate.echo_gate_chen_suspicion.requirements",
+        "ch02_station_platform.echo_platform_chen_suspicion.requirements",
+        "ch03_backup_unlock.echo_backup_chen_suspicion.requirements",
+        "ch03_witness_thread.echo_witness_chen_suspicion.requirements",
+        "ch03_publish_decision.echo_publish_chen_suspicion.requirements"
+      ]
+    },
+    "clues.unsent_warning": {
+      "writes": [
+        "ch01_phone_lock.obs_unsent_sms.effects"
+      ],
+      "reads": []
+    },
+    "clues.lock_time_0213": {
+      "writes": [
+        "ch01_phone_lock.obs_time_0213.effects"
+      ],
+      "reads": []
+    },
+    "clues.freeze_token": {
+      "writes": [
+        "ch01_cloud_console.obs_session_token.effects"
+      ],
+      "reads": [
+        "ch01_cloud_console.choice_freeze_wipe.requirements"
+      ]
+    },
+    "clues.cloud_admin": {
+      "writes": [
+        "ch01_cloud_console.obs_device_admin.effects"
+      ],
+      "reads": [
+        "ch01_cloud_console.choice_isolate_phone.requirements"
+      ]
+    },
+    "clues.station_route_confirmed": {
+      "writes": [
+        "ch01_cloud_console.choice_isolate_phone.effects",
+        "ch01_contact_trace.obs_taxi_order.effects"
+      ],
+      "reads": [
+        "ch01_contact_trace.choice_leave_for_station.requirements"
+      ]
+    },
+    "clues.screen_recording": {
+      "writes": [
+        "ch01_cloud_console.obs_screen_recording.effects"
+      ],
+      "reads": [
+        "ch01_cloud_console.choice_blind_recording.requirements"
+      ]
+    },
+    "stance.protect_person": {
+      "writes": [
+        "ch01_cloud_console.choice_leave_unfrozen.effects",
+        "ch01_contact_trace.choice_follow_old_address.effects",
+        "ch02_station_gate.choice_wait_guard_shift.effects",
+        "ch02_station_platform.choice_read_wall_note.effects",
+        "ch02_locker_room.choice_protect_lin_secret.effects",
+        "ch03_backup_unlock.choice_archive_first.effects",
+        "ch03_witness_thread.choice_prepare_archive.effects",
+        "ch03_publish_decision.choice_keep_archive.effects"
+      ],
+      "reads": []
+    },
+    "clues.voice_note": {
+      "writes": [
+        "ch01_contact_trace.obs_voice_note.effects"
+      ],
+      "reads": [
+        "ch01_contact_trace.choice_send_voice_to_self.requirements"
+      ]
+    },
+    "relationships.lin.bond": {
+      "writes": [
+        "ch01_contact_trace.choice_send_voice_to_self.effects",
+        "ch01_contact_trace.obs_voice_note.effects",
+        "ch02_station_platform.choice_open_locker.effects",
+        "ch02_locker_room.choice_wait_for_lin_contact.effects",
+        "ch02_locker_room.obs_red_bracelet.effects"
+      ],
+      "reads": [
+        "ch02_station_gate.echo_gate_lin_bond.requirements",
+        "ch02_station_platform.echo_platform_lin_bond.requirements",
+        "ch02_locker_room.echo_locker_lin_bond.requirements",
+        "ch03_backup_unlock.echo_backup_lin_bond.requirements",
+        "ch03_witness_thread.echo_witness_lin_bond.requirements",
+        "ch03_publish_decision.echo_publish_lin_bond.requirements"
+      ]
+    },
+    "clues.chen_casefile": {
+      "writes": [
+        "ch01_contact_trace.obs_casefile_share.effects"
+      ],
+      "reads": [
+        "ch01_contact_trace.choice_warn_chen.requirements"
+      ]
+    },
+    "clues.chen_alias": {
+      "writes": [
+        "ch01_contact_trace.obs_chen_alias.effects"
+      ],
+      "reads": []
+    },
+    "clues.station_entry_code": {
+      "writes": [
+        "ch02_station_gate.obs_station_entry_code.effects"
+      ],
+      "reads": [
+        "ch02_station_gate.choice_enter_service_corridor.requirements"
+      ]
+    },
+    "clues.security_booth": {
+      "writes": [
+        "ch02_station_gate.obs_security_booth.effects"
+      ],
+      "reads": [
+        "ch02_station_gate.choice_wait_guard_shift.requirements"
+      ]
+    },
+    "clues.camera_blind_spot": {
+      "writes": [
+        "ch02_station_gate.obs_camera_blind_spot.effects"
+      ],
+      "reads": []
+    },
+    "clues.locker_a17": {
+      "writes": [
+        "ch02_station_platform.obs_locker_code.effects"
+      ],
+      "reads": [
+        "ch02_station_platform.choice_open_locker.requirements"
+      ]
+    },
+    "clues.backup_copy": {
+      "writes": [
+        "ch02_station_platform.choice_open_locker.effects",
+        "ch02_locker_room.obs_backup_drive.effects"
+      ],
+      "reads": [
+        "ch02_locker_room.choice_take_backup_to_safehouse.requirements"
+      ]
+    },
+    "clues.hidden_camera": {
+      "writes": [
+        "ch02_station_platform.obs_red_dot.effects"
+      ],
+      "reads": [
+        "ch02_station_platform.choice_cover_camera.requirements"
+      ]
+    },
+    "clues.lin_confession": {
+      "writes": [
+        "ch02_station_platform.obs_recording_warning.effects"
+      ],
+      "reads": [
+        "ch02_station_platform.choice_read_wall_note.requirements"
+      ]
+    },
+    "clues.ticket_warning": {
+      "writes": [
+        "ch02_station_platform.obs_ticket.effects"
+      ],
+      "reads": []
+    },
+    "clues.victim_list": {
+      "writes": [
+        "ch02_locker_room.obs_red_bracelet.effects",
+        "ch03_backup_unlock.obs_context_chain.effects",
+        "ch03_witness_thread.obs_victim_list.effects"
+      ],
+      "reads": [
+        "ch02_locker_room.choice_protect_lin_secret.requirements",
+        "ch03_backup_unlock.choice_archive_first.requirements",
+        "ch03_witness_thread.choice_prepare_public_packet.requirements"
+      ]
+    },
+    "clues.lin_audio_key": {
+      "writes": [
+        "ch02_locker_room.obs_audio_key.effects"
+      ],
+      "reads": []
+    },
+    "clues.raw_recording": {
+      "writes": [
+        "ch03_backup_unlock.obs_raw_recording.effects"
+      ],
+      "reads": [
+        "ch03_backup_unlock.choice_compare_context.requirements"
+      ]
+    },
+    "clues.edited_recording": {
+      "writes": [
+        "ch03_backup_unlock.obs_edited_recording.effects"
+      ],
+      "reads": [
+        "ch03_backup_unlock.choice_send_hash_to_chen.requirements"
+      ]
+    },
+    "clues.public_packet_ready": {
+      "writes": [
+        "ch03_witness_thread.choice_prepare_public_packet.effects",
+        "ch03_publish_decision.obs_public_packet.effects"
+      ],
+      "reads": [
+        "ch03_publish_decision.choice_publish_truth.requirements"
+      ]
+    },
+    "clues.final_message": {
+      "writes": [
+        "ch03_witness_thread.obs_final_message.effects"
+      ],
+      "reads": [
+        "ch03_witness_thread.choice_prepare_archive.requirements"
+      ]
+    },
+    "clues.archive_ready": {
+      "writes": [
+        "ch03_witness_thread.choice_prepare_archive.effects",
+        "ch03_publish_decision.obs_offline_archive.effects"
+      ],
+      "reads": [
+        "ch03_publish_decision.choice_keep_archive.requirements"
+      ]
+    },
+    "clues.chen_motive": {
+      "writes": [
+        "ch03_witness_thread.obs_chen_pause.effects"
+      ],
+      "reads": [
+        "ch03_witness_thread.choice_ask_chen_last_time.requirements"
+      ]
+    },
+    "clues.chen_message_ready": {
+      "writes": [
+        "ch03_witness_thread.choice_ask_chen_last_time.effects",
+        "ch03_publish_decision.obs_send_to_chen.effects"
+      ],
+      "reads": [
+        "ch03_publish_decision.choice_confront_final.requirements"
+      ]
+    }
+  }
+}
