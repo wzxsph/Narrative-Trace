@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>失踪者的手机</title>
+    <link rel="stylesheet" href="src/styles.css" />
+  </head>
+  <body>
+    <main class="shell">
+      <section class="phone" aria-label="文字冒险游戏">
+        <header class="status-bar">
+          <div>
+            <p class="eyebrow" id="chapterLabel">载入中</p>
+            <h1 id="sceneTitle">失踪者的手机</h1>
+          </div>
+          <button id="mapButton" class="icon-text-button" type="button">路径</button>
+        </header>
+
+        <section class="task-strip">
+          <div>
+            <span>任务</span>
+            <strong id="taskText">读取案件资料</strong>
+          </div>
+          <div>
+            <span>压力</span>
+            <strong id="pressureText">--</strong>
+          </div>
+        </section>
+
+        <section id="outcomePanel" class="outcome-panel" hidden></section>
+        <section id="storyArea" class="story-area"></section>
+        <section id="choiceArea" class="choice-area"></section>
+      </section>
+
+      <aside id="pathPanel" class="path-panel" aria-label="路径图">
+        <div class="panel-header">
+          <div>
+            <p class="eyebrow">Path Map</p>
+            <h2>案件痕迹图</h2>
+          </div>
+          <button id="closeMapButton" class="icon-button" type="button" aria-label="关闭路径图">×</button>
+        </div>
+        <div id="pathMapContent" class="path-map-content"></div>
+      </aside>
+    </main>
+
+    <template id="loadingTemplate">
+      <div class="loading-card">
+        <h2>正在接入手机</h2>
+        <p>读取生成的案件资料...</p>
+      </div>
+    </template>
+
+    <script src="src/app.js" type="module"></script>
+  </body>
+</html>
+

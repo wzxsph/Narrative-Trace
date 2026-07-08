@@ -1,0 +1,8 @@
+reference/
+给人类看的文档/
+doc/给人类看的文档/
+.env
+__pycache__/
+*.py[cod]
+.DS_Store
+

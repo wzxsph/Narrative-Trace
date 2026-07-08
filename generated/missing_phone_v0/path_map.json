@@ -1,0 +1,247 @@
+{
+  "project": {
+    "id": "missing_phone",
+    "title": "失踪者的手机",
+    "theme_question": "当真相会伤害无辜者时，你是否仍然有义务公开它？",
+    "interface": "竖屏手机"
+  },
+  "start_scene_id": "ch01_phone_lock",
+  "scenes": [
+    {
+      "id": "ch01_phone_lock",
+      "chapter": "第一章：锁屏上的半句话",
+      "title": "锁屏上的半句话",
+      "observes": [
+        {
+          "id": "obs_unsent_sms",
+          "label": "查看短信草稿",
+          "depth": 1,
+          "unlocks_choices": []
+        },
+        {
+          "id": "obs_0213_log",
+          "label": "对照系统日志",
+          "depth": 2,
+          "unlocks_choices": [
+            "choice_go_station"
+          ]
+        },
+        {
+          "id": "obs_trimmed_gap",
+          "label": "检查截断痕迹",
+          "depth": 3,
+          "unlocks_choices": [
+            "choice_confront_chen"
+          ]
+        },
+        {
+          "id": "obs_remote_wipe",
+          "label": "查看远程清除来源",
+          "depth": 1,
+          "unlocks_choices": [
+            "choice_delay_wipe"
+          ]
+        },
+        {
+          "id": "obs_pause_window",
+          "label": "检查暂停窗口",
+          "depth": 2,
+          "unlocks_choices": [
+            "choice_delay_wipe"
+          ]
+        },
+        {
+          "id": "obs_time_0213",
+          "label": "查看锁屏时间",
+          "depth": 1,
+          "unlocks_choices": []
+        }
+      ],
+      "choices": [
+        {
+          "id": "choice_call_chen",
+          "label": "联系陈警官",
+          "target": "ch02_station",
+          "requirements": []
+        },
+        {
+          "id": "choice_go_station",
+          "label": "前往废弃地铁站",
+          "target": "ch02_station",
+          "requirements": [
+            {
+              "state": "clues.station_location",
+              "equals": true
+            }
+          ]
+        },
+        {
+          "id": "choice_delay_wipe",
+          "label": "延迟远程清除",
+          "target": "ch02_station",
+          "requirements": [
+            {
+              "state": "clues.wipe_pause_window",
+              "equals": true
+            }
+          ]
+        },
+        {
+          "id": "choice_confront_chen",
+          "label": "带着截断记录质问陈",
+          "target": "ch03_backup",
+          "requirements": [
+            {
+              "state": "clues.chen_trimmed_location",
+              "equals": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ch02_station",
+      "chapter": "第二章：废弃地铁站",
+      "title": "废弃地铁站",
+      "observes": [
+        {
+          "id": "obs_ticket",
+          "label": "取下车票",
+          "depth": 1,
+          "unlocks_choices": []
+        },
+        {
+          "id": "obs_locker_code",
+          "label": "核对储物柜编号",
+          "depth": 2,
+          "unlocks_choices": [
+            "choice_open_locker"
+          ]
+        },
+        {
+          "id": "obs_red_dot",
+          "label": "检查红点",
+          "depth": 1,
+          "unlocks_choices": [
+            "choice_cover_camera"
+          ]
+        },
+        {
+          "id": "obs_recording_warning",
+          "label": "辨认字迹",
+          "depth": 1,
+          "unlocks_choices": [
+            "choice_protect_lin"
+          ]
+        }
+      ],
+      "choices": [
+        {
+          "id": "choice_wait_station",
+          "label": "继续等待",
+          "target": "ch03_backup",
+          "requirements": []
+        },
+        {
+          "id": "choice_open_locker",
+          "label": "打开 A-17 储物柜",
+          "target": "ch03_backup",
+          "requirements": [
+            {
+              "state": "clues.locker_a17",
+              "equals": true
+            }
+          ]
+        },
+        {
+          "id": "choice_cover_camera",
+          "label": "遮住隐藏摄像头",
+          "target": "ch03_backup",
+          "requirements": [
+            {
+              "state": "clues.hidden_camera",
+              "equals": true
+            }
+          ]
+        },
+        {
+          "id": "choice_protect_lin",
+          "label": "先保护林的秘密",
+          "target": "ch03_backup",
+          "requirements": [
+            {
+              "state": "clues.lin_confession",
+              "equals": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ch03_backup",
+      "chapter": "第三章：被保存的副本",
+      "title": "被保存的副本",
+      "observes": [
+        {
+          "id": "obs_raw_recording",
+          "label": "播放原始录音",
+          "depth": 1,
+          "unlocks_choices": [
+            "choice_publish_truth"
+          ]
+        },
+        {
+          "id": "obs_edited_recording",
+          "label": "比对剪辑版本",
+          "depth": 1,
+          "unlocks_choices": [
+            "choice_confront_final"
+          ]
+        },
+        {
+          "id": "obs_final_message",
+          "label": "阅读最后留言",
+          "depth": 1,
+          "unlocks_choices": [
+            "choice_keep_archive"
+          ]
+        }
+      ],
+      "choices": [
+        {
+          "id": "choice_publish_truth",
+          "label": "公开原始录音",
+          "target": "ending_publish",
+          "requirements": [
+            {
+              "state": "clues.raw_recording",
+              "equals": true
+            }
+          ]
+        },
+        {
+          "id": "choice_keep_archive",
+          "label": "保存但暂不公开",
+          "target": "ending_bury",
+          "requirements": [
+            {
+              "state": "clues.final_message",
+              "equals": true
+            }
+          ]
+        },
+        {
+          "id": "choice_confront_final",
+          "label": "把剪辑痕迹发给陈",
+          "target": "ending_confront",
+          "requirements": [
+            {
+              "state": "clues.edited_recording",
+              "equals": true
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

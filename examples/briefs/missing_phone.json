@@ -1,0 +1,48 @@
+{
+  "project": {
+    "id": "missing_phone",
+    "title": "失踪者的手机",
+    "theme_question": "当真相会伤害无辜者时，你是否仍然有义务公开它？",
+    "tone": ["悬疑", "克制", "道德压力"],
+    "target_duration_minutes": 25
+  },
+  "world": {
+    "interface": "竖屏手机",
+    "premise": "玩家拿到一部即将被远程清除的手机。",
+    "pressure": "远程清除倒计时"
+  },
+  "chapters": [
+    {
+      "id": "ch01",
+      "title": "锁屏上的半句话",
+      "question": "你是否愿意侵犯隐私来寻找真相？"
+    },
+    {
+      "id": "ch02",
+      "title": "废弃地铁站",
+      "question": "你是否愿意相信一个可能撒谎的人？"
+    },
+    {
+      "id": "ch03",
+      "title": "被保存的副本",
+      "question": "当真相会伤害无辜者时，你是否公开它？"
+    }
+  ],
+  "characters": [
+    {
+      "id": "lin",
+      "name": "林",
+      "role": "失踪者",
+      "public_face": "调查记者",
+      "hidden_truth": "曾经剪辑过一段关键录音"
+    },
+    {
+      "id": "chen",
+      "name": "陈警官",
+      "role": "警方联系人",
+      "public_face": "理性可靠",
+      "hidden_truth": "被上级要求截断定位记录"
+    }
+  ]
+}
+
