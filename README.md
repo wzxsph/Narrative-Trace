@@ -120,7 +120,7 @@ python3 scripts/run_generation_agent.py \
   --provider offline
 ```
 
-该入口会执行 `load_brief -> plan_story_structure -> design_state_schema -> validate_state_schema_design -> design_scene_blueprint -> validate_scene_blueprint -> draft_scene_artifacts -> validate_scene_artifacts -> optional_llm_scene_review -> review_scene_artifacts -> validate_scene_artifact_release -> draft_skeleton -> validate_blueprint_alignment -> optional_llm_polish -> validate_schema -> validate_structure -> validate_content_qa -> repair_if_needed -> export_artifacts -> write_agent_trace`，并导出 `generation_plan.json`、`state_schema_design.json`、`scene_blueprint.json`、`scene_artifacts.json` 与 `agent_trace.jsonl`。其中 `draft_skeleton` 只消费已 locked 的 `scene_artifacts.json` 编译完整 game。
+该入口会执行 `load_brief -> plan_story_structure -> design_state_schema -> validate_state_schema_design -> design_scene_blueprint -> validate_scene_blueprint -> draft_scene_artifacts -> validate_scene_artifacts -> optional_llm_scene_review -> build_review_issues -> validate_review_issues -> review_scene_artifacts -> validate_scene_artifact_release -> draft_skeleton -> validate_blueprint_alignment -> optional_llm_polish -> validate_schema -> validate_structure -> validate_content_qa -> repair_if_needed -> export_artifacts -> write_agent_trace`，并导出 `generation_plan.json`、`state_schema_design.json`、`scene_blueprint.json`、`scene_artifacts.json`、`review_issues.json` 与 `agent_trace.jsonl`。其中 `draft_skeleton` 只消费已 locked 的 `scene_artifacts.json` 编译完整 game。
 
 校验状态设计 artifact：
 
@@ -168,6 +168,13 @@ python3 scripts/llm_env_smoke_test.py
 
 ```bash
 python3 scripts/llm_scene_review_smoke.py
+```
+
+校验 review issues：
+
+```bash
+python3 scripts/validate_review_issues.py \
+  generated/missing_phone_agent_v0/review_issues.json
 ```
 
 归档真实模型输出样本：

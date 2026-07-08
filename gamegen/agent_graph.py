@@ -17,6 +17,7 @@ from .demo_agent import (
 )
 from .llm_client import LLMClient, LLMConfig
 from .llm_scene_review import review_scene_artifact_with_llm
+from .review_issues import ReviewIssueMessage, build_review_issues, validate_review_issues
 from .schema_contract import validate_against_default_schema
 from .scene_artifacts import (
     SceneArtifactMessage,
@@ -78,11 +79,13 @@ class AgentState:
     scene_blueprint_design: dict[str, Any] | None = None
     scene_artifacts: dict[str, Any] | None = None
     llm_scene_review: dict[str, Any] | None = None
+    review_issues: dict[str, Any] | None = None
     game: dict[str, Any] | None = None
     state_schema_messages: list[StateSchemaDesignMessage] = field(default_factory=list)
     scene_blueprint_messages: list[SceneBlueprintMessage] = field(default_factory=list)
     scene_artifact_messages: list[SceneArtifactMessage] = field(default_factory=list)
     scene_artifact_release_messages: list[SceneArtifactMessage] = field(default_factory=list)
+    review_issue_messages: list[ReviewIssueMessage] = field(default_factory=list)
     blueprint_alignment_messages: list[BlueprintAlignmentMessage] = field(default_factory=list)
     schema_errors: list[str] = field(default_factory=list)
     validation_messages: list[ValidationMessage] = field(default_factory=list)
@@ -102,6 +105,7 @@ class AgentState:
         scene_artifact_release_errors = sum(
             1 for message in self.scene_artifact_release_messages if message.level == "error"
         )
+        review_issue_errors = sum(1 for message in self.review_issue_messages if message.level == "error")
         blueprint_alignment_errors = sum(1 for message in self.blueprint_alignment_messages if message.level == "error")
         validation_errors = sum(1 for message in self.validation_messages if message.level == "error")
         content_errors = sum(1 for message in self.content_qa_messages if message.level == "error")
@@ -110,6 +114,7 @@ class AgentState:
             + scene_blueprint_errors
             + scene_artifact_errors
             + scene_artifact_release_errors
+            + review_issue_errors
             + blueprint_alignment_errors
             + len(self.schema_errors)
             + validation_errors
@@ -129,6 +134,8 @@ class GenerationAgentGraph:
         self.draft_scene_artifacts(state)
         self.validate_scene_artifacts(state)
         self.optional_llm_scene_review(state)
+        self.build_review_issues(state)
+        self.validate_review_issues(state)
         self.review_scene_artifacts(state)
         self.validate_scene_artifact_release(state)
         self.draft_skeleton(state)
@@ -176,7 +183,7 @@ class GenerationAgentGraph:
         generation = state.game.setdefault("generation", {})
         generation["provider"] = "offline"
         generation["model"] = OFFLINE_MODEL_ID
-        generation["agent_graph"] = "v0_37"
+        generation["agent_graph"] = "v0_38"
         generation["plan_schema_version"] = state.generation_plan["plan_schema_version"]
         generation["state_schema_design_version"] = state.state_schema_design["schema_version"]
         generation["scene_blueprint_version"] = state.scene_blueprint_design["schema_version"]
@@ -192,6 +199,7 @@ class GenerationAgentGraph:
             draft_source=generation["draft_source"],
             scene_artifacts=len(state.scene_artifacts["artifacts"]),
             locked_scene_artifacts=sum(1 for artifact in state.scene_artifacts["artifacts"] if artifact["status"] == "locked"),
+            review_issues=len(state.review_issues["issues"]) if state.review_issues else 0,
             scenes=len(state.game.get("scenes", [])),
             endings=len(state.game.get("endings", [])),
         )
@@ -344,6 +352,33 @@ class GenerationAgentGraph:
             risk_flags=len(state.llm_scene_review["risk_flags"]),
             model=config.model,
         )
+
+    def build_review_issues(self, state: AgentState) -> None:
+        if state.brief is None:
+            raise AgentRunError("build_review_issues requires loaded brief")
+        state.review_issues = build_review_issues(state.brief["project"]["id"], state.llm_scene_review)
+        state.add_trace(
+            "build_review_issues",
+            "ok",
+            "Built non-blocking review issues artifact",
+            issues=len(state.review_issues["issues"]),
+        )
+
+    def validate_review_issues(self, state: AgentState) -> None:
+        if state.review_issues is None:
+            raise AgentRunError("validate_review_issues requires review issues")
+        state.review_issue_messages = validate_review_issues(state.review_issues)
+        errors = sum(1 for message in state.review_issue_messages if message.level == "error")
+        warnings = sum(1 for message in state.review_issue_messages if message.level == "warning")
+        state.add_trace(
+            "validate_review_issues",
+            "ok" if errors == 0 else "error",
+            "Review issues artifact gate completed",
+            errors=errors,
+            warnings=warnings,
+        )
+        if errors:
+            raise AgentRunError("Review issues failed validation")
 
     def review_scene_artifacts(self, state: AgentState) -> None:
         if state.scene_artifacts is None:
@@ -505,8 +540,9 @@ class GenerationAgentGraph:
             or state.state_schema_design is None
             or state.scene_blueprint_design is None
             or state.scene_artifacts is None
+            or state.review_issues is None
         ):
-            raise AgentRunError("export_artifacts requires game, generation plan, state schema design, scene blueprint, and scene artifacts")
+            raise AgentRunError("export_artifacts requires game, generation plan, state schema design, scene blueprint, scene artifacts, and review issues")
         export_game(state.game, state.config.out_dir)
         (state.config.out_dir / "generation_plan.json").write_text(
             json.dumps(state.generation_plan, ensure_ascii=False, indent=2) + "\n",
@@ -529,6 +565,10 @@ class GenerationAgentGraph:
                 json.dumps(state.llm_scene_review, ensure_ascii=False, indent=2) + "\n",
                 encoding="utf-8",
             )
+        (state.config.out_dir / "review_issues.json").write_text(
+            json.dumps(state.review_issues, ensure_ascii=False, indent=2) + "\n",
+            encoding="utf-8",
+        )
         state.exported = True
         state.add_trace(
             "export_artifacts",
