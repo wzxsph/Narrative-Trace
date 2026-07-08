@@ -1,0 +1,301 @@
+{
+  "schema_version": "state_schema_design_v0_1",
+  "project_id": "missing_phone",
+  "source_plan_schema_version": "generation_plan_v0_1",
+  "axes": [
+    {
+      "id": "clues",
+      "purpose": "玩家已经确认的证据和可行动信息。"
+    },
+    {
+      "id": "stance",
+      "purpose": "玩家在道德问题上的倾向，而不是显式阵营。"
+    },
+    {
+      "id": "relationships",
+      "purpose": "隐藏关系向量，避免单一好感度条。"
+    },
+    {
+      "id": "pressure",
+      "purpose": "外部风险与时间压力。"
+    }
+  ],
+  "variables": [
+    {
+      "key": "clues.unsent_warning",
+      "axis": "clues",
+      "type": "boolean",
+      "initial": false,
+      "purpose": "玩家是否理解短信在警告陈。",
+      "written_by": [
+        "obs_unsent_sms"
+      ],
+      "read_by": [
+        "chapter_review",
+        "ending_profile"
+      ]
+    },
+    {
+      "key": "clues.station_location",
+      "axis": "clues",
+      "type": "boolean",
+      "initial": false,
+      "purpose": "玩家是否取得废弃地铁站定位。",
+      "written_by": [
+        "obs_0213_log"
+      ],
+      "read_by": [
+        "choice_go_station",
+        "chapter_review"
+      ]
+    },
+    {
+      "key": "clues.chen_trimmed_location",
+      "axis": "clues",
+      "type": "boolean",
+      "initial": false,
+      "purpose": "玩家是否发现陈截断定位记录。",
+      "written_by": [
+        "obs_trimmed_gap"
+      ],
+      "read_by": [
+        "choice_confront_chen",
+        "ending_confront"
+      ]
+    },
+    {
+      "key": "clues.wipe_pause_window",
+      "axis": "clues",
+      "type": "boolean",
+      "initial": false,
+      "purpose": "玩家是否找到远程清除暂停窗口。",
+      "written_by": [
+        "obs_pause_window"
+      ],
+      "read_by": [
+        "choice_delay_wipe"
+      ]
+    },
+    {
+      "key": "clues.freeze_token",
+      "axis": "clues",
+      "type": "boolean",
+      "initial": false,
+      "purpose": "玩家是否复制冻结令牌。",
+      "written_by": [
+        "obs_session_token"
+      ],
+      "read_by": [
+        "choice_freeze_wipe"
+      ]
+    },
+    {
+      "key": "clues.station_entry_code",
+      "axis": "clues",
+      "type": "boolean",
+      "initial": false,
+      "purpose": "玩家是否获得旧员工入口码。",
+      "written_by": [
+        "obs_station_entry_code"
+      ],
+      "read_by": [
+        "choice_enter_service_corridor"
+      ]
+    },
+    {
+      "key": "clues.locker_a17",
+      "axis": "clues",
+      "type": "boolean",
+      "initial": false,
+      "purpose": "玩家是否找到 A-17 储物柜编号。",
+      "written_by": [
+        "obs_locker_code"
+      ],
+      "read_by": [
+        "choice_open_locker"
+      ]
+    },
+    {
+      "key": "clues.backup_copy",
+      "axis": "clues",
+      "type": "boolean",
+      "initial": false,
+      "purpose": "玩家是否取得离线备份。",
+      "written_by": [
+        "obs_backup_drive",
+        "choice_open_locker"
+      ],
+      "read_by": [
+        "choice_take_backup_to_safehouse"
+      ]
+    },
+    {
+      "key": "clues.victim_list",
+      "axis": "clues",
+      "type": "boolean",
+      "initial": false,
+      "purpose": "玩家是否知道受害者名单风险。",
+      "written_by": [
+        "obs_red_bracelet",
+        "obs_victim_list"
+      ],
+      "read_by": [
+        "choice_prepare_public_packet",
+        "choice_protect_lin_secret"
+      ]
+    },
+    {
+      "key": "clues.public_packet_ready",
+      "axis": "clues",
+      "type": "boolean",
+      "initial": false,
+      "purpose": "玩家是否准备公开包。",
+      "written_by": [
+        "choice_prepare_public_packet",
+        "obs_public_packet"
+      ],
+      "read_by": [
+        "choice_publish_truth"
+      ]
+    },
+    {
+      "key": "clues.archive_ready",
+      "axis": "clues",
+      "type": "boolean",
+      "initial": false,
+      "purpose": "玩家是否准备封存包。",
+      "written_by": [
+        "choice_prepare_archive",
+        "obs_offline_archive"
+      ],
+      "read_by": [
+        "choice_keep_archive"
+      ]
+    },
+    {
+      "key": "clues.chen_message_ready",
+      "axis": "clues",
+      "type": "boolean",
+      "initial": false,
+      "purpose": "玩家是否准备发给陈的草稿。",
+      "written_by": [
+        "choice_ask_chen_last_time",
+        "obs_send_to_chen"
+      ],
+      "read_by": [
+        "choice_confront_final"
+      ]
+    },
+    {
+      "key": "stance.truth_first",
+      "axis": "stance",
+      "type": "integer",
+      "initial": 0,
+      "purpose": "玩家偏向公开真相的程度。",
+      "written_by": [
+        "choice_go_station",
+        "choice_enter_service_corridor"
+      ],
+      "read_by": [
+        "ending_profile",
+        "ending_publish"
+      ]
+    },
+    {
+      "key": "stance.protect_person",
+      "axis": "stance",
+      "type": "integer",
+      "initial": 0,
+      "purpose": "玩家偏向保护具体人的程度。",
+      "written_by": [
+        "choice_wait_guard_shift",
+        "choice_prepare_archive"
+      ],
+      "read_by": [
+        "ending_profile",
+        "ending_bury"
+      ]
+    },
+    {
+      "key": "relationships.chen.trust",
+      "axis": "relationships",
+      "type": "integer",
+      "initial": 0,
+      "purpose": "陈对玩家的信任/玩家选择相信陈的轨迹。",
+      "written_by": [
+        "choice_call_chen",
+        "choice_ask_chen_last_time"
+      ],
+      "read_by": [
+        "state_echoes",
+        "ending_profile"
+      ]
+    },
+    {
+      "key": "relationships.chen.suspicion",
+      "axis": "relationships",
+      "type": "integer",
+      "initial": 0,
+      "purpose": "玩家对陈的怀疑和陈的警觉。",
+      "written_by": [
+        "choice_confront_chen",
+        "choice_confront_final"
+      ],
+      "read_by": [
+        "state_echoes",
+        "ending_confront"
+      ]
+    },
+    {
+      "key": "relationships.lin.bond",
+      "axis": "relationships",
+      "type": "integer",
+      "initial": 0,
+      "purpose": "玩家与林留下请求之间的情感连接。",
+      "written_by": [
+        "choice_open_locker",
+        "obs_red_bracelet"
+      ],
+      "read_by": [
+        "state_echoes",
+        "ending_profile"
+      ]
+    },
+    {
+      "key": "pressure.company_alert",
+      "axis": "pressure",
+      "type": "integer",
+      "initial": 0,
+      "purpose": "公司警报/暴露风险。",
+      "written_by": [
+        "obs_remote_wipe",
+        "choice_freeze_wipe",
+        "choice_cover_camera"
+      ],
+      "read_by": [
+        "state_echoes",
+        "ending_profile"
+      ]
+    }
+  ],
+  "relationship_axes": {
+    "chen": [
+      "trust",
+      "suspicion"
+    ],
+    "lin": [
+      "bond"
+    ]
+  },
+  "ending_tags": [
+    "ending_publish",
+    "ending_bury",
+    "ending_confront"
+  ],
+  "design_rules": [
+    "隐藏关系变量必须通过文本回声表现，不能裸露数值。",
+    "关键 choice 的 requirements 必须能被 observe 或前置 choice 明确写入。",
+    "重大关系变化必须有文本暗示。",
+    "pressure 只能改变风险语境，不能黑箱改写玩家意图。"
+  ]
+}

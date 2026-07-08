@@ -28,6 +28,7 @@ class AgentGraphTest(unittest.TestCase):
       self.assertTrue((output / "game.json").exists())
       self.assertTrue((output / "game.yaml").exists())
       self.assertTrue((output / "generation_plan.json").exists())
+      self.assertTrue((output / "state_schema_design.json").exists())
       self.assertTrue((output / "path_map.json").exists())
       self.assertTrue((output / "state_registry.json").exists())
       self.assertTrue((output / "validation_report.md").exists())
@@ -42,6 +43,7 @@ class AgentGraphTest(unittest.TestCase):
       nodes = [event["node"] for event in trace]
       self.assertEqual(nodes[0], "load_brief")
       self.assertIn("plan_story_structure", nodes)
+      self.assertIn("design_state_schema", nodes)
       self.assertIn("draft_skeleton", nodes)
       self.assertIn("validate_schema", nodes)
       self.assertIn("validate_structure", nodes)
@@ -59,6 +61,17 @@ class AgentGraphTest(unittest.TestCase):
       self.assertEqual(generation_plan["scene_count"], 9)
       self.assertEqual(len(generation_plan["chapters"]), 3)
       self.assertEqual(len(generation_plan["ending_targets"]), 3)
+
+      state_schema = json.loads((output / "state_schema_design.json").read_text(encoding="utf-8"))
+      self.assertEqual(state_schema["schema_version"], "state_schema_design_v0_1")
+      self.assertEqual(state_schema["project_id"], "missing_phone")
+      self.assertEqual({axis["id"] for axis in state_schema["axes"]}, {"clues", "stance", "relationships", "pressure"})
+      self.assertEqual(state_schema["relationship_axes"]["chen"], ["trust", "suspicion"])
+      self.assertGreaterEqual(len(state_schema["variables"]), 16)
+      variable_keys = {variable["key"] for variable in state_schema["variables"]}
+      self.assertIn("relationships.chen.trust", variable_keys)
+      self.assertIn("relationships.lin.bond", variable_keys)
+      self.assertIn("pressure.company_alert", variable_keys)
 
   def test_repair_node_applies_supported_structural_repairs(self) -> None:
     brief = load_brief(BRIEF_PATH)

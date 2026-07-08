@@ -1,9 +1,9 @@
 # Agent Game Generation Technical Design V0
 
-版本：V0.29
-日期：2026-07-08  
-文档类型：技术设计文档  
-文件名规则：英文文件名，便于后续工程引用  
+版本：V0.28
+日期：2026-07-08
+文档类型：技术设计文档
+文件名规则：英文文件名，便于后续工程引用
 对齐准则：`/home/samsong/Desktop/game_writer/doc/prd/PRD_V0_文字冒险游戏框架.md`
 
 ---
@@ -1916,84 +1916,3 @@ V0.28 必须满足：
 - 多候选 plan 选择。
 - plan schema 独立 JSON Schema。
 - 根据任意 plan 动态生成全新故事。
-
-## 51. V0.29 State Schema Design Node Delta
-
-V0.28 已经有 `generation_plan.json`，但 state 仍然主要藏在最终 `game.json.initial_state` 和 choice/observe effects 中。V0.29 继续拆 agent 黑箱：在 draft skeleton 之前，新增状态变量设计节点。
-
-设计判断：
-
-> 互动叙事的工业化生成不能只规划章节，还必须先规划“世界会记住什么”。
-
-### 51.1 New Node
-
-新增节点：
-
-```text
-design_state_schema
-```
-
-位置：
-
-```text
-load_brief
-  -> plan_story_structure
-  -> design_state_schema
-  -> draft_skeleton
-```
-
-### 51.2 Artifact
-
-新增 artifact：
-
-```text
-generated/<run>/state_schema_design.json
-```
-
-字段至少包含：
-
-- `schema_version`
-- `project_id`
-- `axes`
-- `variables`
-- `relationship_axes`
-- `ending_tags`
-- `design_rules`
-
-变量项至少包含：
-
-- `key`
-- `axis`
-- `type`
-- `initial`
-- `purpose`
-- `written_by`
-- `read_by`
-
-### 51.3 Why This Matters
-
-后续 LLM 或 LangGraph planner 如果要真正生成可玩的互动叙事，必须先回答：
-
-- 哪些 clue 是关键证据？
-- 哪些 stance 会影响结局？
-- NPC 关系不是单一好感度，而是哪几个隐藏轴？
-- pressure 如何影响风险而不是变成装饰数值？
-
-这些不应只在最终 JSON 里被动出现，而应成为 agent 可以检查、修复、替换的中间设计。
-
-### 51.4 Acceptance
-
-V0.29 必须满足：
-
-- `agent_trace.jsonl` 出现 `design_state_schema` node。
-- agent 输出目录包含 `state_schema_design.json`。
-- `draft_skeleton` trace 引用 state variable 数量。
-- 单测验证 state schema artifact 的 axes、relationship axes、变量数量和关键变量。
-- 当前 graph agent 仍可离线跑通完整导出和 smoke playthrough。
-
-本轮仍不宣称完成：
-
-- 自动从任意 brief 推导完整状态系统。
-- LLM 语义审查 state schema。
-- state schema 独立 JSON Schema。
-- 根据 state schema 动态组装全新 game JSON。

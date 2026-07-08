@@ -1,6 +1,7 @@
 {"node": "load_brief", "status": "ok", "summary": "Loaded project brief", "metrics": {"brief_path": "examples/briefs/missing_phone.json", "project_id": "missing_phone"}}
 {"node": "plan_story_structure", "status": "ok", "summary": "Built deterministic generation plan", "metrics": {"chapters": 3, "scenes": 9, "ending_targets": 3}}
-{"node": "draft_skeleton", "status": "ok", "summary": "Created deterministic structured game skeleton", "metrics": {"planned_chapters": 3, "planned_scenes": 9, "scenes": 9, "endings": 3}}
+{"node": "design_state_schema", "status": "ok", "summary": "Designed hidden state schema", "metrics": {"axes": 4, "variables": 18, "relationship_axes": 2}}
+{"node": "draft_skeleton", "status": "ok", "summary": "Created deterministic structured game skeleton", "metrics": {"planned_chapters": 3, "planned_scenes": 9, "designed_state_variables": 18, "scenes": 9, "endings": 3}}
 {"node": "optional_llm_polish", "status": "skipped", "summary": "Provider is offline", "metrics": {}}
 {"node": "validate_schema", "status": "ok", "summary": "JSON Schema gate completed", "metrics": {"errors": 0}}
 {"node": "validate_structure", "status": "ok", "summary": "Graph and state validator gate completed", "metrics": {"errors": 0, "warnings": 0}}

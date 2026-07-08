@@ -59,6 +59,7 @@ class AgentState:
     config: AgentConfig
     brief: dict[str, Any] | None = None
     generation_plan: dict[str, Any] | None = None
+    state_schema_design: dict[str, Any] | None = None
     game: dict[str, Any] | None = None
     schema_errors: list[str] = field(default_factory=list)
     validation_messages: list[ValidationMessage] = field(default_factory=list)
@@ -82,6 +83,7 @@ class GenerationAgentGraph:
         state = AgentState(config=config)
         self.load_brief(state)
         self.plan_story_structure(state)
+        self.design_state_schema(state)
         self.draft_skeleton(state)
         self.optional_llm_polish(state)
 
@@ -114,20 +116,22 @@ class GenerationAgentGraph:
         )
 
     def draft_skeleton(self, state: AgentState) -> None:
-        if state.brief is None or state.generation_plan is None:
-            raise AgentRunError("draft_skeleton requires loaded brief and generation plan")
+        if state.brief is None or state.generation_plan is None or state.state_schema_design is None:
+            raise AgentRunError("draft_skeleton requires loaded brief, generation plan, and state schema design")
         state.game = deterministic_demo_game(state.brief)
         generation = state.game.setdefault("generation", {})
         generation["provider"] = "offline"
         generation["model"] = OFFLINE_MODEL_ID
-        generation["agent_graph"] = "v0_28"
+        generation["agent_graph"] = "v0_29"
         generation["plan_schema_version"] = state.generation_plan["plan_schema_version"]
+        generation["state_schema_design_version"] = state.state_schema_design["schema_version"]
         state.add_trace(
             "draft_skeleton",
             "ok",
             "Created deterministic structured game skeleton",
             planned_chapters=state.generation_plan["chapter_count"],
             planned_scenes=state.generation_plan["scene_count"],
+            designed_state_variables=len(state.state_schema_design["variables"]),
             scenes=len(state.game.get("scenes", [])),
             endings=len(state.game.get("endings", [])),
         )
@@ -143,6 +147,19 @@ class GenerationAgentGraph:
             chapters=state.generation_plan["chapter_count"],
             scenes=state.generation_plan["scene_count"],
             ending_targets=len(state.generation_plan["ending_targets"]),
+        )
+
+    def design_state_schema(self, state: AgentState) -> None:
+        if state.brief is None or state.generation_plan is None:
+            raise AgentRunError("design_state_schema requires loaded brief and generation plan")
+        state.state_schema_design = build_state_schema_design(state.brief, state.generation_plan)
+        state.add_trace(
+            "design_state_schema",
+            "ok",
+            "Designed hidden state schema",
+            axes=len(state.state_schema_design["axes"]),
+            variables=len(state.state_schema_design["variables"]),
+            relationship_axes=len(state.state_schema_design["relationship_axes"]),
         )
 
     def optional_llm_polish(self, state: AgentState) -> None:
@@ -254,11 +271,15 @@ class GenerationAgentGraph:
         )
 
     def export_artifacts(self, state: AgentState) -> None:
-        if state.game is None or state.generation_plan is None:
-            raise AgentRunError("export_artifacts requires game and generation plan")
+        if state.game is None or state.generation_plan is None or state.state_schema_design is None:
+            raise AgentRunError("export_artifacts requires game, generation plan, and state schema design")
         export_game(state.game, state.config.out_dir)
         (state.config.out_dir / "generation_plan.json").write_text(
             json.dumps(state.generation_plan, ensure_ascii=False, indent=2) + "\n",
+            encoding="utf-8",
+        )
+        (state.config.out_dir / "state_schema_design.json").write_text(
+            json.dumps(state.state_schema_design, ensure_ascii=False, indent=2) + "\n",
             encoding="utf-8",
         )
         state.exported = True
@@ -337,4 +358,71 @@ def build_generation_plan(brief: dict[str, Any]) -> dict[str, Any]:
             "free_text_player_input",
             "unbounded_branching",
         ],
+    }
+
+
+def build_state_schema_design(brief: dict[str, Any], generation_plan: dict[str, Any]) -> dict[str, Any]:
+    project = brief["project"]
+    variables = [
+        state_variable("clues.unsent_warning", "clues", "boolean", False, "玩家是否理解短信在警告陈。", ["obs_unsent_sms"], ["chapter_review", "ending_profile"]),
+        state_variable("clues.station_location", "clues", "boolean", False, "玩家是否取得废弃地铁站定位。", ["obs_0213_log"], ["choice_go_station", "chapter_review"]),
+        state_variable("clues.chen_trimmed_location", "clues", "boolean", False, "玩家是否发现陈截断定位记录。", ["obs_trimmed_gap"], ["choice_confront_chen", "ending_confront"]),
+        state_variable("clues.wipe_pause_window", "clues", "boolean", False, "玩家是否找到远程清除暂停窗口。", ["obs_pause_window"], ["choice_delay_wipe"]),
+        state_variable("clues.freeze_token", "clues", "boolean", False, "玩家是否复制冻结令牌。", ["obs_session_token"], ["choice_freeze_wipe"]),
+        state_variable("clues.station_entry_code", "clues", "boolean", False, "玩家是否获得旧员工入口码。", ["obs_station_entry_code"], ["choice_enter_service_corridor"]),
+        state_variable("clues.locker_a17", "clues", "boolean", False, "玩家是否找到 A-17 储物柜编号。", ["obs_locker_code"], ["choice_open_locker"]),
+        state_variable("clues.backup_copy", "clues", "boolean", False, "玩家是否取得离线备份。", ["obs_backup_drive", "choice_open_locker"], ["choice_take_backup_to_safehouse"]),
+        state_variable("clues.victim_list", "clues", "boolean", False, "玩家是否知道受害者名单风险。", ["obs_red_bracelet", "obs_victim_list"], ["choice_prepare_public_packet", "choice_protect_lin_secret"]),
+        state_variable("clues.public_packet_ready", "clues", "boolean", False, "玩家是否准备公开包。", ["choice_prepare_public_packet", "obs_public_packet"], ["choice_publish_truth"]),
+        state_variable("clues.archive_ready", "clues", "boolean", False, "玩家是否准备封存包。", ["choice_prepare_archive", "obs_offline_archive"], ["choice_keep_archive"]),
+        state_variable("clues.chen_message_ready", "clues", "boolean", False, "玩家是否准备发给陈的草稿。", ["choice_ask_chen_last_time", "obs_send_to_chen"], ["choice_confront_final"]),
+        state_variable("stance.truth_first", "stance", "integer", 0, "玩家偏向公开真相的程度。", ["choice_go_station", "choice_enter_service_corridor"], ["ending_profile", "ending_publish"]),
+        state_variable("stance.protect_person", "stance", "integer", 0, "玩家偏向保护具体人的程度。", ["choice_wait_guard_shift", "choice_prepare_archive"], ["ending_profile", "ending_bury"]),
+        state_variable("relationships.chen.trust", "relationships", "integer", 0, "陈对玩家的信任/玩家选择相信陈的轨迹。", ["choice_call_chen", "choice_ask_chen_last_time"], ["state_echoes", "ending_profile"]),
+        state_variable("relationships.chen.suspicion", "relationships", "integer", 0, "玩家对陈的怀疑和陈的警觉。", ["choice_confront_chen", "choice_confront_final"], ["state_echoes", "ending_confront"]),
+        state_variable("relationships.lin.bond", "relationships", "integer", 0, "玩家与林留下请求之间的情感连接。", ["choice_open_locker", "obs_red_bracelet"], ["state_echoes", "ending_profile"]),
+        state_variable("pressure.company_alert", "pressure", "integer", 0, "公司警报/暴露风险。", ["obs_remote_wipe", "choice_freeze_wipe", "choice_cover_camera"], ["state_echoes", "ending_profile"]),
+    ]
+    return {
+        "schema_version": "state_schema_design_v0_1",
+        "project_id": project["id"],
+        "source_plan_schema_version": generation_plan["plan_schema_version"],
+        "axes": [
+            {"id": "clues", "purpose": "玩家已经确认的证据和可行动信息。"},
+            {"id": "stance", "purpose": "玩家在道德问题上的倾向，而不是显式阵营。"},
+            {"id": "relationships", "purpose": "隐藏关系向量，避免单一好感度条。"},
+            {"id": "pressure", "purpose": "外部风险与时间压力。"},
+        ],
+        "variables": variables,
+        "relationship_axes": {
+            "chen": ["trust", "suspicion"],
+            "lin": ["bond"],
+        },
+        "ending_tags": generation_plan["ending_targets"],
+        "design_rules": [
+            "隐藏关系变量必须通过文本回声表现，不能裸露数值。",
+            "关键 choice 的 requirements 必须能被 observe 或前置 choice 明确写入。",
+            "重大关系变化必须有文本暗示。",
+            "pressure 只能改变风险语境，不能黑箱改写玩家意图。",
+        ],
+    }
+
+
+def state_variable(
+    key: str,
+    axis: str,
+    value_type: str,
+    initial: bool | int,
+    purpose: str,
+    written_by: list[str],
+    read_by: list[str],
+) -> dict[str, Any]:
+    return {
+        "key": key,
+        "axis": axis,
+        "type": value_type,
+        "initial": initial,
+        "purpose": purpose,
+        "written_by": written_by,
+        "read_by": read_by,
     }
