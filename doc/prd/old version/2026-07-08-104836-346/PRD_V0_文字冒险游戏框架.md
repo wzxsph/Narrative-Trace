@@ -1,6 +1,6 @@
 # PRD V0：文字版底特律式互动叙事游戏框架
 
-版本：V0.11
+版本：V0.10
 日期：2026-07-08  
 文档目标：定义第一版本文字游戏本身的框架、具体形态、用户 UI/UX  
 保留文档：`PRD_AI文字冒险游戏.md` 继续保留，作为后续 AI 创作 Agent 和长期路线参考  
@@ -1026,7 +1026,6 @@ V0 失败时，测试用户会说：
 - 入口：`/home/samsong/Desktop/game_writer/index.html`
 - 生成内容：`/home/samsong/Desktop/game_writer/generated/missing_phone_v0/game.json`
 - 生成脚本：`/home/samsong/Desktop/game_writer/scripts/generate_game.py`
-- 局部修复脚本：`/home/samsong/Desktop/game_writer/scripts/repair_game.py`
 - 校验脚本：`/home/samsong/Desktop/game_writer/scripts/validate_game.py`
 - 内容 QA 脚本：`/home/samsong/Desktop/game_writer/scripts/content_qa_report.py`
 - 冒烟游玩脚本：`/home/samsong/Desktop/game_writer/scripts/smoke_playthrough.py`
@@ -1059,7 +1058,6 @@ V0 失败时，测试用户会说：
 - 生成产物的结构校验。
 - 自动内容 QA 检查：关键场景必须有明显 observe 入口，`hidden_optional` 不能解锁章节/全局后果 choice，choice 必须有描述和后果文案，结局必须可达并具备画像标签。
 - 浏览器级移动视口 smoke：验证轻教学、新行动高亮、章节复盘、未解锁原因、刷新恢复和移动端横向溢出。
-- 局部 repair：能修复常见生成硬伤，包括坏 `start_scene_id`、坏 `next_scene`、缺失 anchor 文本、错误 observe depth、坏 unlock choice 引用。
 - 基础测试入口：`/home/samsong/Desktop/game_writer/tests/test_demo_contract.py`
 - 内部测试记录模板：`/home/samsong/Desktop/game_writer/doc/testing/internal_playtest_record_template.md`
 - 内部测试批次模板：`/home/samsong/Desktop/game_writer/examples/playtests/internal_playtest_batch_template.json`
@@ -1269,19 +1267,3 @@ V0.10 的边界：
 - 当前浏览器 smoke 是核心路径自动验收，不是完整 E2E 矩阵。
 - 它依赖本机 Python `playwright` 包和 Chrome/Chromium；若环境缺失，需要先安装或设置 `BROWSER_EXECUTABLE`。
 - 尚未覆盖真实设备触控、屏幕阅读器和多浏览器兼容性。
-
-### 17.15 V0.11 版本变更记录
-
-V0.11 相比 V0.10 的实质变化：
-
-- 旧版 V0.10 PRD 和技术文档已归档到 `/home/samsong/Desktop/game_writer/doc/prd/old version/2026-07-08-104836-346`。
-- `scripts/repair_game.py` 从 report-only 工具升级为保守局部修复器。
-- repair 支持修复坏 `start_scene_id`、坏 `next_scene`、缺失 anchor 文本、错误 observe depth、坏 unlock choice 引用。
-- CLI 支持 `--out` 和 `--in-place`，默认不写文件，只报告可执行修复。
-- 新增 `tests/test_repair_game.py`，覆盖常见局部生成错误和不可修复 unlock 引用删除。
-
-V0.11 的边界：
-
-- repair 只处理确定性结构硬伤，不重写剧情文案，也不生成新的复杂 choice。
-- 对不可确定的 invalid unlock choice，repair 会删除引用而不是幻想补剧情。
-- 这仍不是完整 LLM repair loop；下一步需要 prompt 版本、失败样本 fixtures 和显式 schema。

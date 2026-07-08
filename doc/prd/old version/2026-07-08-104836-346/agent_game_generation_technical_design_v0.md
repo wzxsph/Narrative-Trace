@@ -1,6 +1,6 @@
 # Agent Game Generation Technical Design V0
 
-版本：V0.11
+版本：V0.10
 日期：2026-07-08  
 文档类型：技术设计文档  
 文件名规则：英文文件名，便于后续工程引用  
@@ -1171,7 +1171,6 @@ generated/missing_phone_v0/game.json
 - 自动内容 QA 已覆盖结局画像完整性硬伤。
 - 章节 flowchart 分支可显示已选择、可选未走、已解锁未选、未解锁原因。
 - 新增浏览器级 smoke，覆盖移动视口、轻教学、高亮、章节复盘、未解锁原因和刷新恢复。
-- `repair_game.py` 已从 report-only 升级为保守局部修复器。
 
 当前技术状态：
 
@@ -1185,7 +1184,6 @@ Automated content QA hard-error gate: achieved
 Chapter flow locked-branch explanation: achieved
 Ending portrait completeness gate: achieved
 Browser smoke for core mobile path: achieved
-Conservative local repair tool: achieved
 Production-grade generation pipeline: not achieved
 ```
 
@@ -1196,7 +1194,7 @@ Production-grade generation pipeline: not achieved
 ### 21.1 Generation Robustness
 
 - 当前 LLM 只做可选 polish，不是真正多阶段生成。
-- repair loop 已能修复常见确定性结构错误，但还不是 LLM 驱动的语义局部重写。
+- repair loop 目前只报告错误，还没有自动局部重写。
 - 缺少模型输出 fixtures 和失败样本测试。
 - 缺少 prompt 版本管理。
 - deterministic demo 规模已扩到 9 场景，但仍是手写结构，不证明 agent 能稳定生成同等规模内容。
@@ -1229,8 +1227,8 @@ Production-grade generation pipeline: not achieved
 
 下一轮建议按这个顺序推进：
 
-1. 增加显式 JSON schema 或 contract fixture，减少生成器和前端之间的隐式耦合。
-2. 增加模型输出 fixtures 和失败样本测试，验证 repair loop 的真实输入输出。
+1. 将 `repair_game.py` 从报告工具升级为可修复 broken anchor / missing choice / missing next_scene 的局部 repair。
+2. 增加显式 JSON schema 或 contract fixture，减少生成器和前端之间的隐式耦合。
 3. 扩展浏览器 E2E 矩阵，覆盖多结局、多路径、章节继续和结局画像。
 4. 跑一轮内部 playtest 批次，使用 `summarize_playtest_batch.py` 生成 pass/fail 报告。
 5. 增加真实设备与无障碍测试，覆盖触控、滚动、可读性、键盘导航和屏幕阅读器。
@@ -1419,26 +1417,3 @@ Production-grade generation pipeline: not achieved
 - 真实移动设备测试。
 - 无障碍键盘导航和屏幕阅读器检查。
 - 完整多路径/多结局浏览器 E2E 矩阵。
-
-## 33. V0.11 Implementation Delta
-
-本轮 V0.11 的工程变化：
-
-- PRD 和技术文档旧版已归档到 `doc/prd/old version/2026-07-08-104836-346`。
-- `scripts/repair_game.py` 从 report-only 改为保守局部修复器。
-- repair 支持：
-  - 坏 `start_scene_id` 回退到第一个 scene。
-  - 坏 `next_scene` 用近似 ID 或相邻 scene / ending 兜底。
-  - 缺失 anchor `text_range` 补回父文本。
-  - 错误 observe depth 修正为当前位置层级。
-  - 坏 `unlocks_choices` 用近似 choice ID 修正，无法确定时删除。
-- CLI 支持 `--out` 和 `--in-place`。
-- 新增 `tests/test_repair_game.py` 覆盖常见局部生成错误。
-- `README.md` 增加 repair 命令入口。
-
-本轮没有解决：
-
-- 显式 JSON schema。
-- 模型输出 fixtures 和失败样本库。
-- LLM 语义 repair prompt 版本管理。
-- 新增复杂 choice 或重写剧情文案的能力。
