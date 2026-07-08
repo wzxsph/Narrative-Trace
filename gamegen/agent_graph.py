@@ -16,6 +16,7 @@ from .demo_agent import (
     load_brief,
 )
 from .llm_client import LLMClient, LLMConfig
+from .llm_scene_review import review_scene_artifact_with_llm
 from .schema_contract import validate_against_default_schema
 from .scene_artifacts import (
     SceneArtifactMessage,
@@ -76,6 +77,7 @@ class AgentState:
     state_schema_design: dict[str, Any] | None = None
     scene_blueprint_design: dict[str, Any] | None = None
     scene_artifacts: dict[str, Any] | None = None
+    llm_scene_review: dict[str, Any] | None = None
     game: dict[str, Any] | None = None
     state_schema_messages: list[StateSchemaDesignMessage] = field(default_factory=list)
     scene_blueprint_messages: list[SceneBlueprintMessage] = field(default_factory=list)
@@ -126,6 +128,7 @@ class GenerationAgentGraph:
         self.validate_scene_blueprint(state)
         self.draft_scene_artifacts(state)
         self.validate_scene_artifacts(state)
+        self.optional_llm_scene_review(state)
         self.review_scene_artifacts(state)
         self.validate_scene_artifact_release(state)
         self.draft_skeleton(state)
@@ -173,7 +176,7 @@ class GenerationAgentGraph:
         generation = state.game.setdefault("generation", {})
         generation["provider"] = "offline"
         generation["model"] = OFFLINE_MODEL_ID
-        generation["agent_graph"] = "v0_36"
+        generation["agent_graph"] = "v0_37"
         generation["plan_schema_version"] = state.generation_plan["plan_schema_version"]
         generation["state_schema_design_version"] = state.state_schema_design["schema_version"]
         generation["scene_blueprint_version"] = state.scene_blueprint_design["schema_version"]
@@ -303,6 +306,44 @@ class GenerationAgentGraph:
         )
         if errors:
             raise AgentRunError("Scene artifacts failed validation")
+
+    def optional_llm_scene_review(self, state: AgentState) -> None:
+        if state.scene_artifacts is None or state.scene_blueprint_design is None:
+            raise AgentRunError("optional_llm_scene_review requires scene artifacts and scene blueprint")
+        provider = state.config.provider
+        if provider == "offline":
+            state.add_trace("optional_llm_scene_review", "skipped", "Provider is offline")
+            return
+
+        config = LLMConfig.from_env()
+        if not config:
+            if provider == "llm":
+                state.add_trace("optional_llm_scene_review", "error", "LLM provider requested but env is missing")
+                raise AgentRunError("LLM provider requested, but LLM_BASE_URL or LLM_API_KEY is missing")
+            state.add_trace("optional_llm_scene_review", "skipped", "No OpenAI-compatible env configured")
+            return
+
+        try:
+            state.llm_scene_review = review_scene_artifact_with_llm(
+                state.scene_artifacts,
+                state.scene_blueprint_design,
+                LLMClient(config),
+            )
+        except Exception as exc:  # noqa: BLE001 - auto mode should keep deterministic path resilient
+            state.add_trace("optional_llm_scene_review", "fallback", "LLM scene review failed")
+            if provider == "llm":
+                raise AgentRunError(f"LLM scene review failed: {exc}") from exc
+            return
+
+        state.add_trace(
+            "optional_llm_scene_review",
+            "ok",
+            "Reviewed one scene artifact with LLM",
+            scene_id=state.llm_scene_review["scene_id"],
+            verdict=state.llm_scene_review["verdict"],
+            risk_flags=len(state.llm_scene_review["risk_flags"]),
+            model=config.model,
+        )
 
     def review_scene_artifacts(self, state: AgentState) -> None:
         if state.scene_artifacts is None:
@@ -483,6 +524,11 @@ class GenerationAgentGraph:
             json.dumps(state.scene_artifacts, ensure_ascii=False, indent=2) + "\n",
             encoding="utf-8",
         )
+        if state.llm_scene_review is not None:
+            (state.config.out_dir / "llm_scene_review.json").write_text(
+                json.dumps(state.llm_scene_review, ensure_ascii=False, indent=2) + "\n",
+                encoding="utf-8",
+            )
         state.exported = True
         state.add_trace(
             "export_artifacts",

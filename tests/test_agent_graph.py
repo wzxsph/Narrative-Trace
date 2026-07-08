@@ -51,6 +51,7 @@ class AgentGraphTest(unittest.TestCase):
       self.assertIn("validate_scene_blueprint", nodes)
       self.assertIn("draft_scene_artifacts", nodes)
       self.assertIn("validate_scene_artifacts", nodes)
+      self.assertIn("optional_llm_scene_review", nodes)
       self.assertIn("review_scene_artifacts", nodes)
       self.assertIn("validate_scene_artifact_release", nodes)
       self.assertIn("draft_skeleton", nodes)
@@ -98,6 +99,8 @@ class AgentGraphTest(unittest.TestCase):
       self.assertEqual(scene_blueprint_events[-1]["status"], "ok")
       scene_artifact_events = [event for event in trace if event["node"] == "validate_scene_artifacts"]
       self.assertEqual(scene_artifact_events[-1]["status"], "ok")
+      llm_scene_review_events = [event for event in trace if event["node"] == "optional_llm_scene_review"]
+      self.assertEqual(llm_scene_review_events[-1]["status"], "skipped")
       release_events = [event for event in trace if event["node"] == "validate_scene_artifact_release"]
       self.assertEqual(release_events[-1]["status"], "ok")
       alignment_events = [event for event in trace if event["node"] == "validate_blueprint_alignment"]
