@@ -55,9 +55,10 @@ button:focus-visible {
 
 .phone {
   display: grid;
-  grid-template-rows: auto auto auto 1fr auto;
+  grid-template-rows: auto auto auto minmax(0, 1fr) auto;
   overflow: hidden;
   width: min(100%, 430px);
+  height: min(860px, calc(100vh - 48px));
   min-height: min(860px, calc(100vh - 48px));
   max-height: calc(100vh - 48px);
   margin: 0 auto;
@@ -68,6 +69,7 @@ button:focus-visible {
 }
 
 .status-bar {
+  grid-row: 1;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -132,6 +134,7 @@ h2 {
 }
 
 .task-strip {
+  grid-row: 2;
   display: grid;
   grid-template-columns: 1fr 0.68fr;
   gap: 1px;
@@ -161,7 +164,9 @@ h2 {
 }
 
 .story-area {
+  grid-row: 4;
   overflow: auto;
+  min-height: 0;
   padding: 18px;
   background:
     linear-gradient(180deg, rgba(255, 255, 255, 0.46), transparent 120px),
@@ -325,6 +330,7 @@ h2 {
 }
 
 .outcome-panel {
+  grid-row: 3;
   margin: 14px 18px 0;
   padding: 12px;
   border: 1px solid var(--line);
@@ -335,12 +341,12 @@ h2 {
 }
 
 .choice-area {
+  grid-row: 5;
   display: grid;
   gap: 8px;
   align-content: start;
   grid-auto-rows: max-content;
-  overflow: auto;
-  max-height: clamp(168px, 30vh, 260px);
+  overflow: visible;
   padding: 12px 14px;
   border-top: 1px solid var(--line);
   background: var(--paper-panel);
@@ -711,8 +717,12 @@ h2 {
   }
 
   .phone {
+    height: 100vh;
+    height: 100dvh;
     min-height: 100vh;
-    max-height: none;
+    min-height: 100dvh;
+    max-height: 100vh;
+    max-height: 100dvh;
     border: 0;
     border-radius: 0;
   }
@@ -726,5 +736,73 @@ h2 {
 
   .path-panel.open {
     display: block;
+  }
+
+  .review-screen {
+    gap: 8px;
+  }
+
+  .review-screen h2 {
+    font-size: 1.12rem;
+  }
+
+  .review-body {
+    line-height: 1.55;
+  }
+
+  .chapter-flow {
+    gap: 7px;
+    padding: 8px 0;
+  }
+
+  .chapter-flow h3 {
+    font-size: 0.86rem;
+  }
+
+  .chapter-flow-node {
+    min-height: auto;
+    column-gap: 8px;
+  }
+
+  .flow-body {
+    margin-bottom: 6px;
+    padding: 7px;
+  }
+
+  .flow-body h4 {
+    margin-bottom: 3px;
+    font-size: 0.88rem;
+  }
+
+  .flow-meta {
+    margin-bottom: 5px;
+    font-size: 0.72rem;
+  }
+
+  .flow-branches {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 4px;
+    overflow: visible;
+    padding-bottom: 0;
+  }
+
+  .flow-branches li {
+    min-width: 0;
+    max-width: 100%;
+    padding: 3px 5px;
+    white-space: normal;
+    overflow-wrap: anywhere;
+    font-size: 0.66rem;
+    line-height: 1.22;
+  }
+
+  .flow-connector {
+    height: 16px;
+    margin-top: -8px;
+  }
+
+  .profile-section {
+    padding: 10px 0;
   }
 }

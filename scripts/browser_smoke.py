@@ -117,10 +117,13 @@ def run_browser_smoke() -> dict[str, object]:
             assert_condition("未解锁：" in review_text, "Locked branch reason missing")
             assert_condition(flow_nodes == 3, "First chapter flow should contain 3 nodes")
             assert_condition(locked_branches > 0, "Flow should contain at least one locked branch")
+            assert_review_flow_choices_not_clipped(page)
+            assert_review_continue_button_visible(page)
 
             page.reload(wait_until="networkidle")
             restored_text = page.locator(".review-screen").inner_text()
             assert_condition("本章路径图" in restored_text, "Review state did not restore after reload")
+            assert_review_continue_button_visible(page)
             assert_no_horizontal_overflow(page)
 
             page.evaluate(
@@ -203,6 +206,54 @@ def assert_single_active_observe_chain(page: object, *anchor_ids: str) -> None:
         visible_card_ids == list(anchor_ids),
         f"Visible observe cards should match the active chain: {visible_card_ids}",
     )
+
+
+def assert_review_continue_button_visible(page: object) -> None:
+    metrics = page.locator('[data-action="continue-review"]').evaluate(
+        """
+        (button) => {
+          const rect = button.getBoundingClientRect();
+          const story = document.querySelector("#storyArea");
+          return {
+            top: rect.top,
+            bottom: rect.bottom,
+            viewportHeight: window.innerHeight,
+            storyScrollHeight: story.scrollHeight,
+            storyClientHeight: story.clientHeight
+          };
+        }
+        """
+    )
+    assert_condition(
+        metrics["top"] >= 0 and metrics["bottom"] <= metrics["viewportHeight"],
+        f"Continue choice should be fully visible in chapter review: {metrics}",
+    )
+    assert_condition(
+        metrics["storyScrollHeight"] >= metrics["storyClientHeight"],
+        f"Chapter review should scroll inside the story area instead of clipping choices: {metrics}",
+    )
+
+
+def assert_review_flow_choices_not_clipped(page: object) -> None:
+    metrics = page.locator(".flow-branches li").evaluate_all(
+        """
+        (items) => items.map((item) => {
+          const rect = item.getBoundingClientRect();
+          const storyRect = document.querySelector("#storyArea").getBoundingClientRect();
+          return {
+            text: item.textContent.trim(),
+            top: rect.top,
+            bottom: rect.bottom,
+            storyBottom: storyRect.bottom,
+            clipped: item.scrollHeight > item.clientHeight + 1 || item.scrollWidth > item.clientWidth + 1
+          };
+        })
+        """
+    )
+    clipped = [item for item in metrics if item["clipped"]]
+    below_story = [item for item in metrics if item["bottom"] > item["storyBottom"] + 1]
+    assert_condition(not clipped, f"Review flow choices should not clip their text: {clipped}")
+    assert_condition(not below_story, f"Review flow choices should not be hidden behind the action bar: {below_story}")
 
 
 def assert_start_scene_restored(page: object, message: str, expected_notice: str) -> str:
