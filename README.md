@@ -120,7 +120,7 @@ python3 scripts/run_generation_agent.py \
   --provider offline
 ```
 
-该入口会执行 `load_brief -> plan_story_structure -> design_state_schema -> validate_state_schema_design -> design_scene_blueprint -> validate_scene_blueprint -> draft_skeleton -> validate_blueprint_alignment -> optional_llm_polish -> validate_schema -> validate_structure -> validate_content_qa -> repair_if_needed -> export_artifacts -> write_agent_trace`，并导出 `generation_plan.json`、`state_schema_design.json`、`scene_blueprint.json` 与 `agent_trace.jsonl`。其中 `draft_skeleton` 已开始消费 `scene_blueprint.json`，从当前 demo scene library 中按蓝图装配场景。
+该入口会执行 `load_brief -> plan_story_structure -> design_state_schema -> validate_state_schema_design -> design_scene_blueprint -> validate_scene_blueprint -> draft_scene_artifacts -> validate_scene_artifacts -> draft_skeleton -> validate_blueprint_alignment -> optional_llm_polish -> validate_schema -> validate_structure -> validate_content_qa -> repair_if_needed -> export_artifacts -> write_agent_trace`，并导出 `generation_plan.json`、`state_schema_design.json`、`scene_blueprint.json`、`scene_artifacts.json` 与 `agent_trace.jsonl`。其中 `draft_skeleton` 已开始消费 `scene_artifacts.json` 编译完整 game。
 
 校验状态设计 artifact：
 
@@ -134,6 +134,13 @@ python3 scripts/validate_state_schema_design.py \
 ```bash
 python3 scripts/validate_scene_blueprint.py \
   generated/missing_phone_agent_v0/scene_blueprint.json
+```
+
+校验场景 artifact：
+
+```bash
+python3 scripts/validate_scene_artifacts.py \
+  generated/missing_phone_agent_v0/scene_artifacts.json
 ```
 
 校验场景蓝图与最终 game 对齐：

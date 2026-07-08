@@ -4,7 +4,9 @@
 {"node": "validate_state_schema_design", "status": "ok", "summary": "State schema design gate completed", "metrics": {"errors": 0, "warnings": 0}}
 {"node": "design_scene_blueprint", "status": "ok", "summary": "Designed scene blueprint contract", "metrics": {"scenes": 9, "ending_scene_count": 1}}
 {"node": "validate_scene_blueprint", "status": "ok", "summary": "Scene blueprint gate completed", "metrics": {"errors": 0, "warnings": 0}}
-{"node": "draft_skeleton", "status": "ok", "summary": "Created deterministic structured game skeleton", "metrics": {"planned_chapters": 3, "planned_scenes": 9, "designed_state_variables": 18, "planned_blueprint_scenes": 9, "draft_source": "scene_blueprint_demo_library_v0_1", "scenes": 9, "endings": 3}}
+{"node": "draft_scene_artifacts", "status": "ok", "summary": "Drafted scene artifacts from demo scene library", "metrics": {"artifacts": 9, "source": "demo_scene_library_v0_1"}}
+{"node": "validate_scene_artifacts", "status": "ok", "summary": "Scene artifact gate completed", "metrics": {"errors": 0, "warnings": 0}}
+{"node": "draft_skeleton", "status": "ok", "summary": "Created deterministic structured game skeleton", "metrics": {"planned_chapters": 3, "planned_scenes": 9, "designed_state_variables": 18, "planned_blueprint_scenes": 9, "draft_source": "scene_artifacts_v0_1", "scene_artifacts": 9, "scenes": 9, "endings": 3}}
 {"node": "validate_blueprint_alignment", "status": "ok", "summary": "Blueprint-to-game alignment gate completed", "metrics": {"errors": 0, "warnings": 0}}
 {"node": "optional_llm_polish", "status": "skipped", "summary": "Provider is offline", "metrics": {}}
 {"node": "validate_schema", "status": "ok", "summary": "JSON Schema gate completed", "metrics": {"errors": 0}}
