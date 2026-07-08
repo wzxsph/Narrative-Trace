@@ -1,6 +1,31 @@
 const GAME_URL = "generated/missing_phone_v0/game.json";
 const SAVE_KEY = "game_writer_missing_phone_runtime_v1";
 const SAVE_VERSION = 1;
+const STATE_LABELS = {
+  "clues.archive_ready": "归档包",
+  "clues.backup_copy": "备份副本",
+  "clues.chen_casefile": "陈的旧案卷",
+  "clues.chen_message_ready": "给陈的草稿",
+  "clues.chen_motive": "陈的动机",
+  "clues.chen_trimmed_location": "定位截断记录",
+  "clues.cloud_admin": "云端管理员来源",
+  "clues.edited_recording": "剪辑录音",
+  "clues.final_message": "最后留言",
+  "clues.freeze_token": "冻结令牌",
+  "clues.hidden_camera": "隐藏摄像头",
+  "clues.lin_confession": "林的自述",
+  "clues.locker_a17": "A17 储物柜",
+  "clues.public_packet_ready": "公开包",
+  "clues.raw_recording": "原始录音",
+  "clues.screen_recording": "屏幕录制会话",
+  "clues.security_booth": "保安岗亭",
+  "clues.station_entry_code": "旧员工入口码",
+  "clues.station_location": "废弃地铁站定位",
+  "clues.station_route_confirmed": "订单路线",
+  "clues.victim_list": "受害者名单",
+  "clues.voice_note": "语音便签",
+  "clues.wipe_pause_window": "远程清除暂停窗口",
+};
 
 const dom = {
   chapterLabel: document.querySelector("#chapterLabel"),
@@ -499,9 +524,10 @@ function renderChapterFlowNode(scene, index, total) {
   const branchList = document.createElement("ul");
   branchList.className = "flow-branches";
   scene.choices.forEach((choice) => {
+    const branchState = buildChoiceBranchState(choice);
     const branch = document.createElement("li");
-    branch.className = runtime.chosenChoices.includes(choice.id) ? "chosen" : "unchosen";
-    branch.textContent = choice.label;
+    branch.className = branchState.className;
+    branch.textContent = `${choice.label} · ${branchState.note}`;
     branchList.appendChild(branch);
   });
 
@@ -514,6 +540,34 @@ function renderChapterFlowNode(scene, index, total) {
     item.appendChild(connector);
   }
   return item;
+}
+
+function buildChoiceBranchState(choice) {
+  if (runtime.chosenChoices.includes(choice.id)) {
+    return { className: "chosen", note: "已选择" };
+  }
+  if (!choice.requirements?.length) {
+    return { className: "available", note: "可选未走" };
+  }
+  if (runtime.unlockedChoices.has(choice.id) || isChoiceVisible(choice)) {
+    return { className: "unlocked", note: "已解锁未选" };
+  }
+  return { className: "locked", note: `未解锁：${describeRequirements(choice.requirements)}` };
+}
+
+function describeRequirements(requirements) {
+  return requirements.map((requirement) => describeRequirement(requirement)).join("、");
+}
+
+function describeRequirement(requirement) {
+  const label = STATE_LABELS[requirement.state] || requirement.state || "未知证据";
+  if ("min" in requirement) {
+    return `${label}达到 ${requirement.min}`;
+  }
+  if ("equals" in requirement && requirement.equals === false) {
+    return `${label}未成立`;
+  }
+  return label;
 }
 
 function buildFlowMeta(scene, visited) {

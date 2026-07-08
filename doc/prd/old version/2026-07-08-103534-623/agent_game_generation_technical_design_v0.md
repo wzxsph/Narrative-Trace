@@ -1,6 +1,6 @@
 # Agent Game Generation Technical Design V0
 
-版本：V0.8
+版本：V0.7
 日期：2026-07-08  
 文档类型：技术设计文档  
 文件名规则：英文文件名，便于后续工程引用  
@@ -1168,7 +1168,6 @@ generated/missing_phone_v0/game.json
 - validator 校验 guidance 的 `id`、`title`、`text`，测试覆盖首章轻教学契约。
 - 新增内部 playtest 记录模板、批次 JSON 模板和汇总脚本，用于验证 PRD 第 14 节成功指标。
 - 新增自动内容 QA 报告脚本，用于检查隐藏 observe 可发现性和 choice 代价文案硬伤。
-- 章节 flowchart 分支可显示已选择、可选未走、已解锁未选、未解锁原因。
 
 当前技术状态：
 
@@ -1179,7 +1178,6 @@ Basic chapter flow review runtime: achieved
 Diegetic first-chapter guidance runtime: achieved
 Internal playtest metric pipeline: achieved
 Automated content QA hard-error gate: achieved
-Chapter flow locked-branch explanation: achieved
 Production-grade generation pipeline: not achieved
 ```
 
@@ -1198,7 +1196,7 @@ Production-grade generation pipeline: not achieved
 ### 21.2 Runtime Robustness
 
 - 当前前端已有本地单存档，但没有多存档、版本迁移、损坏存档提示或云端同步。
-- 已有基础章节 flowchart 复盘和未解锁原因说明，但还不是完整 flowchart 级路径复盘。
+- 已有基础章节 flowchart 复盘，但还不是完整 flowchart 级路径复盘。
 - 已有基础 `state_echoes` 渲染，但还没有复杂优先级、互斥回声或节奏控制。
 - 已有第一章叙事内轻教学，但还没有用户测试数据证明提示强度刚好。
 - 缺少移动端真实设备测试。
@@ -1352,24 +1350,5 @@ Production-grade generation pipeline: not achieved
 
 - 真实 5 到 8 人内部用户测试。
 - 浏览器自动化测试进入常规 test suite。
-- 空间化全章节路径图和跨章因果线。
+- 全章节路径图的锁定原因说明。
 - LLM/人工语义 QA 对“是否公平、是否犹豫”的判断。
-
-## 30. V0.8 Implementation Delta
-
-本轮 V0.8 的工程变化：
-
-- PRD 和技术文档旧版已归档到 `doc/prd/old version/2026-07-08-103534-623`。
-- `src/app.js` 新增 `STATE_LABELS`、`buildChoiceBranchState()`、`describeRequirements()`、`describeRequirement()`。
-- 章节 flowchart 分支新增状态：已选择、可选未走、已解锁未选、未解锁。
-- 未解锁分支显示缺少的证据标签，避免玩家只看到灰色分支却不知道自己漏了什么类型的观察。
-- `src/styles.css` 新增 `.flow-branches li.available`、`.unlocked`、`.locked` 样式。
-- `tests/test_demo_contract.py` 增加静态 hook 检查。
-- `README.md` 同步当前 flowchart 能力。
-
-本轮没有解决：
-
-- 真实 5 到 8 人内部用户测试。
-- 浏览器自动化测试进入常规 test suite。
-- 空间化全章节路径图和跨章因果线。
-- 逐节点历史状态回放；当前锁定原因基于最终 runtime state 和已解锁 choice 记录。

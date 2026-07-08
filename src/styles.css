@@ -548,6 +548,22 @@ h2 {
   color: #145c54;
 }
 
+.flow-branches li.available {
+  background: #eef1ed;
+  color: #687168;
+}
+
+.flow-branches li.unlocked {
+  background: #fff1d3;
+  color: #725312;
+}
+
+.flow-branches li.locked {
+  border: 1px dashed #c8b6b9;
+  background: #f6edef;
+  color: #7b4a55;
+}
+
 .flow-connector {
   grid-column: 1;
   display: grid;
