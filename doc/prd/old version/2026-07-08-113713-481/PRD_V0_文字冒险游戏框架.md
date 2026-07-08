@@ -1,6 +1,6 @@
 # PRD V0：文字版底特律式互动叙事游戏框架
 
-版本：V0.18
+版本：V0.17
 日期：2026-07-08  
 文档目标：定义第一版本文字游戏本身的框架、具体形态、用户 UI/UX  
 保留文档：`PRD_AI文字冒险游戏.md` 继续保留，作为后续 AI 创作 Agent 和长期路线参考  
@@ -1029,7 +1029,6 @@ V0 失败时，测试用户会说：
 - JSON Schema：`/home/samsong/Desktop/game_writer/schemas/game.schema.json`
 - Prompt Manifest：`/home/samsong/Desktop/game_writer/prompts/manifest.json`
 - 模型输出样本归档脚本：`/home/samsong/Desktop/game_writer/scripts/archive_model_output_sample.py`
-- 模型输出样本校验脚本：`/home/samsong/Desktop/game_writer/scripts/validate_model_output_archive.py`
 - Schema 校验脚本：`/home/samsong/Desktop/game_writer/scripts/validate_json_schema.py`
 - 局部修复脚本：`/home/samsong/Desktop/game_writer/scripts/repair_game.py`
 - 校验脚本：`/home/samsong/Desktop/game_writer/scripts/validate_game.py`
@@ -1074,7 +1073,6 @@ V0 失败时，测试用户会说：
 - 生成失败 fixture：用 mutation case 覆盖 schema gate、validator gate、repair gate 的典型坏输出。
 - Prompt/模型版本管理：`generation_trace.jsonl` 记录 `prompt_set`、`provider`、`model`，为未来真实 LLM 输出样本提供追溯维度。
 - 模型输出样本归档合同：真实模型输出进入样本库前必须脱敏，并记录 provider、model、prompt_set、source、schema、checksum。
-- 模型输出样本库校验门禁：检查 manifest、文件引用、prompt_set 声明、checksum 和未脱敏敏感信息，避免样本库本身变成风险源。
 - 基础测试入口：`/home/samsong/Desktop/game_writer/tests/test_demo_contract.py`
 - 内部测试记录模板：`/home/samsong/Desktop/game_writer/doc/testing/internal_playtest_record_template.md`
 - 内部测试批次模板：`/home/samsong/Desktop/game_writer/examples/playtests/internal_playtest_batch_template.json`
@@ -1401,20 +1399,3 @@ V0.17 的边界：
 - 本轮建立的是样本归档合同，不是假装已经积累了真实模型输出样本。
 - 脱敏工具只能覆盖常见密钥/邮箱形态，真实样本入库前仍需要人工复查。
 - 下一步应使用该工具沉淀首批真实 LLM 成功/失败样本，并把样本与 repair/validator/content QA 结果关联起来。
-
-### 17.22 V0.18 版本变更记录
-
-V0.18 相比 V0.17 的实质变化：
-
-- 旧版 V0.17 PRD 和技术文档已归档到 `/home/samsong/Desktop/game_writer/doc/prd/old version/2026-07-08-113713-481`。
-- `gamegen/model_output_archive.py` 增加 `validate_model_output_archive()`，用于检查样本库 manifest 与样本文件。
-- 新增 `scripts/validate_model_output_archive.py`，可在提交前校验模型输出样本库。
-- 校验范围包括：manifest schema、sample id、重复 id、文件路径越界、文件缺失、prompt_set 未声明、schema 字段、sha256 漂移、未脱敏 API key / bearer token / auth 字段 / env token / 邮箱。
-- `tests/test_model_output_archive.py` 增加空样本库通过、归档样本通过、篡改样本失败的覆盖。
-- README 增加模型输出样本库校验命令。
-
-V0.18 的边界：
-
-- 样本库门禁只能保证已归档样本的基础安全和一致性，不会自动判断样本代表的生成失败是否重要。
-- 当前样本库仍未沉淀真实 provider response；下一步仍需要用 V0.17/V0.18 的工具链归档首批真实样本。
-- 真实样本入库前仍需要人工复查敏感信息，尤其是脱敏规则尚未覆盖的手机号、真实姓名、私有 URL 等。

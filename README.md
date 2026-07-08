@@ -11,6 +11,7 @@
 - JSON Schema：`schemas/game.schema.json`
 - Prompt Manifest：`prompts/manifest.json`
 - 模型输出样本归档：`scripts/archive_model_output_sample.py`
+- 模型输出样本校验：`scripts/validate_model_output_archive.py`
 - Schema 校验：`scripts/validate_json_schema.py`
 - 校验器：`scripts/validate_game.py`
 - 局部修复器：`scripts/repair_game.py`
@@ -41,6 +42,7 @@
 - 生成失败 fixture，覆盖 schema gate、validator gate 和 repair gate 的典型坏输出。
 - Prompt manifest 和 generation trace 记录 `prompt_set`、`provider`、`model`，让后续真实模型输出可追溯到生成策略。
 - 模型输出样本归档工具会脱敏 API key、bearer token、认证字段、`.env` token 和邮箱，并写入 provider/model/prompt_set 元数据。
+- 模型输出样本校验门禁会检查 manifest、文件引用、prompt_set 声明、checksum 和未脱敏敏感信息。
 - 内部 playtest 记录模板和 PRD 第 14 节指标汇总脚本。
 - 自动内容 QA 检查，覆盖隐藏 observe 可发现性、choice 代价文案和结局画像完整性硬伤。
 - 局部 repair 可修复常见生成硬伤：坏 `start_scene_id`、坏 `next_scene`、缺失 anchor 文本、错误 observe depth、坏 unlock choice 引用。
@@ -106,6 +108,12 @@ python3 scripts/archive_model_output_sample.py \
   --model your-model-id \
   --source first_scene_llm_polish_v0_1 \
   --notes "invalid JSON returned by optional polish"
+```
+
+校验模型输出样本库：
+
+```bash
+python3 scripts/validate_model_output_archive.py
 ```
 
 跑测试：

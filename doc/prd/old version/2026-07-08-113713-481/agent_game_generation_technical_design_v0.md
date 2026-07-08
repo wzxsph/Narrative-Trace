@@ -1,6 +1,6 @@
 # Agent Game Generation Technical Design V0
 
-版本：V0.18
+版本：V0.17
 日期：2026-07-08  
 文档类型：技术设计文档  
 文件名规则：英文文件名，便于后续工程引用  
@@ -1197,7 +1197,6 @@ Generation failure fixtures: achieved
 Prompt manifest traceability: achieved
 Provider/model trace metadata: achieved
 Redacted model output sample archive contract: achieved
-Model output sample archive validation gate: achieved
 Production-grade generation pipeline: not achieved
 ```
 
@@ -1209,7 +1208,7 @@ Production-grade generation pipeline: not achieved
 
 - 当前 LLM 只做可选 polish，不是真正多阶段生成。
 - repair loop 已能修复常见确定性结构错误，但还不是 LLM 驱动的语义局部重写。
-- 已有生成失败 mutation fixtures、模型输出样本归档合同和样本库校验门禁，但还缺少真实模型输出样本库。
+- 已有生成失败 mutation fixtures 和模型输出样本归档合同，但还缺少真实模型输出样本库。
 - 已有 prompt manifest 和 trace 记录，trace 已包含 `prompt_set`、`provider`、`model`；但还缺少真实模型输出样本与这些版本字段的实际绑定。
 - deterministic demo 规模已扩到 9 场景，但仍是手写结构，不证明 agent 能稳定生成同等规模内容。
 
@@ -1233,7 +1232,7 @@ Production-grade generation pipeline: not achieved
 ### 21.4 Engineering Hygiene
 
 - 已引入最小 `tests/`、浏览器 smoke 和三主结局 E2E，但还不是完整测试矩阵。
-- 已有统一 JSON Schema、基础生成失败 fixtures、prompt manifest、provider/model trace、模型输出样本归档/校验合同和结局路径 E2E，但还需要真实模型输出样本入库。
+- 已有统一 JSON Schema、基础生成失败 fixtures、prompt manifest、provider/model trace、模型输出样本归档合同和结局路径 E2E，但还需要真实模型输出样本入库。
 - 需要把 generated demo 内容与手写 fixture 的边界定义清楚。
 - 已增加 README，但仍需要持续同步真实命令和产品边界。
 
@@ -1567,27 +1566,3 @@ Production-grade generation pipeline: not achieved
 - 尚未积累真实 provider response；当前样本库仍为空合同。
 - 脱敏规则不能替代人工复查，尤其是项目私有 URL、真实姓名、手机号等未来可能出现的敏感数据。
 - 真实样本尚未与 repair/content QA 结果形成一体化回归报告。
-
-## 40. V0.18 Implementation Delta
-
-本轮 V0.18 的工程变化：
-
-- PRD 和技术文档旧版已归档到 `doc/prd/old version/2026-07-08-113713-481`。
-- `gamegen/model_output_archive.py` 增加 `validate_model_output_archive()`。
-- 新增 `scripts/validate_model_output_archive.py`，用于校验 `examples/fixtures/model_outputs`。
-- 样本库校验覆盖：
-  - manifest schema version。
-  - sample id 合法性和重复 id。
-  - 样本文件是否存在、是否越界引用。
-  - provider/model/prompt_set/source/schema/sha256 必填。
-  - prompt_set 是否仍由 `prompts/manifest.json` 声明。
-  - 样本文件是否残留常见 API key、bearer token、认证字段、env token 和邮箱。
-  - 样本文件 sha256 是否与 manifest 一致。
-- `tests/test_model_output_archive.py` 增加样本库校验通过/失败测试。
-- `README.md` 增加样本库校验命令。
-
-本轮没有解决：
-
-- 真实模型输出样本仍未入库。
-- 校验门禁不判断样本的重要性、失败类型归因或 repair 是否应当处理。
-- 脱敏规则仍需随着真实样本中出现的敏感形态继续扩展。

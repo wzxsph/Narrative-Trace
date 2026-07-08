@@ -35,6 +35,7 @@ SECRET_DETECTORS: tuple[re.Pattern[str], ...] = (
     re.compile(r"Bearer\s+(?!REDACTED\b)[A-Za-z0-9._~+/=-]{8,}", re.IGNORECASE),
     re.compile(r'("(?:api[_-]?key|authorization|token)"\s*:\s*")(?!REDACTED")[^"]+(")', re.IGNORECASE),
     re.compile(r"\b(?:LLM_API_KEY|OPENAI_API_KEY|API_KEY|TOKEN)\s*=\s*(?!REDACTED\b)[^\s]+", re.IGNORECASE),
+    re.compile(r"\b[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}\b", re.IGNORECASE),
 )
 
 
@@ -112,6 +113,79 @@ def archive_model_output_sample(
     upsert_manifest_entry(manifest, entry, overwrite=overwrite)
     manifest_path.write_text(json.dumps(manifest, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
     return entry
+
+
+def validate_model_output_archive(
+    archive_dir: str | Path = DEFAULT_ARCHIVE_DIR,
+    *,
+    prompt_manifest: str | Path = DEFAULT_MANIFEST,
+) -> list[str]:
+    errors: list[str] = []
+    archive_path = Path(archive_dir)
+    manifest_path = archive_path / "sample_manifest.json"
+    if not manifest_path.exists():
+        return [f"Missing sample manifest: {manifest_path}"]
+
+    try:
+        manifest = load_sample_manifest(manifest_path)
+    except Exception as exc:  # noqa: BLE001 - return all validation issues as strings
+        return [f"Invalid sample manifest: {exc}"]
+
+    if manifest.get("schema_version") != "game_writer_model_output_samples_v0_1":
+        errors.append("sample_manifest.json has unsupported schema_version")
+
+    declared_ids = declared_prompt_set_ids(prompt_manifest)
+    seen_ids: set[str] = set()
+    for index, entry in enumerate(manifest.get("samples", [])):
+        location = f"samples[{index}]"
+        if not isinstance(entry, dict):
+            errors.append(f"{location}: entry must be an object")
+            continue
+
+        sample_id = entry.get("id")
+        if not isinstance(sample_id, str) or not SAMPLE_ID_RE.match(sample_id):
+            errors.append(f"{location}: invalid sample id")
+        elif sample_id in seen_ids:
+            errors.append(f"{location}: duplicate sample id '{sample_id}'")
+        else:
+            seen_ids.add(sample_id)
+
+        for field in ("provider", "model", "prompt_set", "source", "schema", "sha256"):
+            if not isinstance(entry.get(field), str) or not entry[field].strip():
+                errors.append(f"{location}: missing {field}")
+
+        prompt_set = entry.get("prompt_set")
+        if isinstance(prompt_set, str) and prompt_set and prompt_set not in declared_ids:
+            errors.append(f"{location}: prompt_set '{prompt_set}' is not declared")
+
+        if entry.get("schema") != "schemas/game.schema.json":
+            errors.append(f"{location}: schema must be schemas/game.schema.json")
+
+        sample_file = entry.get("file")
+        if not isinstance(sample_file, str) or not sample_file:
+            errors.append(f"{location}: missing file")
+            continue
+        relative_file = Path(sample_file)
+        if relative_file.is_absolute() or ".." in relative_file.parts:
+            errors.append(f"{location}: file must be a relative path inside archive")
+            continue
+
+        sample_path = archive_path / relative_file
+        if not sample_path.exists():
+            errors.append(f"{location}: sample file missing: {sample_file}")
+            continue
+
+        text = sample_path.read_text(encoding="utf-8")
+        try:
+            assert_no_unredacted_secrets(text)
+        except ValueError as exc:
+            errors.append(f"{location}: sample still contains unredacted secret: {exc}")
+
+        digest = hashlib.sha256(text.encode("utf-8")).hexdigest()
+        if isinstance(entry.get("sha256"), str) and entry["sha256"] != digest:
+            errors.append(f"{location}: sha256 mismatch")
+
+    return errors
 
 
 def load_sample_manifest(path: str | Path) -> dict[str, Any]:

@@ -9,7 +9,12 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 
-from gamegen.model_output_archive import archive_model_output_sample, assert_no_unredacted_secrets, redact_sample_text
+from gamegen.model_output_archive import (
+  archive_model_output_sample,
+  assert_no_unredacted_secrets,
+  redact_sample_text,
+  validate_model_output_archive,
+)
 from gamegen.prompt_manifest import active_prompt_set_id
 
 
@@ -64,6 +69,7 @@ class ModelOutputArchiveTest(unittest.TestCase):
       self.assertNotIn("sk-live", sample_text)
       self.assertEqual(manifest["samples"][0]["id"], "first_scene_polish_fail_001")
       self.assertEqual(manifest["samples"][0]["sha256"], entry["sha256"])
+      self.assertEqual(validate_model_output_archive(out_dir), [])
 
   def test_rejects_bad_sample_id_and_undeclared_prompt_set(self) -> None:
     with tempfile.TemporaryDirectory() as tmp:
@@ -91,6 +97,48 @@ class ModelOutputArchiveTest(unittest.TestCase):
           prompt_set="missing_prompt_set",
           source="first_scene_llm_polish_v0_1",
         )
+
+  def test_archive_validator_catches_tampered_sample(self) -> None:
+    with tempfile.TemporaryDirectory() as tmp:
+      tmp_path = Path(tmp)
+      raw_path = tmp_path / "raw_sample.txt"
+      raw_path.write_text("safe sample", encoding="utf-8")
+      out_dir = tmp_path / "archive"
+      entry = archive_model_output_sample(
+        raw_path,
+        out_dir=out_dir,
+        sample_id="tamper_sample_001",
+        provider="openai_compatible",
+        model="sample-model",
+        prompt_set=active_prompt_set_id(),
+        source="first_scene_llm_polish_v0_1",
+      )
+
+      sample_path = out_dir / entry["file"]
+      sample_path.write_text("tampered Bearer abcdefghijklmnop user@example.com\n", encoding="utf-8")
+
+      errors = validate_model_output_archive(out_dir)
+
+      self.assertTrue(any("unredacted secret" in error for error in errors))
+      self.assertTrue(any("sha256 mismatch" in error for error in errors))
+
+  def test_archive_validator_accepts_empty_manifest(self) -> None:
+    with tempfile.TemporaryDirectory() as tmp:
+      out_dir = Path(tmp) / "archive"
+      out_dir.mkdir()
+      (out_dir / "sample_manifest.json").write_text(
+        json.dumps(
+          {
+            "schema_version": "game_writer_model_output_samples_v0_1",
+            "description": "empty",
+            "samples": [],
+          },
+          ensure_ascii=False,
+        ),
+        encoding="utf-8",
+      )
+
+      self.assertEqual(validate_model_output_archive(out_dir), [])
 
 
 if __name__ == "__main__":
