@@ -1,6 +1,6 @@
 # Agent Game Generation Technical Design V0
 
-版本：V0.10
+版本：V0.9
 日期：2026-07-08  
 文档类型：技术设计文档  
 文件名规则：英文文件名，便于后续工程引用  
@@ -1170,7 +1170,6 @@ generated/missing_phone_v0/game.json
 - 新增自动内容 QA 报告脚本，用于检查隐藏 observe 可发现性和 choice 代价文案硬伤。
 - 自动内容 QA 已覆盖结局画像完整性硬伤。
 - 章节 flowchart 分支可显示已选择、可选未走、已解锁未选、未解锁原因。
-- 新增浏览器级 smoke，覆盖移动视口、轻教学、高亮、章节复盘、未解锁原因和刷新恢复。
 
 当前技术状态：
 
@@ -1183,7 +1182,6 @@ Internal playtest metric pipeline: achieved
 Automated content QA hard-error gate: achieved
 Chapter flow locked-branch explanation: achieved
 Ending portrait completeness gate: achieved
-Browser smoke for core mobile path: achieved
 Production-grade generation pipeline: not achieved
 ```
 
@@ -1205,7 +1203,7 @@ Production-grade generation pipeline: not achieved
 - 已有基础章节 flowchart 复盘和未解锁原因说明，但还不是完整 flowchart 级路径复盘。
 - 已有基础 `state_echoes` 渲染，但还没有复杂优先级、互斥回声或节奏控制。
 - 已有第一章叙事内轻教学，但还没有用户测试数据证明提示强度刚好。
-- 已有浏览器级移动视口 smoke，但缺少真实设备测试。
+- 缺少移动端真实设备测试。
 - 缺少无障碍键盘导航和屏幕阅读器检查。
 
 ### 21.3 Content QA
@@ -1229,9 +1227,9 @@ Production-grade generation pipeline: not achieved
 
 1. 将 `repair_game.py` 从报告工具升级为可修复 broken anchor / missing choice / missing next_scene 的局部 repair。
 2. 增加显式 JSON schema 或 contract fixture，减少生成器和前端之间的隐式耦合。
-3. 扩展浏览器 E2E 矩阵，覆盖多结局、多路径、章节继续和结局画像。
+3. 增加 Playwright 或等价浏览器测试，验证轻教学、高亮、章节复盘、结局画像、刷新恢复和移动视口。
 4. 跑一轮内部 playtest 批次，使用 `summarize_playtest_batch.py` 生成 pass/fail 报告。
-5. 增加真实设备与无障碍测试，覆盖触控、滚动、可读性、键盘导航和屏幕阅读器。
+5. 增加浏览器自动化测试，覆盖轻教学、高亮、章节复盘、刷新恢复和移动视口。
 
 ## 23. V0.1 Implementation Delta
 
@@ -1395,25 +1393,3 @@ Production-grade generation pipeline: not achieved
 - 浏览器自动化测试进入常规 test suite。
 - 结局画像仍是字符串标签，不是完整结构化因果画像。
 - 结局文案是否有情感重量，仍需人工 QA 或 playtest 判断。
-
-## 32. V0.10 Implementation Delta
-
-本轮 V0.10 的工程变化：
-
-- PRD 和技术文档旧版已归档到 `doc/prd/old version/2026-07-08-104252-500`。
-- 新增 `scripts/browser_smoke.py`，脚本自行启动临时静态服务并用 Python Playwright + Chrome 执行真实浏览器 smoke。
-- 浏览器 smoke 使用 390x844 移动视口，验证：
-  - 首次 observe 轻教学。
-  - observe 解锁 choice 的高亮。
-  - 第一章章节复盘 flowchart。
-  - 未解锁分支原因。
-  - 章节复盘刷新恢复。
-  - 页面无横向溢出。
-- `README.md` 增加浏览器 smoke 入口。
-
-本轮没有解决：
-
-- 真实 5 到 8 人内部用户测试。
-- 真实移动设备测试。
-- 无障碍键盘导航和屏幕阅读器检查。
-- 完整多路径/多结局浏览器 E2E 矩阵。

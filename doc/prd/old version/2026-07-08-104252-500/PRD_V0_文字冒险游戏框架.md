@@ -1,6 +1,6 @@
 # PRD V0：文字版底特律式互动叙事游戏框架
 
-版本：V0.10
+版本：V0.9
 日期：2026-07-08  
 文档目标：定义第一版本文字游戏本身的框架、具体形态、用户 UI/UX  
 保留文档：`PRD_AI文字冒险游戏.md` 继续保留，作为后续 AI 创作 Agent 和长期路线参考  
@@ -1029,7 +1029,6 @@ V0 失败时，测试用户会说：
 - 校验脚本：`/home/samsong/Desktop/game_writer/scripts/validate_game.py`
 - 内容 QA 脚本：`/home/samsong/Desktop/game_writer/scripts/content_qa_report.py`
 - 冒烟游玩脚本：`/home/samsong/Desktop/game_writer/scripts/smoke_playthrough.py`
-- 浏览器冒烟脚本：`/home/samsong/Desktop/game_writer/scripts/browser_smoke.py`
 
 它已经覆盖本 PRD 的关键体验闭环：
 
@@ -1057,7 +1056,6 @@ V0 失败时，测试用户会说：
 - 隐藏关系变量的叙事回声：`relationships.chen.trust`、`relationships.chen.suspicion`、`relationships.lin.bond` 会在后续场景中触发条件文本。
 - 生成产物的结构校验。
 - 自动内容 QA 检查：关键场景必须有明显 observe 入口，`hidden_optional` 不能解锁章节/全局后果 choice，choice 必须有描述和后果文案，结局必须可达并具备画像标签。
-- 浏览器级移动视口 smoke：验证轻教学、新行动高亮、章节复盘、未解锁原因、刷新恢复和移动端横向溢出。
 - 基础测试入口：`/home/samsong/Desktop/game_writer/tests/test_demo_contract.py`
 - 内部测试记录模板：`/home/samsong/Desktop/game_writer/doc/testing/internal_playtest_record_template.md`
 - 内部测试批次模板：`/home/samsong/Desktop/game_writer/examples/playtests/internal_playtest_batch_template.json`
@@ -1076,7 +1074,7 @@ V0 失败时，测试用户会说：
 - 结局行动画像已具备基本结构，但还没有充分回答“保护了谁、伤害了谁、相信了什么、哪些 observe 改变路径”。
 - 第一章轻教学已有基础实现，但还没有通过内部用户测试证明玩家能稳定理解“文字可展开”和“观察会长出行动”。
 - 已建立内部测试记录模板和批次汇总脚本，但尚未实际完成 5 到 8 名内部用户测试，因此第 14 节量化指标尚未验证。
-- 保存/恢复已支持单机本地状态，并已有浏览器 smoke 覆盖章节复盘刷新恢复；但还没有多存档、云端同步、版本迁移或异常恢复 UI。
+- 保存/恢复已支持单机本地状态，但还没有多存档、云端同步、版本迁移或异常恢复 UI。
 - 内容 QA 已有基础自动检查，但还不能判断“选择是否真的让人犹豫”或“隐藏线索是否在语义上公平”。
 - 结局画像已有自动完整性检查，但还不能判断结局是否有足够情感重量。
 
@@ -1088,7 +1086,7 @@ V0 失败时，测试用户会说：
 2. 检查 9 场景内容节奏，删掉只是在“加长度”的场景，保留真正改变理解或行动的场景。
 3. 继续打磨关系回声文案，确保它是文本暗示，不是数值播报。
 4. 将章节基础 flowchart 继续升级为更完整的路径复盘，包括空间化布局、二周目提示与跨章影响。
-5. 继续补移动端真实设备与无障碍验收，验证触控、滚动、可读性和屏幕阅读器基础体验。
+5. 增加移动端和浏览器自动化验收，验证提示、高亮、复盘和存档在真实交互中稳定工作。
 
 ### 17.4 产品级距离判断
 
@@ -1252,18 +1250,3 @@ V0.9 的边界：
 - 自动 QA 能检查结局画像的结构完整性，不能判断结局文案是否真正有冲击力。
 - 结局 tag 仍是字符串标签，还不是完整的“保护了谁、伤害了谁、相信了什么”的结构化画像。
 - 下一步仍应通过真实 playtest 验证玩家是否觉得结局回应了自己的选择。
-
-### 17.14 V0.10 版本变更记录
-
-V0.10 相比 V0.9 的实质变化：
-
-- 旧版 V0.9 PRD 和技术文档已归档到 `/home/samsong/Desktop/game_writer/doc/prd/old version/2026-07-08-104252-500`。
-- 新增 `scripts/browser_smoke.py`，脚本会自行启动临时静态服务并用 Python Playwright + Chrome 跑真实浏览器交互。
-- 浏览器 smoke 使用 390x844 移动视口，验证首章轻教学、observe 解锁 choice 高亮、章节 flowchart、未解锁原因、刷新恢复和横向溢出。
-- README 增加浏览器 smoke 命令入口。
-
-V0.10 的边界：
-
-- 当前浏览器 smoke 是核心路径自动验收，不是完整 E2E 矩阵。
-- 它依赖本机 Python `playwright` 包和 Chrome/Chromium；若环境缺失，需要先安装或设置 `BROWSER_EXECUTABLE`。
-- 尚未覆盖真实设备触控、屏幕阅读器和多浏览器兼容性。

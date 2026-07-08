@@ -11,6 +11,7 @@
 - 校验器：`scripts/validate_game.py`
 - 内容 QA：`scripts/content_qa_report.py`
 - 冒烟游玩：`scripts/smoke_playthrough.py`
+- 浏览器冒烟：`scripts/browser_smoke.py`
 - 内部测试汇总：`scripts/summarize_playtest_batch.py`
 - Demo 内容：`generated/missing_phone_v0/game.json`
 
@@ -26,6 +27,7 @@
 - 章节结束基础 flowchart 复盘、未解锁原因、路径图、结局行动画像。
 - 隐藏关系变量在后续场景触发叙事回声。
 - 本地刷新恢复进度。
+- 浏览器级移动视口 smoke，覆盖轻教学、高亮、章节复盘、未解锁原因和刷新恢复。
 - 内部 playtest 记录模板和 PRD 第 14 节指标汇总脚本。
 - 自动内容 QA 检查，覆盖隐藏 observe 可发现性、choice 代价文案和结局画像完整性硬伤。
 - 冒烟路径穿过 9 个主场景并抵达 `ending_publish`。
@@ -57,6 +59,12 @@ python3 scripts/smoke_playthrough.py generated/missing_phone_v0/game.json
 
 ```bash
 python3 scripts/content_qa_report.py generated/missing_phone_v0/game.json
+```
+
+跑浏览器 smoke：
+
+```bash
+python3 scripts/browser_smoke.py
 ```
 
 跑测试：
