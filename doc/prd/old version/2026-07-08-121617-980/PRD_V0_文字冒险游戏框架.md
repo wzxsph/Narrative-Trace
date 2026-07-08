@@ -1,6 +1,6 @@
 # PRD V0：文字版底特律式互动叙事游戏框架
 
-版本：V0.24
+版本：V0.23
 日期：2026-07-08  
 文档目标：定义第一版本文字游戏本身的框架、具体形态、用户 UI/UX  
 保留文档：`PRD_AI文字冒险游戏.md` 继续保留，作为后续 AI 创作 Agent 和长期路线参考  
@@ -1031,7 +1031,6 @@ V0 失败时，测试用户会说：
 - 模型输出样本归档脚本：`/home/samsong/Desktop/game_writer/scripts/archive_model_output_sample.py`
 - 模型输出样本校验脚本：`/home/samsong/Desktop/game_writer/scripts/validate_model_output_archive.py`
 - 存档合同校验脚本：`/home/samsong/Desktop/game_writer/scripts/validate_save_contract.py`
-- 浏览器存档合同回放脚本：`/home/samsong/Desktop/game_writer/scripts/browser_save_contract.py`
 - Schema 校验脚本：`/home/samsong/Desktop/game_writer/scripts/validate_json_schema.py`
 - 局部修复脚本：`/home/samsong/Desktop/game_writer/scripts/repair_game.py`
 - 校验脚本：`/home/samsong/Desktop/game_writer/scripts/validate_game.py`
@@ -1066,7 +1065,6 @@ V0 失败时，测试用户会说：
 - 结局行动画像：结局页展示关键 observe、关键 choice、最终立场与结局标签。
 - 本地保存/恢复：刷新页面后可恢复当前场景、已展开观察、选择路径、章节复盘或结局状态。
 - 存档合同 fixture：覆盖 v1 复盘迁移、v2 结局恢复、未来版本 fallback 和坏 JSON fallback。
-- 浏览器存档合同回放：逐条把存档 fixture 注入 localStorage，验证真实 UI 恢复 review、ending 或 fallback 提示。
 - 内容规模达到 3 章 x 每章 3 个主场景，共 9 个主场景。
 - 隐藏关系变量的叙事回声：`relationships.chen.trust`、`relationships.chen.suspicion`、`relationships.lin.bond` 会在后续场景中触发条件文本。
 - 生成产物的结构校验。
@@ -1509,20 +1507,3 @@ V0.23 的边界：
 - 当前存档合同 fixture 是最小样本集，不覆盖所有路径和所有字段组合。
 - 当前迁移规则仍只支持 v1 到 v2 原样升级，不做字段级重写。
 - 下一步如果继续做存档系统，应扩展字段级迁移 fixture，并把 fixture 与浏览器 localStorage 注入路径更紧密地绑定。
-
-### 17.28 V0.24 版本变更记录
-
-V0.24 相比 V0.23 的实质变化：
-
-- 旧版 V0.23 PRD 和技术文档已归档到 `/home/samsong/Desktop/game_writer/doc/prd/old version/2026-07-08-121617-980`。
-- 新增 `scripts/browser_save_contract.py`。
-- 浏览器存档合同回放会读取 `examples/fixtures/save_contract/save_cases.json`，逐条写入 localStorage 后刷新页面。
-- 回放覆盖 v1 章节复盘存档迁移、v2 公开结局存档恢复、未来版本 fallback 和坏 JSON fallback。
-- 回放会验证真实 UI 是否进入 review / ending / fallback 首场景，并检查恢复提示和移动端横向溢出。
-- README 增加浏览器存档合同回放命令。
-
-V0.24 的边界：
-
-- 浏览器回放仍运行在 Chrome/Chromium headless 移动视口，不等于真实手机或多浏览器。
-- 当前只回放最小合同样本集，不覆盖所有存档状态。
-- 下一步可以把更多字段级迁移样本加入 fixture，并扩展浏览器回放覆盖。

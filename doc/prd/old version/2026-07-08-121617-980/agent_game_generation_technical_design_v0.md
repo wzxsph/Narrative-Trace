@@ -1,6 +1,6 @@
 # Agent Game Generation Technical Design V0
 
-版本：V0.24
+版本：V0.23
 日期：2026-07-08  
 文档类型：技术设计文档  
 文件名规则：英文文件名，便于后续工程引用  
@@ -1195,7 +1195,6 @@ Corrupt save fallback browser smoke: achieved
 Corrupt save recovery notice: achieved
 Save version migration skeleton: achieved
 Save contract fixtures and validation gate: achieved
-Browser save contract replay: achieved
 Conservative local repair tool: achieved
 Explicit JSON Schema contract: achieved
 Schema and validator export gate: achieved
@@ -1221,7 +1220,7 @@ Production-grade generation pipeline: not achieved
 
 ### 21.2 Runtime Robustness
 
-- 当前前端已有本地单存档，且浏览器 E2E 已覆盖结局态刷新恢复和重新开始，浏览器 smoke 已覆盖 v1 存档迁移、坏 JSON / 旧版本存档 fallback 与可见恢复提示；存档合同 fixture 已覆盖 v1 复盘迁移、v2 结局恢复和 fallback 样本，并已有浏览器逐条回放。但没有多存档、复杂字段迁移或云端同步。
+- 当前前端已有本地单存档，且浏览器 E2E 已覆盖结局态刷新恢复和重新开始，浏览器 smoke 已覆盖 v1 存档迁移、坏 JSON / 旧版本存档 fallback 与可见恢复提示；存档合同 fixture 已覆盖 v1 复盘迁移、v2 结局恢复和 fallback 样本。但没有多存档、复杂字段迁移或云端同步。
 - 已有基础章节 flowchart 复盘和未解锁原因说明，但还不是完整 flowchart 级路径复盘。
 - 已有基础 `state_echoes` 渲染，但还没有复杂优先级、互斥回声或节奏控制。
 - 已有第一章叙事内轻教学，但还没有用户测试数据证明提示强度刚好。
@@ -1238,7 +1237,7 @@ Production-grade generation pipeline: not achieved
 
 ### 21.4 Engineering Hygiene
 
-- 已引入最小 `tests/`、浏览器 smoke、三主结局 E2E、存档合同校验和浏览器存档合同回放，但还不是完整测试矩阵。
+- 已引入最小 `tests/`、浏览器 smoke、三主结局 E2E 和存档合同校验，但还不是完整测试矩阵。
 - 已有统一 JSON Schema、基础生成失败 fixtures、prompt manifest、provider/model trace、模型输出样本归档/校验合同、存档合同 fixture 和结局路径 E2E，但还需要真实模型输出样本入库。
 - 需要把 generated demo 内容与手写 fixture 的边界定义清楚。
 - 已增加 README，但仍需要持续同步真实命令和产品边界。
@@ -1692,23 +1691,4 @@ Production-grade generation pipeline: not achieved
 
 - 复杂字段迁移和迁移链。
 - 浏览器逐条注入所有 save contract fixture。
-- 多存档、云同步、坏存档导出或错误报告。
-
-## 46. V0.24 Implementation Delta
-
-本轮 V0.24 的工程变化：
-
-- PRD 和技术文档旧版已归档到 `doc/prd/old version/2026-07-08-121617-980`。
-- 新增 `scripts/browser_save_contract.py`。
-- 脚本复用 `scripts/browser_smoke.py` 的静态服务、Chrome/Chromium 发现、横向溢出断言和 `SAVE_KEY`。
-- 脚本逐条读取 `examples/fixtures/save_contract/save_cases.json`：
-  - restore case 写入 payload 后刷新，并断言 review / ending UI。
-  - migration case 断言 localStorage 被重新保存为当前版本。
-  - fallback case 断言回到首场景并显示指定恢复提示。
-- `README.md` 同步浏览器存档合同回放入口。
-
-本轮没有解决：
-
-- 多浏览器和真实设备下的存档合同回放。
-- 更大规模 save fixture 覆盖。
 - 多存档、云同步、坏存档导出或错误报告。
