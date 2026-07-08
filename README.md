@@ -10,6 +10,7 @@
 - 生成器：`scripts/generate_game.py`
 - JSON Schema：`schemas/game.schema.json`
 - Prompt Manifest：`prompts/manifest.json`
+- 模型输出样本归档：`scripts/archive_model_output_sample.py`
 - Schema 校验：`scripts/validate_json_schema.py`
 - 校验器：`scripts/validate_game.py`
 - 局部修复器：`scripts/repair_game.py`
@@ -20,6 +21,7 @@
 - 内部测试汇总：`scripts/summarize_playtest_batch.py`
 - Demo 内容：`generated/missing_phone_v0/game.json`
 - 生成失败样本：`examples/fixtures/generation_failures/fixture_cases.json`
+- 模型输出样本库：`examples/fixtures/model_outputs/sample_manifest.json`
 
 当前 demo 已覆盖：
 
@@ -37,7 +39,8 @@
 - 多结局浏览器 E2E 矩阵，覆盖 `ending_publish`、`ending_bury`、`ending_confront` 三条真实 UI 路径。
 - 显式 JSON Schema 契约，减少生成器、校验器和前端之间的隐式耦合。
 - 生成失败 fixture，覆盖 schema gate、validator gate 和 repair gate 的典型坏输出。
-- Prompt manifest 和 generation trace 记录 `prompt_set`，让后续真实模型输出可追溯到生成策略。
+- Prompt manifest 和 generation trace 记录 `prompt_set`、`provider`、`model`，让后续真实模型输出可追溯到生成策略。
+- 模型输出样本归档工具会脱敏 API key、bearer token、认证字段、`.env` token 和邮箱，并写入 provider/model/prompt_set 元数据。
 - 内部 playtest 记录模板和 PRD 第 14 节指标汇总脚本。
 - 自动内容 QA 检查，覆盖隐藏 observe 可发现性、choice 代价文案和结局画像完整性硬伤。
 - 局部 repair 可修复常见生成硬伤：坏 `start_scene_id`、坏 `next_scene`、缺失 anchor 文本、错误 observe depth、坏 unlock choice 引用。
@@ -91,6 +94,18 @@ python3 scripts/browser_smoke.py
 
 ```bash
 python3 scripts/browser_e2e_matrix.py
+```
+
+归档一份真实模型输出样本：
+
+```bash
+python3 scripts/archive_model_output_sample.py \
+  --input path/to/raw_model_output.txt \
+  --sample-id first_scene_polish_fail_001 \
+  --provider openai_compatible \
+  --model your-model-id \
+  --source first_scene_llm_polish_v0_1 \
+  --notes "invalid JSON returned by optional polish"
 ```
 
 跑测试：

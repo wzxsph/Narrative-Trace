@@ -1,6 +1,6 @@
 # Agent Game Generation Technical Design V0
 
-版本：V0.17
+版本：V0.16
 日期：2026-07-08  
 文档类型：技术设计文档  
 文件名规则：英文文件名，便于后续工程引用  
@@ -1195,8 +1195,6 @@ Explicit JSON Schema contract: achieved
 Schema and validator export gate: achieved
 Generation failure fixtures: achieved
 Prompt manifest traceability: achieved
-Provider/model trace metadata: achieved
-Redacted model output sample archive contract: achieved
 Production-grade generation pipeline: not achieved
 ```
 
@@ -1208,8 +1206,8 @@ Production-grade generation pipeline: not achieved
 
 - 当前 LLM 只做可选 polish，不是真正多阶段生成。
 - repair loop 已能修复常见确定性结构错误，但还不是 LLM 驱动的语义局部重写。
-- 已有生成失败 mutation fixtures 和模型输出样本归档合同，但还缺少真实模型输出样本库。
-- 已有 prompt manifest 和 trace 记录，trace 已包含 `prompt_set`、`provider`、`model`；但还缺少真实模型输出样本与这些版本字段的实际绑定。
+- 已有生成失败 mutation fixtures，但还缺少真实模型输出样本库。
+- 已有 prompt manifest 和 trace 记录，但还缺少真实模型输出样本与 prompt/model/provider 版本映射。
 - deterministic demo 规模已扩到 9 场景，但仍是手写结构，不证明 agent 能稳定生成同等规模内容。
 
 ### 21.2 Runtime Robustness
@@ -1232,7 +1230,7 @@ Production-grade generation pipeline: not achieved
 ### 21.4 Engineering Hygiene
 
 - 已引入最小 `tests/`、浏览器 smoke 和三主结局 E2E，但还不是完整测试矩阵。
-- 已有统一 JSON Schema、基础生成失败 fixtures、prompt manifest、provider/model trace、模型输出样本归档合同和结局路径 E2E，但还需要真实模型输出样本入库。
+- 已有统一 JSON Schema、基础生成失败 fixtures、prompt manifest 和结局路径 E2E，但还需要真实模型输出样本和 provider/model 版本映射。
 - 需要把 generated demo 内容与手写 fixture 的边界定义清楚。
 - 已增加 README，但仍需要持续同步真实命令和产品边界。
 
@@ -1240,8 +1238,8 @@ Production-grade generation pipeline: not achieved
 
 下一轮建议按这个顺序推进：
 
-1. 用 `scripts/archive_model_output_sample.py` 积累首批真实模型输出 fixtures，并记录对应 prompt/model/provider 版本。
-2. 将真实样本与 schema gate、validator gate、repair gate、content QA 结果关联，形成可回归失败库。
+1. 积累真实模型输出 fixtures，并记录对应 prompt/model/provider 版本。
+2. 建立真实模型输出样本的脱敏/归档规则。
 3. 跑一轮内部 playtest 批次，使用 `summarize_playtest_batch.py` 生成 pass/fail 报告。
 4. 增加真实设备与无障碍测试，覆盖触控、滚动、可读性、键盘导航和屏幕阅读器。
 5. 将浏览器 E2E 继续扩展到刷新恢复、失败/遗漏路径、多浏览器和可访问性断言。
@@ -1546,23 +1544,3 @@ Production-grade generation pipeline: not achieved
 - 多浏览器、真实移动设备和无障碍测试。
 - 结局文案情感质量、选择犹豫感和隐藏线索公平性的人工判断。
 - E2E 对刷新恢复、失败路径和存档异常的覆盖。
-
-## 39. V0.17 Implementation Delta
-
-本轮 V0.17 的工程变化：
-
-- PRD 和技术文档旧版已归档到 `doc/prd/old version/2026-07-08-113003-355`。
-- `gamegen/demo_agent.py` 为 generation metadata 增加 `model`，离线生成写入 `deterministic_demo_v0`，LLM 路径写入 `LLM_MODEL`。
-- `generation_trace.jsonl` 增加 `trace_schema_version` 和 `model` 字段。
-- `gamegen/prompt_manifest.py` 增加 `declared_prompt_set_ids()`，供样本归档校验 prompt set。
-- 新增 `gamegen/model_output_archive.py`，提供样本 id 校验、常见密钥/邮箱脱敏、残留 secret 检查、sha256、manifest upsert。
-- 新增 `scripts/archive_model_output_sample.py`，将原始模型输出脱敏后归档到 `examples/fixtures/model_outputs`。
-- 新增 `examples/fixtures/model_outputs/sample_manifest.json` 和 README，明确真实样本入库规则。
-- 新增 `tests/test_model_output_archive.py`，覆盖脱敏、manifest 元数据和非法样本拒绝。
-- `README.md` 增加模型输出样本归档命令。
-
-本轮没有解决：
-
-- 尚未积累真实 provider response；当前样本库仍为空合同。
-- 脱敏规则不能替代人工复查，尤其是项目私有 URL、真实姓名、手机号等未来可能出现的敏感数据。
-- 真实样本尚未与 repair/content QA 结果形成一体化回归报告。

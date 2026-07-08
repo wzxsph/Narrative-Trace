@@ -9,7 +9,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 
-from gamegen.demo_agent import export_game
+from gamegen.demo_agent import OFFLINE_MODEL_ID, export_game
 from gamegen.prompt_manifest import active_prompt_set_id, load_prompt_manifest
 
 
@@ -32,7 +32,9 @@ class PromptManifestTest(unittest.TestCase):
     with tempfile.TemporaryDirectory() as tmp:
       export_game(load_game(), tmp)
       trace = json.loads((Path(tmp) / "generation_trace.jsonl").read_text(encoding="utf-8"))
+      self.assertEqual(trace["trace_schema_version"], "generation_trace_v0_2")
       self.assertEqual(trace["prompt_set"], active_prompt_set_id(MANIFEST_PATH))
+      self.assertEqual(trace["model"], OFFLINE_MODEL_ID)
 
   def test_manifest_rejects_undeclared_active_prompt_set(self) -> None:
     with tempfile.TemporaryDirectory() as tmp:

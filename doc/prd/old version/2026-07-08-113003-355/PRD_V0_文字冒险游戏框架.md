@@ -1,6 +1,6 @@
 # PRD V0：文字版底特律式互动叙事游戏框架
 
-版本：V0.17
+版本：V0.16
 日期：2026-07-08  
 文档目标：定义第一版本文字游戏本身的框架、具体形态、用户 UI/UX  
 保留文档：`PRD_AI文字冒险游戏.md` 继续保留，作为后续 AI 创作 Agent 和长期路线参考  
@@ -1028,7 +1028,6 @@ V0 失败时，测试用户会说：
 - 生成脚本：`/home/samsong/Desktop/game_writer/scripts/generate_game.py`
 - JSON Schema：`/home/samsong/Desktop/game_writer/schemas/game.schema.json`
 - Prompt Manifest：`/home/samsong/Desktop/game_writer/prompts/manifest.json`
-- 模型输出样本归档脚本：`/home/samsong/Desktop/game_writer/scripts/archive_model_output_sample.py`
 - Schema 校验脚本：`/home/samsong/Desktop/game_writer/scripts/validate_json_schema.py`
 - 局部修复脚本：`/home/samsong/Desktop/game_writer/scripts/repair_game.py`
 - 校验脚本：`/home/samsong/Desktop/game_writer/scripts/validate_game.py`
@@ -1037,7 +1036,6 @@ V0 失败时，测试用户会说：
 - 浏览器冒烟脚本：`/home/samsong/Desktop/game_writer/scripts/browser_smoke.py`
 - 多结局浏览器 E2E 矩阵：`/home/samsong/Desktop/game_writer/scripts/browser_e2e_matrix.py`
 - 生成失败样本库：`/home/samsong/Desktop/game_writer/examples/fixtures/generation_failures/fixture_cases.json`
-- 模型输出样本库：`/home/samsong/Desktop/game_writer/examples/fixtures/model_outputs/sample_manifest.json`
 
 它已经覆盖本 PRD 的关键体验闭环：
 
@@ -1071,8 +1069,7 @@ V0 失败时，测试用户会说：
 - 显式 JSON Schema 契约：验证游戏数据的字段形状、必填项、枚举、递归 observe 结构和基础类型。
 - 生成导出门禁：`generate_game.py` 默认在写文件前通过 JSON Schema 和结构 validator，失败时阻断导出。
 - 生成失败 fixture：用 mutation case 覆盖 schema gate、validator gate、repair gate 的典型坏输出。
-- Prompt/模型版本管理：`generation_trace.jsonl` 记录 `prompt_set`、`provider`、`model`，为未来真实 LLM 输出样本提供追溯维度。
-- 模型输出样本归档合同：真实模型输出进入样本库前必须脱敏，并记录 provider、model、prompt_set、source、schema、checksum。
+- Prompt 版本管理：`generation_trace.jsonl` 记录 `prompt_set`，为未来真实 LLM 输出样本提供追溯维度。
 - 基础测试入口：`/home/samsong/Desktop/game_writer/tests/test_demo_contract.py`
 - 内部测试记录模板：`/home/samsong/Desktop/game_writer/doc/testing/internal_playtest_record_template.md`
 - 内部测试批次模板：`/home/samsong/Desktop/game_writer/examples/playtests/internal_playtest_batch_template.json`
@@ -1095,7 +1092,6 @@ V0 失败时，测试用户会说：
 - 浏览器自动化已覆盖核心路径与三主结局路径，但还没有真实移动设备、多浏览器、触控细节和无障碍验收。
 - 内容 QA 已有基础自动检查，但还不能判断“选择是否真的让人犹豫”或“隐藏线索是否在语义上公平”。
 - 结局画像已有自动完整性检查，但还不能判断结局是否有足够情感重量。
-- 已有模型输出样本归档工具和空样本库合同，但还没有沉淀真实 LLM 输出样本，因此不能证明 agent 生成链路在真实模型下稳定。
 
 ### 17.3 下一轮产品优先级
 
@@ -1125,7 +1121,7 @@ V0 失败时，测试用户会说：
 
 产品级至少还需要：
 
-- 内容生产流程稳定，能持续生成多章内容而不崩坏，并有真实模型输出样本支撑失败回归。
+- 内容生产流程稳定，能持续生成多章内容而不崩坏。
 - 前端 UI 在移动端真实设备上验证触控、滚动、可读性。
 - 路径图、结局画像、新手引导形成更强闭环，并通过真实玩家数据验证它们不是“看起来完整”。
 - 保存/重开能力从本地单存档升级到可解释、可恢复、可迁移的产品级存档。
@@ -1382,20 +1378,3 @@ V0.16 的边界：
 - 浏览器 E2E 证明当前 demo 的三主结局可达，不证明结局文案有足够情感重量。
 - 它覆盖 Chrome/Chromium headless 移动视口，不等于真实手机、多浏览器或无障碍验收。
 - 下一步仍应优先积累真实模型输出样本、跑内部用户测试，并补真实设备/无障碍验证。
-
-### 17.21 V0.17 版本变更记录
-
-V0.17 相比 V0.16 的实质变化：
-
-- 旧版 V0.16 PRD 和技术文档已归档到 `/home/samsong/Desktop/game_writer/doc/prd/old version/2026-07-08-113003-355`。
-- `generation_trace.jsonl` 增加 `trace_schema_version` 和 `model` 字段，离线生成默认记录 `deterministic_demo_v0`。
-- 新增 `gamegen/model_output_archive.py`，定义模型输出样本归档、脱敏、checksum 和 manifest 更新逻辑。
-- 新增 `scripts/archive_model_output_sample.py`，用于把真实模型输出文件脱敏后归档到样本库。
-- 新增 `examples/fixtures/model_outputs/sample_manifest.json` 和 README，明确不提交原始未脱敏 provider response。
-- 新增 `tests/test_model_output_archive.py`，覆盖 API key、bearer token、认证字段、`.env` token、邮箱脱敏，样本 manifest 写入，坏 sample id 和未声明 prompt_set 拒绝。
-
-V0.17 的边界：
-
-- 本轮建立的是样本归档合同，不是假装已经积累了真实模型输出样本。
-- 脱敏工具只能覆盖常见密钥/邮箱形态，真实样本入库前仍需要人工复查。
-- 下一步应使用该工具沉淀首批真实 LLM 成功/失败样本，并把样本与 repair/validator/content QA 结果关联起来。

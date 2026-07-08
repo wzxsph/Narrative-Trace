@@ -1344,3 +1344,4 @@ endings:
       - "unstable_truth"
 generation:
   provider: "offline"
+  model: "deterministic_demo_v0"

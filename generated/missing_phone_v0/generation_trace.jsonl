@@ -1,1 +1,1 @@
-{"provider": "offline", "schema": "schemas/game.schema.json", "prompt_set": "demo_agent_v0_15", "artifacts": ["game.json", "game.yaml", "path_map.json", "state_registry.json", "validation_report.md"]}
+{"trace_schema_version": "generation_trace_v0_2", "provider": "offline", "model": "deterministic_demo_v0", "schema": "schemas/game.schema.json", "prompt_set": "demo_agent_v0_15", "artifacts": ["game.json", "game.yaml", "path_map.json", "state_registry.json", "validation_report.md"]}

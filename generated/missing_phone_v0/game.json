@@ -2121,6 +2121,7 @@
     }
   ],
   "generation": {
-    "provider": "offline"
+    "provider": "offline",
+    "model": "deterministic_demo_v0"
   }
 }

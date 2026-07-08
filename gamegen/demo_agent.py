@@ -11,6 +11,9 @@ from .schema_contract import validate_against_default_schema
 from .validator import build_path_map, validate_game, write_validation_report
 
 
+OFFLINE_MODEL_ID = "deterministic_demo_v0"
+
+
 def load_brief(path: str | Path) -> dict[str, Any]:
     return json.loads(Path(path).read_text(encoding="utf-8"))
 
@@ -23,16 +26,24 @@ def generate_game(brief: dict[str, Any], provider: str = "auto") -> dict[str, An
             client = LLMClient(config)
             try:
                 apply_llm_polish(game, brief, client)
-                game.setdefault("generation", {})["provider"] = "openai_compatible"
+                generation = game.setdefault("generation", {})
+                generation["provider"] = "openai_compatible"
+                generation["model"] = config.model
             except Exception as exc:  # noqa: BLE001 - keep demo generation resilient
-                game.setdefault("generation", {})["provider"] = "offline_fallback"
-                game.setdefault("generation", {})["llm_error"] = str(exc)
+                generation = game.setdefault("generation", {})
+                generation["provider"] = "offline_fallback"
+                generation["model"] = config.model
+                generation["llm_error"] = str(exc)
         elif provider == "llm":
             raise RuntimeError("LLM provider requested, but LLM_BASE_URL or LLM_API_KEY is missing")
         else:
-            game.setdefault("generation", {})["provider"] = "offline"
+            generation = game.setdefault("generation", {})
+            generation["provider"] = "offline"
+            generation["model"] = OFFLINE_MODEL_ID
     else:
-        game.setdefault("generation", {})["provider"] = "offline"
+        generation = game.setdefault("generation", {})
+        generation["provider"] = "offline"
+        generation["model"] = OFFLINE_MODEL_ID
     return game
 
 
@@ -1211,7 +1222,9 @@ def export_game(game: dict[str, Any], out_dir: str | Path) -> None:
     )
     write_validation_report(messages, output / "validation_report.md")
     trace = {
+        "trace_schema_version": "generation_trace_v0_2",
         "provider": game.get("generation", {}).get("provider", "offline"),
+        "model": game.get("generation", {}).get("model", OFFLINE_MODEL_ID),
         "schema": "schemas/game.schema.json",
         "prompt_set": active_prompt_set_id(),
         "artifacts": ["game.json", "game.yaml", "path_map.json", "state_registry.json", "validation_report.md"],

@@ -22,3 +22,9 @@ def active_prompt_set_id(path: str | Path = DEFAULT_MANIFEST) -> str:
     if not any(item.get("id") == prompt_set_id for item in prompt_sets if isinstance(item, dict)):
         raise ValueError(f"Prompt manifest active_prompt_set '{prompt_set_id}' is not declared")
     return prompt_set_id
+
+
+def declared_prompt_set_ids(path: str | Path = DEFAULT_MANIFEST) -> set[str]:
+    manifest = load_prompt_manifest(path)
+    prompt_sets = manifest.get("prompt_sets", [])
+    return {item["id"] for item in prompt_sets if isinstance(item, dict) and isinstance(item.get("id"), str)}
