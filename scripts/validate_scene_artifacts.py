@@ -8,13 +8,14 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
-from gamegen.scene_artifacts import validate_scene_artifacts
+from gamegen.scene_artifacts import validate_scene_artifact_release, validate_scene_artifacts
 
 
 def main() -> int:
     parser = argparse.ArgumentParser(description="Validate scene_artifacts.json against scene_blueprint.json.")
     parser.add_argument("path", help="Path to scene_artifacts.json")
     parser.add_argument("--blueprint", default=None, help="Path to scene_blueprint.json")
+    parser.add_argument("--release", action="store_true", help="Also require all scene artifacts to be locked for compile.")
     args = parser.parse_args()
 
     path = Path(args.path)
@@ -23,6 +24,8 @@ def main() -> int:
     scene_blueprint = json.loads(blueprint_path.read_text(encoding="utf-8"))
 
     messages = validate_scene_artifacts(scene_artifacts, scene_blueprint)
+    if args.release:
+        messages.extend(validate_scene_artifact_release(scene_artifacts))
     errors = [message for message in messages if message.level == "error"]
 
     if not messages:

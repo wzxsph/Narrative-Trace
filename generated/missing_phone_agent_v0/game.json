@@ -2119,7 +2119,7 @@
     "compiled_scene_count": 9,
     "provider": "offline",
     "model": "deterministic_demo_v0",
-    "agent_graph": "v0_34",
+    "agent_graph": "v0_35",
     "plan_schema_version": "generation_plan_v0_1",
     "state_schema_design_version": "state_schema_design_v0_1",
     "scene_blueprint_version": "scene_blueprint_v0_1",

@@ -8,7 +8,15 @@
       "scene_id": "ch01_phone_lock",
       "blueprint_scene_role": "entry_mystery",
       "source": "demo_scene_library_v0_1",
-      "status": "draft",
+      "status": "locked",
+      "review": {
+        "state": "approved",
+        "reviewer": "deterministic_reviewer_v0_1",
+        "notes": [
+          "Structure gates passed before deterministic release.",
+          "Scene artifact is locked for compile."
+        ]
+      },
       "scene": {
         "id": "ch01_phone_lock",
         "chapter": "第一章：锁屏上的半句话",
@@ -288,7 +296,15 @@
       "scene_id": "ch01_cloud_console",
       "blueprint_scene_role": "pressure_escalation",
       "source": "demo_scene_library_v0_1",
-      "status": "draft",
+      "status": "locked",
+      "review": {
+        "state": "approved",
+        "reviewer": "deterministic_reviewer_v0_1",
+        "notes": [
+          "Structure gates passed before deterministic release.",
+          "Scene artifact is locked for compile."
+        ]
+      },
       "scene": {
         "id": "ch01_cloud_console",
         "chapter": "第一章：锁屏上的半句话",
@@ -515,7 +531,15 @@
       "scene_id": "ch01_contact_trace",
       "blueprint_scene_role": "relationship_probe",
       "source": "demo_scene_library_v0_1",
-      "status": "draft",
+      "status": "locked",
+      "review": {
+        "state": "approved",
+        "reviewer": "deterministic_reviewer_v0_1",
+        "notes": [
+          "Structure gates passed before deterministic release.",
+          "Scene artifact is locked for compile."
+        ]
+      },
       "scene": {
         "id": "ch01_contact_trace",
         "chapter": "第一章：锁屏上的半句话",
@@ -757,7 +781,15 @@
       "scene_id": "ch02_station_gate",
       "blueprint_scene_role": "threshold_choice",
       "source": "demo_scene_library_v0_1",
-      "status": "draft",
+      "status": "locked",
+      "review": {
+        "state": "approved",
+        "reviewer": "deterministic_reviewer_v0_1",
+        "notes": [
+          "Structure gates passed before deterministic release.",
+          "Scene artifact is locked for compile."
+        ]
+      },
       "scene": {
         "id": "ch02_station_gate",
         "chapter": "第二章：废弃地铁站",
@@ -977,7 +1009,15 @@
       "scene_id": "ch02_station_platform",
       "blueprint_scene_role": "evidence_reveal",
       "source": "demo_scene_library_v0_1",
-      "status": "draft",
+      "status": "locked",
+      "review": {
+        "state": "approved",
+        "reviewer": "deterministic_reviewer_v0_1",
+        "notes": [
+          "Structure gates passed before deterministic release.",
+          "Scene artifact is locked for compile."
+        ]
+      },
       "scene": {
         "id": "ch02_station_platform",
         "chapter": "第二章：废弃地铁站",
@@ -1230,7 +1270,15 @@
       "scene_id": "ch02_locker_room",
       "blueprint_scene_role": "asset_recovery",
       "source": "demo_scene_library_v0_1",
-      "status": "draft",
+      "status": "locked",
+      "review": {
+        "state": "approved",
+        "reviewer": "deterministic_reviewer_v0_1",
+        "notes": [
+          "Structure gates passed before deterministic release.",
+          "Scene artifact is locked for compile."
+        ]
+      },
       "scene": {
         "id": "ch02_locker_room",
         "chapter": "第二章：废弃地铁站",
@@ -1439,7 +1487,15 @@
       "scene_id": "ch03_backup_unlock",
       "blueprint_scene_role": "context_reframe",
       "source": "demo_scene_library_v0_1",
-      "status": "draft",
+      "status": "locked",
+      "review": {
+        "state": "approved",
+        "reviewer": "deterministic_reviewer_v0_1",
+        "notes": [
+          "Structure gates passed before deterministic release.",
+          "Scene artifact is locked for compile."
+        ]
+      },
       "scene": {
         "id": "ch03_backup_unlock",
         "chapter": "第三章：被保存的副本",
@@ -1650,7 +1706,15 @@
       "scene_id": "ch03_witness_thread",
       "blueprint_scene_role": "relationship_echo",
       "source": "demo_scene_library_v0_1",
-      "status": "draft",
+      "status": "locked",
+      "review": {
+        "state": "approved",
+        "reviewer": "deterministic_reviewer_v0_1",
+        "notes": [
+          "Structure gates passed before deterministic release.",
+          "Scene artifact is locked for compile."
+        ]
+      },
       "scene": {
         "id": "ch03_witness_thread",
         "chapter": "第三章：被保存的副本",
@@ -1887,7 +1951,15 @@
       "scene_id": "ch03_publish_decision",
       "blueprint_scene_role": "ending_matrix",
       "source": "demo_scene_library_v0_1",
-      "status": "draft",
+      "status": "locked",
+      "review": {
+        "state": "approved",
+        "reviewer": "deterministic_reviewer_v0_1",
+        "notes": [
+          "Structure gates passed before deterministic release.",
+          "Scene artifact is locked for compile."
+        ]
+      },
       "scene": {
         "id": "ch03_publish_decision",
         "chapter": "第三章：被保存的副本",
@@ -2094,5 +2166,6 @@
         ]
       }
     }
-  ]
+  ],
+  "review_schema_version": "scene_artifact_review_v0_1"
 }

@@ -13,6 +13,8 @@ from gamegen.demo_agent import load_brief
 from gamegen.scene_artifacts import (
   build_scene_artifacts_from_library,
   compile_game_from_scene_artifacts,
+  review_scene_artifacts,
+  validate_scene_artifact_release,
   validate_scene_artifacts,
 )
 from gamegen.scene_blueprint import build_scene_blueprint_design
@@ -34,13 +36,33 @@ class SceneArtifactsTest(unittest.TestCase):
     brief, blueprint, artifacts = valid_inputs()
 
     messages = validate_scene_artifacts(artifacts, blueprint)
-    game = compile_game_from_scene_artifacts(brief, artifacts)
+    reviewed = review_scene_artifacts(artifacts)
+    release_messages = validate_scene_artifact_release(reviewed)
+    game = compile_game_from_scene_artifacts(brief, reviewed)
 
     self.assertEqual(messages, [])
-    self.assertEqual(artifacts["schema_version"], "scene_artifacts_v0_1")
-    self.assertEqual([artifact["scene_id"] for artifact in artifacts["artifacts"]], [scene["id"] for scene in blueprint["scenes"]])
+    self.assertEqual(release_messages, [])
+    self.assertEqual(reviewed["schema_version"], "scene_artifacts_v0_1")
+    self.assertEqual(reviewed["review_schema_version"], "scene_artifact_review_v0_1")
+    self.assertEqual([artifact["scene_id"] for artifact in reviewed["artifacts"]], [scene["id"] for scene in blueprint["scenes"]])
     self.assertEqual([scene["id"] for scene in game["scenes"]], [scene["id"] for scene in blueprint["scenes"]])
     self.assertEqual(game["generation"]["draft_source"], "scene_artifacts_v0_1")
+    self.assertTrue(all(artifact["status"] == "locked" for artifact in reviewed["artifacts"]))
+
+  def test_compile_requires_locked_artifacts(self) -> None:
+    brief, _, artifacts = valid_inputs()
+
+    with self.assertRaisesRegex(ValueError, "locked"):
+      compile_game_from_scene_artifacts(brief, artifacts)
+
+  def test_release_gate_rejects_unapproved_artifact(self) -> None:
+    _, _, artifacts = valid_inputs()
+    reviewed = review_scene_artifacts(artifacts)
+    reviewed["artifacts"][0]["status"] = "draft"
+
+    messages = validate_scene_artifact_release(reviewed)
+
+    self.assertTrue(any(message.level == "error" and message.message == "Artifact must be locked before compile" for message in messages))
 
   def test_artifact_order_must_match_blueprint(self) -> None:
     _, blueprint, artifacts = valid_inputs()

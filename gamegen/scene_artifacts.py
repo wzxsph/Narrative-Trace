@@ -9,6 +9,7 @@ from .demo_agent import deterministic_demo_game
 
 
 Level = Literal["error", "warning"]
+ALLOWED_ARTIFACT_STATUSES = {"draft", "locked", "rejected"}
 
 
 @dataclass(frozen=True)
@@ -36,6 +37,11 @@ def build_scene_artifacts_from_library(brief: dict[str, Any], scene_blueprint: d
                 "blueprint_scene_role": blueprint_scene.get("scene_role"),
                 "source": "demo_scene_library_v0_1",
                 "status": "draft",
+                "review": {
+                    "state": "unreviewed",
+                    "reviewer": None,
+                    "notes": [],
+                },
                 "scene": deepcopy(scene),
             }
         )
@@ -89,6 +95,18 @@ def validate_scene_artifacts(
             messages.append(SceneArtifactMessage("error", f"{location}.scene_id", f"Duplicate artifact scene_id: {scene_id}"))
         seen_ids.add(scene_id)
 
+        status = artifact.get("status")
+        if status not in ALLOWED_ARTIFACT_STATUSES:
+            messages.append(SceneArtifactMessage("error", f"{location}.status", "Artifact status must be draft, locked, or rejected"))
+
+        review = artifact.get("review")
+        if not isinstance(review, dict):
+            messages.append(SceneArtifactMessage("error", f"{location}.review", "Artifact review must be an object"))
+        else:
+            notes = review.get("notes")
+            if not isinstance(notes, list) or not all(isinstance(note, str) for note in notes):
+                messages.append(SceneArtifactMessage("error", f"{location}.review.notes", "Review notes must be a list of strings"))
+
         scene = artifact.get("scene")
         if not isinstance(scene, dict):
             messages.append(SceneArtifactMessage("error", f"{location}.scene", "Artifact scene must be an object"))
@@ -135,7 +153,57 @@ def validate_scene_artifacts(
     return messages
 
 
+def review_scene_artifacts(scene_artifacts: dict[str, Any], reviewer: str = "deterministic_reviewer_v0_1") -> dict[str, Any]:
+    reviewed = deepcopy(scene_artifacts)
+    reviewed["review_schema_version"] = "scene_artifact_review_v0_1"
+    for artifact in reviewed.get("artifacts", []):
+        if not isinstance(artifact, dict):
+            continue
+        artifact["status"] = "locked"
+        artifact["review"] = {
+            "state": "approved",
+            "reviewer": reviewer,
+            "notes": [
+                "Structure gates passed before deterministic release.",
+                "Scene artifact is locked for compile.",
+            ],
+        }
+    return reviewed
+
+
+def validate_scene_artifact_release(scene_artifacts: dict[str, Any]) -> list[SceneArtifactMessage]:
+    messages: list[SceneArtifactMessage] = []
+    if scene_artifacts.get("review_schema_version") != "scene_artifact_review_v0_1":
+        messages.append(
+            SceneArtifactMessage("error", "review_schema_version", "Scene artifacts must include review schema before release")
+        )
+    artifacts = scene_artifacts.get("artifacts")
+    if not isinstance(artifacts, list) or not artifacts:
+        messages.append(SceneArtifactMessage("error", "artifacts", "Artifacts must be a non-empty list"))
+        return messages
+    for index, artifact in enumerate(artifacts):
+        location = f"artifacts[{index}]"
+        if not isinstance(artifact, dict):
+            messages.append(SceneArtifactMessage("error", location, "Artifact must be an object"))
+            continue
+        if artifact.get("status") != "locked":
+            messages.append(SceneArtifactMessage("error", f"{location}.status", "Artifact must be locked before compile"))
+        review = artifact.get("review")
+        if not isinstance(review, dict):
+            messages.append(SceneArtifactMessage("error", f"{location}.review", "Artifact review must be an object"))
+            continue
+        if review.get("state") != "approved":
+            messages.append(SceneArtifactMessage("error", f"{location}.review.state", "Artifact review must be approved"))
+        if not isinstance(review.get("reviewer"), str) or not review.get("reviewer"):
+            messages.append(SceneArtifactMessage("error", f"{location}.review.reviewer", "Artifact reviewer is required"))
+    return messages
+
+
 def compile_game_from_scene_artifacts(brief: dict[str, Any], scene_artifacts: dict[str, Any]) -> dict[str, Any]:
+    release_messages = validate_scene_artifact_release(scene_artifacts)
+    release_errors = [message for message in release_messages if message.level == "error"]
+    if release_errors:
+        raise ValueError("Scene artifacts must be locked before compile")
     game = deterministic_demo_game(brief)
     scenes = [deepcopy(artifact["scene"]) for artifact in scene_artifacts.get("artifacts", [])]
     game["start_scene_id"] = scene_artifacts.get("entry_scene_id", game["start_scene_id"])

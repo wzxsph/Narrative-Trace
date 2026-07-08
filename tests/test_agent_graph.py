@@ -51,6 +51,8 @@ class AgentGraphTest(unittest.TestCase):
       self.assertIn("validate_scene_blueprint", nodes)
       self.assertIn("draft_scene_artifacts", nodes)
       self.assertIn("validate_scene_artifacts", nodes)
+      self.assertIn("review_scene_artifacts", nodes)
+      self.assertIn("validate_scene_artifact_release", nodes)
       self.assertIn("draft_skeleton", nodes)
       self.assertIn("validate_blueprint_alignment", nodes)
       self.assertIn("validate_schema", nodes)
@@ -63,6 +65,7 @@ class AgentGraphTest(unittest.TestCase):
       self.assertEqual(repair_events[-1]["status"], "skipped")
       draft_events = [event for event in trace if event["node"] == "draft_skeleton"]
       self.assertEqual(draft_events[-1]["metrics"]["draft_source"], "scene_artifacts_v0_1")
+      self.assertEqual(draft_events[-1]["metrics"]["locked_scene_artifacts"], 9)
 
       generation_plan = json.loads((output / "generation_plan.json").read_text(encoding="utf-8"))
       self.assertEqual(generation_plan["plan_schema_version"], "generation_plan_v0_1")
@@ -95,12 +98,16 @@ class AgentGraphTest(unittest.TestCase):
       self.assertEqual(scene_blueprint_events[-1]["status"], "ok")
       scene_artifact_events = [event for event in trace if event["node"] == "validate_scene_artifacts"]
       self.assertEqual(scene_artifact_events[-1]["status"], "ok")
+      release_events = [event for event in trace if event["node"] == "validate_scene_artifact_release"]
+      self.assertEqual(release_events[-1]["status"], "ok")
       alignment_events = [event for event in trace if event["node"] == "validate_blueprint_alignment"]
       self.assertEqual(alignment_events[-1]["status"], "ok")
 
       scene_artifacts = json.loads((output / "scene_artifacts.json").read_text(encoding="utf-8"))
       self.assertEqual(scene_artifacts["schema_version"], "scene_artifacts_v0_1")
+      self.assertEqual(scene_artifacts["review_schema_version"], "scene_artifact_review_v0_1")
       self.assertEqual(len(scene_artifacts["artifacts"]), 9)
+      self.assertTrue(all(artifact["status"] == "locked" for artifact in scene_artifacts["artifacts"]))
 
   def test_repair_node_applies_supported_structural_repairs(self) -> None:
     brief = load_brief(BRIEF_PATH)

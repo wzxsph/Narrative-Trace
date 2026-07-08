@@ -21,6 +21,8 @@ from .scene_artifacts import (
     SceneArtifactMessage,
     build_scene_artifacts_from_library,
     compile_game_from_scene_artifacts,
+    review_scene_artifacts,
+    validate_scene_artifact_release,
     validate_scene_artifacts,
 )
 from .scene_blueprint import (
@@ -78,6 +80,7 @@ class AgentState:
     state_schema_messages: list[StateSchemaDesignMessage] = field(default_factory=list)
     scene_blueprint_messages: list[SceneBlueprintMessage] = field(default_factory=list)
     scene_artifact_messages: list[SceneArtifactMessage] = field(default_factory=list)
+    scene_artifact_release_messages: list[SceneArtifactMessage] = field(default_factory=list)
     blueprint_alignment_messages: list[BlueprintAlignmentMessage] = field(default_factory=list)
     schema_errors: list[str] = field(default_factory=list)
     validation_messages: list[ValidationMessage] = field(default_factory=list)
@@ -94,6 +97,9 @@ class AgentState:
         state_schema_errors = sum(1 for message in self.state_schema_messages if message.level == "error")
         scene_blueprint_errors = sum(1 for message in self.scene_blueprint_messages if message.level == "error")
         scene_artifact_errors = sum(1 for message in self.scene_artifact_messages if message.level == "error")
+        scene_artifact_release_errors = sum(
+            1 for message in self.scene_artifact_release_messages if message.level == "error"
+        )
         blueprint_alignment_errors = sum(1 for message in self.blueprint_alignment_messages if message.level == "error")
         validation_errors = sum(1 for message in self.validation_messages if message.level == "error")
         content_errors = sum(1 for message in self.content_qa_messages if message.level == "error")
@@ -101,6 +107,7 @@ class AgentState:
             state_schema_errors
             + scene_blueprint_errors
             + scene_artifact_errors
+            + scene_artifact_release_errors
             + blueprint_alignment_errors
             + len(self.schema_errors)
             + validation_errors
@@ -119,6 +126,8 @@ class GenerationAgentGraph:
         self.validate_scene_blueprint(state)
         self.draft_scene_artifacts(state)
         self.validate_scene_artifacts(state)
+        self.review_scene_artifacts(state)
+        self.validate_scene_artifact_release(state)
         self.draft_skeleton(state)
         self.validate_blueprint_alignment(state)
         self.optional_llm_polish(state)
@@ -164,7 +173,7 @@ class GenerationAgentGraph:
         generation = state.game.setdefault("generation", {})
         generation["provider"] = "offline"
         generation["model"] = OFFLINE_MODEL_ID
-        generation["agent_graph"] = "v0_34"
+        generation["agent_graph"] = "v0_35"
         generation["plan_schema_version"] = state.generation_plan["plan_schema_version"]
         generation["state_schema_design_version"] = state.state_schema_design["schema_version"]
         generation["scene_blueprint_version"] = state.scene_blueprint_design["schema_version"]
@@ -179,6 +188,7 @@ class GenerationAgentGraph:
             planned_blueprint_scenes=len(state.scene_blueprint_design["scenes"]),
             draft_source=generation["draft_source"],
             scene_artifacts=len(state.scene_artifacts["artifacts"]),
+            locked_scene_artifacts=sum(1 for artifact in state.scene_artifacts["artifacts"] if artifact["status"] == "locked"),
             scenes=len(state.game.get("scenes", [])),
             endings=len(state.game.get("endings", [])),
         )
@@ -293,6 +303,35 @@ class GenerationAgentGraph:
         )
         if errors:
             raise AgentRunError("Scene artifacts failed validation")
+
+    def review_scene_artifacts(self, state: AgentState) -> None:
+        if state.scene_artifacts is None:
+            raise AgentRunError("review_scene_artifacts requires scene artifacts")
+        state.scene_artifacts = review_scene_artifacts(state.scene_artifacts)
+        locked_count = sum(1 for artifact in state.scene_artifacts["artifacts"] if artifact["status"] == "locked")
+        state.add_trace(
+            "review_scene_artifacts",
+            "ok",
+            "Reviewed and locked scene artifacts for compile",
+            locked=locked_count,
+            reviewer="deterministic_reviewer_v0_1",
+        )
+
+    def validate_scene_artifact_release(self, state: AgentState) -> None:
+        if state.scene_artifacts is None:
+            raise AgentRunError("validate_scene_artifact_release requires scene artifacts")
+        state.scene_artifact_release_messages = validate_scene_artifact_release(state.scene_artifacts)
+        errors = sum(1 for message in state.scene_artifact_release_messages if message.level == "error")
+        warnings = sum(1 for message in state.scene_artifact_release_messages if message.level == "warning")
+        state.add_trace(
+            "validate_scene_artifact_release",
+            "ok" if errors == 0 else "error",
+            "Scene artifact release gate completed",
+            errors=errors,
+            warnings=warnings,
+        )
+        if errors:
+            raise AgentRunError("Scene artifact release failed validation")
 
     def validate_blueprint_alignment(self, state: AgentState) -> None:
         if state.game is None or state.scene_blueprint_design is None:
