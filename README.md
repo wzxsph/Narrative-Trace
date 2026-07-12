@@ -6,7 +6,7 @@
   <tr>
     <td width="50%">
       <strong>在线体验</strong><br>
-      <a href="https://game-writer-missing-phone.samsong-1a3.workers.dev/">打开《失踪者的手机》Cloudflare Worker Demo</a>
+      <a href="https://wzxsph.github.io/Narrative-Trace/">打开《失踪者的手机》GitHub Pages Demo</a>
     </td>
     <td width="50%">
       <strong>当前状态</strong><br>
@@ -14,6 +14,8 @@
     </td>
   </tr>
 </table>
+
+备用 Cloudflare Worker Demo：<https://game-writer-missing-phone.samsong-1a3.workers.dev/>
 
 这个项目不是“AI 实时随机写剧情”，而是一个确定性互动叙事实验：玩家在有限信息里观察、判断、行动，系统用隐藏状态记住选择，并在章节复盘和结局画像里回放玩家留下的痕迹。
 
