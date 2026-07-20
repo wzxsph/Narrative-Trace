@@ -1,0 +1,120 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://narrative-trace.dev/schemas/kernel/v1/common.schema.json",
+  "title": "Narrative Trace Kernel V1 Common Types",
+  "$defs": {
+    "id": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9_.-]*$"
+    },
+    "version": {
+      "type": "string",
+      "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+(?:-[a-z0-9.-]+)?$"
+    },
+    "relative_path": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^(?!/)(?!.*(?:^|/)\\.\\.(?:/|$)).+$"
+    },
+    "scalar": {
+      "type": ["boolean", "number", "string"]
+    },
+    "extensions": {
+      "type": "object",
+      "propertyNames": {
+        "$ref": "#/$defs/id"
+      },
+      "additionalProperties": {
+        "type": "object"
+      },
+      "default": {}
+    },
+    "condition": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["state"],
+      "properties": {
+        "state": {
+          "$ref": "#/$defs/id"
+        },
+        "equals": {
+          "$ref": "#/$defs/scalar"
+        },
+        "min": {
+          "type": "number"
+        },
+        "max": {
+          "type": "number"
+        }
+      },
+      "oneOf": [
+        {"required": ["equals"]},
+        {"required": ["min"]},
+        {"required": ["max"]}
+      ]
+    },
+    "state_update": {
+      "type": "object",
+      "minProperties": 1,
+      "propertyNames": {
+        "$ref": "#/$defs/id"
+      },
+      "additionalProperties": {
+        "$ref": "#/$defs/scalar"
+      }
+    },
+    "effect": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "set": {
+          "$ref": "#/$defs/state_update"
+        },
+        "add": {
+          "$ref": "#/$defs/state_update"
+        }
+      },
+      "oneOf": [
+        {"required": ["set"]},
+        {"required": ["add"]}
+      ]
+    },
+    "guidance": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "title", "text"],
+      "properties": {
+        "id": {"$ref": "#/$defs/id"},
+        "title": {"type": "string", "minLength": 1},
+        "text": {"type": "string", "minLength": 1}
+      }
+    },
+    "echo": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "label", "text", "requirements"],
+      "properties": {
+        "id": {"$ref": "#/$defs/id"},
+        "label": {"type": "string", "minLength": 1},
+        "text": {"type": "string", "minLength": 1},
+        "requirements": {
+          "type": "array",
+          "items": {"$ref": "#/$defs/condition"}
+        }
+      }
+    },
+    "target": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["type", "id"],
+      "properties": {
+        "type": {"enum": ["scene", "ending"]},
+        "id": {"$ref": "#/$defs/id"}
+      }
+    },
+    "sha256": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    }
+  }
+}

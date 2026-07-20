@@ -1,0 +1,24 @@
+{
+  "schema_version": "framework_contract_proof_v1",
+  "loop_package": {
+    "id": "negotiation",
+    "core_verbs": ["inspect", "propose", "commit"],
+    "status": "paper_only"
+  },
+  "kernel_mapping": {
+    "state": "报价、耐心与信任均使用四类状态及 set/add 原语表达。",
+    "surface": "对话记录与报价单都是 text surface；人名、数字和条款是 anchor。",
+    "action": "提出报价、接受或离席均使用通用 action 与类型化 target。",
+    "progression": "谈判回合是 scene，成交与破裂是 ending。",
+    "save": "当前回合、已读条款、已执行行动与状态快照沿用 Kernel save。",
+    "verification": "玩法包扩展定义轮次预算、报价规则、模拟器和体验指标。"
+  },
+  "extension_namespace": {
+    "negotiation": {
+      "turn_budget": 6,
+      "offer_currency": "credibility",
+      "action_kinds": ["inspect", "propose", "commit"]
+    }
+  },
+  "required_kernel_changes": []
+}

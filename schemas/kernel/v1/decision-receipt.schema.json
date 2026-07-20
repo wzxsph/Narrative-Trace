@@ -1,0 +1,28 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://narrative-trace.dev/schemas/kernel/v1/decision-receipt.schema.json",
+  "title": "Narrative Trace Human Decision Receipt V1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "checkpoint", "subject_digest", "decision", "actor", "decided_at", "notes"],
+  "properties": {
+    "schema_version": {"const": "narrative_decision_receipt_v1"},
+    "checkpoint": {"enum": ["brief", "blueprint", "release", "playtest_attribution"]},
+    "subject_digest": {"$ref": "common.schema.json#/$defs/sha256"},
+    "decision": {"enum": ["approved", "rejected", "content_issue", "loop_issue", "inconclusive"]},
+    "actor": {"type": "string", "minLength": 1},
+    "decided_at": {"type": "string", "format": "date-time"},
+    "notes": {"type": "string"},
+    "experimental_opt_in": {"type": "boolean", "default": false}
+  },
+  "allOf": [
+    {
+      "if": {"properties": {"checkpoint": {"enum": ["brief", "blueprint", "release"]}}},
+      "then": {"properties": {"decision": {"enum": ["approved", "rejected"]}}}
+    },
+    {
+      "if": {"properties": {"checkpoint": {"const": "playtest_attribution"}}},
+      "then": {"properties": {"decision": {"enum": ["content_issue", "loop_issue", "inconclusive"]}}}
+    }
+  ]
+}

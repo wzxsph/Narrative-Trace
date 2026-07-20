@@ -1,0 +1,41 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://narrative-trace.dev/schemas/kernel/v1/action.schema.json",
+  "title": "Narrative Trace Kernel V1 Action Contract",
+  "$defs": {
+    "action": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "label",
+        "consequence_hint",
+        "requirements",
+        "effects",
+        "target",
+        "irreversible",
+        "consequence_level",
+        "outcome",
+        "extensions"
+      ],
+      "properties": {
+        "id": {"$ref": "common.schema.json#/$defs/id"},
+        "label": {"type": "string", "minLength": 1},
+        "consequence_hint": {"type": "string", "minLength": 1},
+        "requirements": {
+          "type": "array",
+          "items": {"$ref": "common.schema.json#/$defs/condition"}
+        },
+        "effects": {
+          "type": "array",
+          "items": {"$ref": "common.schema.json#/$defs/effect"}
+        },
+        "target": {"$ref": "common.schema.json#/$defs/target"},
+        "irreversible": {"type": "boolean"},
+        "consequence_level": {"enum": ["local", "chapter", "global", "ending"]},
+        "outcome": {"type": "string", "minLength": 1},
+        "extensions": {"$ref": "common.schema.json#/$defs/extensions"}
+      }
+    }
+  }
+}

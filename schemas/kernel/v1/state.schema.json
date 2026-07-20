@@ -1,0 +1,28 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://narrative-trace.dev/schemas/kernel/v1/state.schema.json",
+  "title": "Narrative Trace Kernel V1 State Registry",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "states"],
+  "properties": {
+    "schema_version": {"const": "narrative_state_registry_v1"},
+    "states": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["key", "family", "type", "initial", "label", "purpose"],
+        "properties": {
+          "key": {"$ref": "common.schema.json#/$defs/id"},
+          "family": {"enum": ["clue", "stance", "relationship", "pressure"]},
+          "type": {"enum": ["boolean", "number", "string"]},
+          "initial": {"$ref": "common.schema.json#/$defs/scalar"},
+          "label": {"type": "string", "minLength": 1},
+          "purpose": {"type": "string", "minLength": 1}
+        }
+      }
+    }
+  }
+}

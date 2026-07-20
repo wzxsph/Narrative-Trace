@@ -1,0 +1,75 @@
+{
+  "schema_version": "narrative_game_v1",
+  "entry_scene_id": "scene_desk",
+  "scenes": [
+    {
+      "id": "scene_desk",
+      "surfaces": [
+        {
+          "id": "surface_desk_text",
+          "type": "text",
+          "content": {"text": "桌面很整齐，只有半开的抽屉破坏了秩序。"},
+          "anchors": [
+            {
+              "id": "anchor_drawer",
+              "label": "检查抽屉",
+              "discoverability": "obvious",
+              "locator": {"kind": "text", "exact": "半开的抽屉", "occurrence": 1},
+              "effects": [{"set": {"clues.drawer_open": true}}],
+              "unlocks_actions": ["action_search_drawer"],
+              "fragment": {
+                "id": "fragment_drawer",
+                "title": "抽屉内侧",
+                "surfaces": [
+                  {
+                    "id": "surface_drawer_note",
+                    "type": "text",
+                    "content": {"text": "里面压着一张没有署名的收据。"},
+                    "anchors": [],
+                    "extensions": {}
+                  }
+                ],
+                "evidence_tags": ["receipt"],
+                "extensions": {}
+              },
+              "extensions": {}
+            }
+          ],
+          "extensions": {}
+        }
+      ],
+      "actions": [
+        {
+          "id": "action_search_drawer",
+          "label": "拿走收据",
+          "consequence_hint": "这会留下翻动抽屉的痕迹。",
+          "requirements": [{"state": "clues.drawer_open", "equals": true}],
+          "effects": [],
+          "target": {"type": "ending", "id": "ending_receipt"},
+          "irreversible": true,
+          "consequence_level": "ending",
+          "outcome": "你把收据折进口袋。",
+          "extensions": {}
+        }
+      ],
+      "echoes": [],
+      "extensions": {}
+    }
+  ],
+  "endings": [
+    {
+      "id": "ending_receipt",
+      "title": "留下痕迹",
+      "body": "你带走了证据，也留下了有人来过的证明。",
+      "tags": ["evidence_taken"],
+      "portrait": {
+        "protected": ["证据"],
+        "harmed": ["现场完整性"],
+        "believed": ["先掌握事实"]
+      },
+      "extensions": {}
+    }
+  ],
+  "profile_echoes": [],
+  "extensions": {}
+}

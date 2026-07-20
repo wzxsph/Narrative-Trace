@@ -1,0 +1,74 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://narrative-trace.dev/schemas/kernel/v1/progression.schema.json",
+  "title": "Narrative Trace Kernel V1 Game and Progression Contract",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "entry_scene_id", "scenes", "endings", "profile_echoes", "extensions"],
+  "properties": {
+    "schema_version": {"const": "narrative_game_v1"},
+    "entry_scene_id": {"$ref": "common.schema.json#/$defs/id"},
+    "scenes": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "surfaces", "actions", "echoes", "extensions"],
+        "properties": {
+          "id": {"$ref": "common.schema.json#/$defs/id"},
+          "surfaces": {
+            "type": "array",
+            "minItems": 1,
+            "items": {"$ref": "surface.schema.json#/$defs/surface"}
+          },
+          "actions": {
+            "type": "array",
+            "minItems": 1,
+            "items": {"$ref": "action.schema.json#/$defs/action"}
+          },
+          "echoes": {
+            "type": "array",
+            "items": {"$ref": "common.schema.json#/$defs/echo"}
+          },
+          "extensions": {"$ref": "common.schema.json#/$defs/extensions"}
+        }
+      }
+    },
+    "endings": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "title", "body", "tags", "portrait", "extensions"],
+        "properties": {
+          "id": {"$ref": "common.schema.json#/$defs/id"},
+          "title": {"type": "string", "minLength": 1},
+          "body": {"type": "string", "minLength": 1},
+          "tags": {
+            "type": "array",
+            "minItems": 1,
+            "items": {"type": "string", "minLength": 1}
+          },
+          "portrait": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["protected", "harmed", "believed"],
+            "properties": {
+              "protected": {"type": "array", "minItems": 1, "items": {"type": "string", "minLength": 1}},
+              "harmed": {"type": "array", "minItems": 1, "items": {"type": "string", "minLength": 1}},
+              "believed": {"type": "array", "minItems": 1, "items": {"type": "string", "minLength": 1}}
+            }
+          },
+          "extensions": {"$ref": "common.schema.json#/$defs/extensions"}
+        }
+      }
+    },
+    "profile_echoes": {
+      "type": "array",
+      "items": {"$ref": "common.schema.json#/$defs/echo"}
+    },
+    "extensions": {"$ref": "common.schema.json#/$defs/extensions"}
+  }
+}
