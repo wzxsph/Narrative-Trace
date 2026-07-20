@@ -1,0 +1,22 @@
+{
+  "schema_version": "narrative_live_smoke_evidence_v1",
+  "executed_at": "2026-07-20T14:17:17.396Z",
+  "brief_id": "night_train_archive",
+  "pack_version": "1.0.0",
+  "provider": "openai_compatible",
+  "model": "Minimax-M3",
+  "stopped_at": "awaiting_release_approval",
+  "gates": {
+    "G1": "passed",
+    "G2": "passed",
+    "G3": "passed",
+    "G4": "passed",
+    "G5": "passed"
+  },
+  "pack_input_digest": "6ad2ef9562af635504ec5e481d12ecf67ea4fb0bbb92d8d5b267b30b0ad9cf15",
+  "gate_report_digest": "92849943f186f5dd621b88143b76c06f6232a211ff2fc7b8fd5d5ec4d0840bb8",
+  "release_candidate_digest": "df8c76653c42d942520bf1bea4e909a06348e67ea385bcbb29db21f02d7c0a8b",
+  "secret_scan": "passed",
+  "external_deploy": false,
+  "note": "A fresh investigation brief reached the digest-bound release approval pause. Only redacted summaries are retained."
+}

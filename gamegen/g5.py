@@ -52,7 +52,7 @@ def run_browser_pack_g5(context: ContentPackContext, digest: str) -> dict[str, A
                 )
                 page = browser.new_page(viewport={"width": 390, "height": 844}, is_mobile=True)
                 replayed = replay_witnesses(page, base_url, witnesses, assert_condition, assert_no_horizontal_overflow)
-                save_evidence = verify_save_contract(page, base_url, save_key, assert_condition)
+                save_evidence = verify_save_contract(page, base_url, save_key, context, assert_condition)
                 isolation_evidence = verify_pack_save_isolation(page, base_url, save_key, assert_condition)
                 accessibility_evidence = verify_keyboard_and_viewports(
                     browser, page, base_url, assert_condition, assert_no_horizontal_overflow
@@ -81,6 +81,7 @@ def replay_witnesses(page: Any, base_url: str, witnesses: dict[str, list[dict[st
         page.goto(base_url, wait_until="networkidle")
         page.evaluate("window.localStorage.clear()")
         page.reload(wait_until="networkidle")
+        acknowledge_experimental(page)
         for step in steps:
             continue_review(page)
             attribute = "anchor-id" if step["kind"] == "anchor" else "action-id"
@@ -93,6 +94,7 @@ def replay_witnesses(page: Any, base_url: str, witnesses: dict[str, list[dict[st
         ending = page.locator(f'.ending-screen[data-ending-id="{ending_id}"]')
         assert_condition(ending.count() == 1, f"Witness reached the wrong ending: {ending_id}")
         page.reload(wait_until="networkidle")
+        acknowledge_experimental(page)
         assert_condition(
             page.locator(f'.ending-screen[data-ending-id="{ending_id}"]').count() == 1,
             f"Ending did not restore: {ending_id}",
@@ -101,7 +103,27 @@ def replay_witnesses(page: Any, base_url: str, witnesses: dict[str, list[dict[st
     return replayed
 
 
-def verify_save_contract(page: Any, base_url: str, save_key: str, assert_condition: Any) -> dict[str, Any]:
+def verify_save_contract(
+    page: Any,
+    base_url: str,
+    save_key: str,
+    context: ContentPackContext,
+    assert_condition: Any,
+) -> dict[str, Any]:
+    if context.manifest["pack_id"] != "missing_phone":
+        page.goto(base_url, wait_until="networkidle")
+        page.evaluate("window.localStorage.clear()")
+        page.reload(wait_until="networkidle")
+        acknowledge_experimental(page)
+        current = page.evaluate("(key) => window.localStorage.getItem(key)", save_key)
+        assert_condition(current is not None, "Namespaced V1 save was not written")
+        page.evaluate("(key) => window.localStorage.setItem(key, 'not-json')", save_key)
+        page.reload(wait_until="networkidle")
+        acknowledge_experimental(page)
+        notice = page.locator('[data-notice="save-recovery"]')
+        assert_condition(notice.count() == 1 and "进度内容损坏" in notice.inner_text(), "Corrupt V1 fallback is not visible")
+        return {"legacy_v1_v2": "not_applicable", "namespaced_v1": True, "visible_corrupt_fallback": True}
+
     fixture = json.loads((ROOT / "examples" / "fixtures" / "save_contract" / "save_cases.json").read_text(encoding="utf-8"))
     legacy = fixture["cases"][0]["payload"]
     page.goto(base_url, wait_until="networkidle")
@@ -111,6 +133,7 @@ def verify_save_contract(page: Any, base_url: str, save_key: str, assert_conditi
         {"key": LEGACY_SAVE_KEY, "payload": legacy},
     )
     page.reload(wait_until="networkidle")
+    acknowledge_experimental(page)
     assert_condition(page.locator(".review-screen").count() == 1, "Legacy chapter review did not migrate")
     values = page.evaluate(
         "(keys) => ({ current: window.localStorage.getItem(keys.current), legacy: window.localStorage.getItem(keys.legacy) })",
@@ -126,6 +149,7 @@ def verify_save_contract(page: Any, base_url: str, save_key: str, assert_conditi
         {"current": save_key, "legacy": LEGACY_SAVE_KEY},
     )
     page.reload(wait_until="networkidle")
+    acknowledge_experimental(page)
     notice = page.locator('[data-notice="save-recovery"]')
     assert_condition(notice.count() == 1 and "旧进度内容损坏" in notice.inner_text(), "Corrupt legacy fallback is not visible")
     return {"legacy_v1_v2": True, "write_then_clear": True, "visible_corrupt_fallback": True}
@@ -137,6 +161,7 @@ def verify_pack_save_isolation(page: Any, base_url: str, save_key: str, assert_c
     page.evaluate("window.localStorage.clear()")
     page.evaluate("(key) => window.localStorage.setItem(key, 'other-pack')", other_key)
     page.reload(wait_until="networkidle")
+    acknowledge_experimental(page)
     values = page.evaluate(
         "(keys) => ({ current: window.localStorage.getItem(keys.current), other: window.localStorage.getItem(keys.other) })",
         {"current": save_key, "other": other_key},
@@ -150,6 +175,7 @@ def verify_keyboard_and_viewports(browser: Any, page: Any, base_url: str, assert
     page.goto(base_url, wait_until="networkidle")
     page.evaluate("window.localStorage.clear()")
     page.reload(wait_until="networkidle")
+    acknowledge_experimental(page)
     page.keyboard.press("Tab")
     assert_condition(page.evaluate("document.activeElement.id") == "mapButton", "Map button is not first keyboard target")
     page.keyboard.press("Enter")
@@ -185,6 +211,7 @@ def verify_surface_fallbacks(browser: Any, base_url: str, context: ContentPackCo
         page = browser.new_page(viewport={"width": 390, "height": 844}, is_mobile=True)
         route_pack_documents(page, manifest, game)
         page.goto(base_url, wait_until="networkidle")
+        acknowledge_experimental(page)
         fallback = page.locator(f'.surface-fallback[data-fallback-for="{surface_type}"]')
         assert_condition(fallback.count() == 1, f"{surface_type} fallback did not render")
         assert_condition("never executes" in fallback.inner_text(), f"{surface_type} fallback text missing")
@@ -226,5 +253,11 @@ def route_pack_documents(page: Any, manifest: dict[str, Any], game: dict[str, An
 
 def continue_review(page: Any) -> None:
     button = page.locator('[data-action="continue-review"]')
+    if button.count():
+        button.click()
+
+
+def acknowledge_experimental(page: Any) -> None:
+    button = page.locator('[data-action="acknowledge-experimental"]')
     if button.count():
         button.click()

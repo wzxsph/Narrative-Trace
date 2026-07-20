@@ -411,17 +411,17 @@
 
       <section class="diagram" id="ai-pipeline">
         <span class="stamp">AI GENERATION PIPELINE</span>
-        <h1>Agent 生成的是可审查 artifact，不是不可控正文洪流</h1>
-        <p class="subtitle">每一步都产出结构化文件，并经过校验与人工可读的 trace。</p>
+        <h1>Agent 用摘要绑定的人工节点控制生成与发布</h1>
+        <p class="subtitle">LLM 只处理小型创意 artifact；ID、结构、组装、repair 和门禁保持确定性。</p>
         <div class="serpentine">
-          <div class="step"><span class="index">1</span><strong>Load Brief</strong><span>读取题材、主题问题和创作约束。</span></div>
-          <div class="step"><span class="index">2</span><strong>Plan Story</strong><span>规划章节问题、主路径和结局覆盖。</span></div>
-          <div class="step"><span class="index">3</span><strong>State Schema</strong><span>设计 flags、clues、relationships。</span></div>
-          <div class="step"><span class="index">4</span><strong>Scene Blueprint</strong><span>锁定场景预算、入口和关键行动。</span></div>
-          <div class="step"><span class="index">8</span><strong>Write Trace</strong><span>保存每步输入、输出和验证结果。</span></div>
-          <div class="step"><span class="index">7</span><strong>Export Game</strong><span>导出可运行 game.json 和报告。</span></div>
-          <div class="step"><span class="index">6</span><strong>Validate / Repair</strong><span>校验结构、内容 QA、必要时修复。</span></div>
-          <div class="step"><span class="index">5</span><strong>Scene Artifacts</strong><span>生成 observe、choice、effects 草案。</span></div>
+          <div class="step"><span class="index">1</span><strong>Brief Artifact</strong><span>锁定题材、边界、玩法包和 Experimental opt-in。</span></div>
+          <div class="step"><span class="index">2</span><strong>Brief Receipt</strong><span>摘要过期或未批准时立即停顿。</span></div>
+          <div class="step"><span class="index">3</span><strong>State + Blueprint</strong><span>确定性规划状态、场景预算与结局覆盖。</span></div>
+          <div class="step"><span class="index">4</span><strong>Blueprint Receipt</strong><span>未批准不批量生成 scene artifacts。</span></div>
+          <div class="step"><span class="index">8</span><strong>Release Bundle</strong><span>重算 G1–G5 后只构建选定内容包，不部署。</span></div>
+          <div class="step"><span class="index">7</span><strong>Release Receipt</strong><span>与 release candidate 摘要绑定。</span></div>
+          <div class="step"><span class="index">6</span><strong>G1–G5</strong><span>Kernel、玩法、BFS witness 与浏览器重放全绿。</span></div>
+          <div class="step"><span class="index">5</span><strong>Pack + Provenance</strong><span>组装 V1 内容包、脱敏 trace 与 V0 投影。</span></div>
         </div>
       </section>
 

@@ -8,9 +8,8 @@ if (!args.pack) {
   throw new Error("--pack is required; a worker bundle must contain exactly one content pack");
 }
 const packDir = await realpath(path.resolve(rootDir, args.pack));
-const contentRoot = await realpath(path.join(rootDir, "content_packs"));
-if (!isWithin(contentRoot, packDir)) {
-  throw new Error("--pack must resolve inside content_packs/");
+if (packDir === rootDir || packDir === path.parse(packDir).root) {
+  throw new Error("--pack must resolve to a dedicated content-pack directory");
 }
 
 const manifest = await readJson(path.join(packDir, "pack.json"));

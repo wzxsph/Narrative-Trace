@@ -70,7 +70,7 @@ Framework V1 将工程拆为四层：L1 Kernel 契约、L2 玩法包、L3 内容
 
 ## AI Generation Pipeline
 
-当前 Agent 是创作辅助流水线，不是全自动作者。它把主题 brief 编译成结构化 artifact，再经过校验、审查和发布闸门生成可玩的 `game.json`。
+当前 Agent 是创作辅助流水线，不是全自动作者。它把主题 brief 编译成结构化 artifact，经摘要绑定的 brief / blueprint / release 人工审批，再生成内容包并运行 G1–G5。LLM 只处理小型创意 artifact；ID、结构、拼装、迁移和 repair 保持确定性。
 
 <p align="center">
   <img src="screenshots/readme-diagrams/ai-pipeline.png" width="860" alt="AI generation pipeline from brief through artifacts, validation, export, and trace">
@@ -112,14 +112,38 @@ http://127.0.0.1:4173/
 python3 scripts/validate_pack.py content_packs/missing_phone/v1 --through G5
 ```
 
-旧生成 CLI 在 V1.0 仍保留为只读兼容入口；新的分阶段 Agent 命令见 `--help`：
+新的分阶段 Agent 每次只推进一个阶段；没有对应 `DecisionReceipt` 会停在当前节点：
 
 ```bash
-python3 scripts/run_generation_agent.py \
-  --brief examples/briefs/missing_phone.json \
-  --out content_packs/generated_story/v1 \
+python3 scripts/run_generation_agent.py prepare \
+  --brief examples/briefs/night_train_archive.json \
+  --out generated/night_train_archive_v1 \
   --provider offline
+
+python3 scripts/run_generation_agent.py approve \
+  --out generated/night_train_archive_v1 \
+  --checkpoint brief --actor editor
+
+python3 scripts/run_generation_agent.py continue \
+  --out generated/night_train_archive_v1
+
+python3 scripts/run_generation_agent.py approve \
+  --out generated/night_train_archive_v1 \
+  --checkpoint blueprint --actor editor
+
+python3 scripts/run_generation_agent.py continue \
+  --out generated/night_train_archive_v1 --gate-through G5
+
+python3 scripts/run_generation_agent.py approve \
+  --out generated/night_train_archive_v1 \
+  --checkpoint release --actor release_owner
+
+python3 scripts/run_generation_agent.py bundle \
+  --out generated/night_train_archive_v1 \
+  --bundle-out dist/night_train_archive --format static
 ```
+
+Experimental 玩法包必须在 brief 审批时显式增加 `--experimental-opt-in`。V1.0 仍接受旧的无子命令参数形式并输出弃用提示；该兼容入口不早于单独批准的 V1.1 移除。
 
 构建静态站点或 Cloudflare Worker（必须明确选择一个内容包；命令只构建，不自动部署）：
 

@@ -361,23 +361,30 @@ def scalar_type(value: Any) -> str:
     return "string"
 
 
-def build_pack_manifest(v0_game: dict[str, Any]) -> dict[str, Any]:
+def build_pack_manifest(
+    v0_game: dict[str, Any],
+    *,
+    loop_package: dict[str, Any] | None = None,
+    pack_version: str = "1.0.0",
+    authorship: str = "agent_assisted",
+) -> dict[str, Any]:
+    loop = loop_package or {
+        "id": "investigation",
+        "version": "1.0.0",
+        "tier": "verified",
+        "verification_status": "debt",
+    }
     return {
         "schema_version": PACK_SCHEMA_VERSION,
         "pack_id": v0_game["project"]["id"],
         "title": v0_game["project"]["title"],
-        "version": "1.0.0",
+        "version": pack_version,
         "kernel_version": KERNEL_VERSION,
-        "loop_package": {
-            "id": "investigation",
-            "version": "1.0.0",
-            "tier": "verified",
-            "verification_status": "debt",
-        },
+        "loop_package": deepcopy(loop),
         "surfaces_used": ["text"],
         "runtime_compat": "^1.0.0",
-        "authorship": "agent_assisted",
-        "experimental_notice": False,
+        "authorship": authorship,
+        "experimental_notice": loop.get("tier") == "experimental",
         "entrypoints": {
             "game": "game.json",
             "state_registry": "state_registry.json",
@@ -387,7 +394,16 @@ def build_pack_manifest(v0_game: dict[str, Any]) -> dict[str, Any]:
     }
 
 
-def export_v1_content_pack(v0_game: dict[str, Any], out_dir: str | Path) -> None:
+def export_v1_content_pack(
+    v0_game: dict[str, Any],
+    out_dir: str | Path,
+    *,
+    loop_package: dict[str, Any] | None = None,
+    pack_version: str = "1.0.0",
+    authorship: str = "agent_assisted",
+    extra_provenance_paths: list[str] | None = None,
+    trace_event: str = "migrated_v0_content",
+) -> None:
     output = Path(out_dir)
     provenance_dir = output / "provenance"
     assets_dir = output / "assets"
@@ -402,7 +418,7 @@ def export_v1_content_pack(v0_game: dict[str, Any], out_dir: str | Path) -> None
     generation = v0_game.get("generation", {})
     trace = {
         "trace_schema_version": "narrative_generation_trace_v1",
-        "event": "migrated_v0_content",
+        "event": trace_event,
         "source_schema": v0_game.get("schema_version", "unknown"),
         "provider": generation.get("provider", "offline"),
         "model": generation.get("model", "unknown"),
@@ -414,7 +430,7 @@ def export_v1_content_pack(v0_game: dict[str, Any], out_dir: str | Path) -> None
 
     provenance = {
         "schema_version": PROVENANCE_SCHEMA_VERSION,
-        "authorship": "agent_assisted",
+        "authorship": authorship,
         "prompt_set": active_prompt_set_id(),
         "provider": generation.get("provider", "offline"),
         "model": generation.get("model", "unknown"),
@@ -430,8 +446,19 @@ def export_v1_content_pack(v0_game: dict[str, Any], out_dir: str | Path) -> None
             {"path": "provenance/generation_trace.jsonl", "sha256": file_digest(trace_path)},
         ],
     }
+    for relative in extra_provenance_paths or []:
+        path = output / relative
+        provenance["artifacts"].append({"path": relative, "sha256": file_digest(path)})
     write_json(provenance_dir / "manifest.json", provenance)
-    write_json(output / "pack.json", build_pack_manifest(v0_game))
+    write_json(
+        output / "pack.json",
+        build_pack_manifest(
+            v0_game,
+            loop_package=loop_package,
+            pack_version=pack_version,
+            authorship=authorship,
+        ),
+    )
 
 
 def write_json(path: Path, value: Any) -> None:

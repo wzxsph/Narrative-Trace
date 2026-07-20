@@ -41,3 +41,15 @@ L4 Runtime      index.html + src/runtime + src/surfaces + src/loops
 - `examples/framework_v1/negotiation_loop_paper.json` 证明谈判循环可完全落入六项契约和扩展命名空间。
 - `examples/framework_v1/surface_equivalence/` 证明 text surface 替换为 image surface 时，状态、行动、进程和存档语义不变。
 - `tests/test_framework_v1_contract_proof.py` 是两项证明的可执行回归门禁。
+
+## 6. Agent 分阶段管线
+
+- `prepare` 固定 brief、精确玩法包版本和摘要，然后停在 brief 确认。
+- brief receipt 通过后只生成 state design 与 blueprint；没有 blueprint receipt 不生成 scene artifacts。
+- 内容包组装后按需运行 G1–G4 或 G1–G5；G5 全绿后产出 release candidate 摘要并再次停顿。
+- 只有与当前 release candidate 摘要匹配的 release receipt 才能生成静态或 Worker bundle，命令不执行外部部署。
+- `offline` 是 CI 使用的确定性模型替身；`examples/fixtures/model_outputs/` 保存脱敏回放样本。人工 live smoke 使用现有 OpenAI-compatible 配置，不在命令、trace、日志或仓库中写入密钥。
+
+## 7. G6 债务边界
+
+G1–G5 全绿与 G6 工具包就绪定义为本轮工程完成。调查玩法包在收到 5–8 人同意的真人原始记录、全部指标达标并写入 evidence digest 之前，仍保持 `tier=verified` + `verification.status=debt`。
