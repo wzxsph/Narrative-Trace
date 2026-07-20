@@ -1,0 +1,239 @@
+{
+  "schema_version": "narrative_gate_chain_report_v1",
+  "results": [
+    {
+      "schema_version": "narrative_gate_result_v1",
+      "gate_id": "G1",
+      "gate_version": "1.0.0",
+      "status": "passed",
+      "input_digest": "7df582dd181716e8d7641f609c7b768603b22829d0c809d2d34074ed1d1f8420",
+      "errors": [],
+      "warnings": [],
+      "evidence": {
+        "schemas": [
+          "pack.schema.json",
+          "progression.schema.json",
+          "state.schema.json",
+          "provenance.schema.json"
+        ],
+        "loop_package": "investigation@1.0.0",
+        "surfaces_used": [
+          "text"
+        ]
+      }
+    },
+    {
+      "schema_version": "narrative_gate_result_v1",
+      "gate_id": "G2",
+      "gate_version": "1.0.0",
+      "status": "passed",
+      "input_digest": "7df582dd181716e8d7641f609c7b768603b22829d0c809d2d34074ed1d1f8420",
+      "errors": [],
+      "warnings": [],
+      "evidence": {
+        "scenes": 9,
+        "endings": 3,
+        "actions": 35,
+        "anchors": 33,
+        "registered_states": 29
+      }
+    },
+    {
+      "schema_version": "narrative_gate_result_v1",
+      "gate_id": "G3",
+      "gate_version": "1.0.0",
+      "status": "passed",
+      "input_digest": "7df582dd181716e8d7641f609c7b768603b22829d0c809d2d34074ed1d1f8420",
+      "errors": [],
+      "warnings": [],
+      "evidence": {
+        "loop": "investigation@1.0.0",
+        "main_scenes": 9,
+        "endings": 3
+      }
+    },
+    {
+      "schema_version": "narrative_gate_result_v1",
+      "gate_id": "G4",
+      "gate_version": "1.0.0",
+      "status": "passed",
+      "input_digest": "7df582dd181716e8d7641f609c7b768603b22829d0c809d2d34074ed1d1f8420",
+      "errors": [],
+      "warnings": [],
+      "evidence": {
+        "visited_state_count": 41181,
+        "reachable_scenes": [
+          "ch01_cloud_console",
+          "ch01_contact_trace",
+          "ch01_phone_lock",
+          "ch02_locker_room",
+          "ch02_station_gate",
+          "ch02_station_platform",
+          "ch03_backup_unlock",
+          "ch03_publish_decision",
+          "ch03_witness_thread"
+        ],
+        "ending_witnesses": {
+          "ending_bury": [
+            {
+              "kind": "action",
+              "id": "choice_call_chen"
+            },
+            {
+              "kind": "action",
+              "id": "choice_leave_unfrozen"
+            },
+            {
+              "kind": "action",
+              "id": "choice_follow_old_address"
+            },
+            {
+              "kind": "action",
+              "id": "choice_force_gate"
+            },
+            {
+              "kind": "action",
+              "id": "choice_wait_station"
+            },
+            {
+              "kind": "action",
+              "id": "choice_destroy_locker_camera"
+            },
+            {
+              "kind": "action",
+              "id": "choice_skip_context"
+            },
+            {
+              "kind": "anchor",
+              "id": "obs_offline_archive"
+            },
+            {
+              "kind": "action",
+              "id": "choice_keep_archive"
+            }
+          ],
+          "ending_confront": [
+            {
+              "kind": "action",
+              "id": "choice_call_chen"
+            },
+            {
+              "kind": "action",
+              "id": "choice_leave_unfrozen"
+            },
+            {
+              "kind": "action",
+              "id": "choice_follow_old_address"
+            },
+            {
+              "kind": "action",
+              "id": "choice_force_gate"
+            },
+            {
+              "kind": "action",
+              "id": "choice_wait_station"
+            },
+            {
+              "kind": "action",
+              "id": "choice_destroy_locker_camera"
+            },
+            {
+              "kind": "action",
+              "id": "choice_skip_context"
+            },
+            {
+              "kind": "anchor",
+              "id": "obs_send_to_chen"
+            },
+            {
+              "kind": "action",
+              "id": "choice_confront_final"
+            }
+          ],
+          "ending_publish": [
+            {
+              "kind": "action",
+              "id": "choice_call_chen"
+            },
+            {
+              "kind": "action",
+              "id": "choice_leave_unfrozen"
+            },
+            {
+              "kind": "action",
+              "id": "choice_follow_old_address"
+            },
+            {
+              "kind": "action",
+              "id": "choice_force_gate"
+            },
+            {
+              "kind": "action",
+              "id": "choice_wait_station"
+            },
+            {
+              "kind": "action",
+              "id": "choice_destroy_locker_camera"
+            },
+            {
+              "kind": "action",
+              "id": "choice_skip_context"
+            },
+            {
+              "kind": "anchor",
+              "id": "obs_public_packet"
+            },
+            {
+              "kind": "action",
+              "id": "choice_publish_truth"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "schema_version": "narrative_gate_result_v1",
+      "gate_id": "G5",
+      "gate_version": "1.0.0",
+      "status": "passed",
+      "input_digest": "7df582dd181716e8d7641f609c7b768603b22829d0c809d2d34074ed1d1f8420",
+      "errors": [],
+      "warnings": [],
+      "evidence": {
+        "witness_paths_replayed": [
+          "ending_bury",
+          "ending_confront",
+          "ending_publish"
+        ],
+        "save_contract": {
+          "legacy_v1_v2": true,
+          "write_then_clear": true,
+          "visible_corrupt_fallback": true
+        },
+        "pack_save_isolation": {
+          "key": "narrative_trace.save.missing_phone.1.0.0",
+          "other_pack_preserved": true
+        },
+        "accessibility_and_viewports": {
+          "keyboard": true,
+          "mobile": [
+            390,
+            844
+          ],
+          "desktop": [
+            1280,
+            900
+          ]
+        },
+        "surface_fallbacks": [
+          "image",
+          "html"
+        ],
+        "experimental_notice": {
+          "blocking_notice": true,
+          "acknowledgement_required": true
+        }
+      }
+    }
+  ]
+}

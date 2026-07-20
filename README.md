@@ -10,7 +10,7 @@
     </td>
     <td width="50%">
       <strong>当前状态</strong><br>
-      <code>medium-length playable vertical slice</code>
+      <code>Framework V1 · G1–G5 engineering complete</code>
     </td>
   </tr>
 </table>
@@ -62,6 +62,8 @@
 
 ## Runtime Architecture
 
+Framework V1 将工程拆为四层：L1 Kernel 契约、L2 玩法包、L3 内容包、L4 运行时。`pack.json` 是作品入口；运行时内部只消费 V1，调查玩法包当前为 `Verified (verification debt)`，不在真人 G6 数据完成前宣称债务已清偿。
+
 <p align="center">
   <img src="screenshots/readme-diagrams/runtime-architecture.png" width="860" alt="Runtime architecture from brief to validation, runtime, save, and UI">
 </p>
@@ -95,11 +97,6 @@ python3 scripts/render_readme_diagrams.py
 ## Quick Start
 
 ```bash
-python3 scripts/generate_game.py \
-  --brief examples/briefs/missing_phone.json \
-  --out generated/missing_phone_v0 \
-  --provider offline
-
 python3 -m http.server 4173
 ```
 
@@ -109,20 +106,30 @@ python3 -m http.server 4173
 http://127.0.0.1:4173/
 ```
 
-运行生成 Agent：
+验证当前内容包（G5 会启动无头浏览器）：
+
+```bash
+python3 scripts/validate_pack.py content_packs/missing_phone/v1 --through G5
+```
+
+旧生成 CLI 在 V1.0 仍保留为只读兼容入口；新的分阶段 Agent 命令见 `--help`：
 
 ```bash
 python3 scripts/run_generation_agent.py \
   --brief examples/briefs/missing_phone.json \
-  --out generated/missing_phone_agent_v0 \
+  --out content_packs/generated_story/v1 \
   --provider offline
 ```
 
-部署玩家端到 Cloudflare Worker：
+构建静态站点或 Cloudflare Worker（必须明确选择一个内容包；命令只构建，不自动部署）：
 
 ```bash
-scripts/build_game_worker_bundle.sh
-npx --yes wrangler deploy
+python3 scripts/build_static_bundle.py \
+  --pack content_packs/missing_phone/v1 \
+  --output dist/game-worker
+
+scripts/build_game_worker_bundle.sh \
+  --pack content_packs/missing_phone/v1
 ```
 
 ## Project Map
@@ -134,19 +141,27 @@ npx --yes wrangler deploy
   </tr>
   <tr>
     <td>玩家端</td>
-    <td><code>index.html</code>, <code>src/app.js</code>, <code>src/styles.css</code></td>
+    <td><code>index.html</code>, <code>runtime-config.json</code>, <code>src/runtime/*</code>, <code>src/styles.css</code></td>
   </tr>
   <tr>
-    <td>Demo 内容</td>
-    <td><code>generated/missing_phone_v0/game.json</code></td>
+    <td>L1 Kernel</td>
+    <td><code>schemas/kernel/v1/*</code></td>
+  </tr>
+  <tr>
+    <td>L2 调查玩法包</td>
+    <td><code>loop_packages/investigation/v1/*</code></td>
+  </tr>
+  <tr>
+    <td>L3 Demo 内容包</td>
+    <td><code>content_packs/missing_phone/v1/*</code></td>
   </tr>
   <tr>
     <td>生成管线</td>
-    <td><code>scripts/run_generation_agent.py</code>, <code>prompts/manifest.json</code></td>
+    <td><code>scripts/run_generation_agent.py</code>, <code>gamegen/*</code>, <code>prompts/manifest.json</code></td>
   </tr>
   <tr>
-    <td>结构约束</td>
-    <td><code>schemas/game.schema.json</code>, <code>scripts/validate_game.py</code></td>
+    <td>统一门禁</td>
+    <td><code>gamegen/gates.py</code>, <code>gamegen/g5.py</code>, <code>scripts/validate_pack.py</code></td>
   </tr>
   <tr>
     <td>浏览器验证</td>
@@ -158,6 +173,7 @@ npx --yes wrangler deploy
   <summary><strong>Full Verification Commands</strong></summary>
 
 ```bash
+python3 scripts/validate_pack.py content_packs/missing_phone/v1 --through G5
 python3 scripts/validate_json_schema.py generated/missing_phone_v0/game.json
 python3 scripts/validate_game.py generated/missing_phone_v0/game.json
 python3 scripts/content_qa_report.py generated/missing_phone_v0/game.json
@@ -195,3 +211,5 @@ python3 scripts/validate_model_output_archive.py
 </p>
 
 产品准则以 <code>doc/prd</code> 为准；Agent 执行规则见 <code>agent.md</code>。
+
+Framework V1 契约定义与实施落点见 `doc/framework/FRAMEWORK_V1_互动叙事框架定义.md` 和 `doc/framework/FRAMEWORK_V1_实施设计.md`。`generated/missing_phone_v0`、旧 URL、旧 CLI 与旧存档迁移在 V1.0 保留；兼容层移除不早于另行批准的 V1.1。

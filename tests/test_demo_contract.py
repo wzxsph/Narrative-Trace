@@ -122,32 +122,41 @@ class DemoContractTest(unittest.TestCase):
 
   def test_static_runtime_includes_save_review_and_portrait_hooks(self) -> None:
     app_js = APP_JS_PATH.read_text(encoding="utf-8")
-    self.assertIn("SAVE_KEY", app_js)
-    self.assertIn("SAVE_VERSION = 2", app_js)
-    self.assertIn("restoreProgress", app_js)
-    self.assertIn("migrateSavePayload", app_js)
-    self.assertIn("recoveryNotice", app_js)
-    self.assertIn("renderRecoveryNotice", app_js)
-    self.assertIn("save-recovery", app_js)
-    self.assertIn("activeAnchorPathByScene", app_js)
-    self.assertIn("findAnchorPath", app_js)
-    self.assertIn("activeGuidance", app_js)
-    self.assertIn("renderGuidance", app_js)
-    self.assertIn("newly-unlocked", app_js)
-    self.assertIn("renderChapterReview", app_js)
-    self.assertIn("renderChapterFlow", app_js)
-    self.assertIn("buildChoiceBranchState", app_js)
-    self.assertIn("describeRequirement", app_js)
-    self.assertIn("syncPathPanelAccessibility", app_js)
-    self.assertIn("aria-expanded", app_js)
-    self.assertIn("inert", app_js)
-    self.assertIn("dataset.anchorId", app_js)
-    self.assertIn("dataset.choiceId", app_js)
-    self.assertIn("continue-review", app_js)
-    self.assertIn("未解锁：", app_js)
-    self.assertIn("chapter-flow-node", app_js)
-    self.assertIn("renderStateEchoes", app_js)
-    self.assertIn("buildStateEchoes", app_js)
+    runtime_js = "\n".join(
+      path.read_text(encoding="utf-8") for path in sorted((ROOT / "src" / "runtime").glob("*.js"))
+    )
+    self.assertIn("bootstrap", app_js)
+    self.assertLessEqual(len(app_js.splitlines()), 5)
+    for hook in (
+      "narrative_trace.save.",
+      "restoreProgress",
+      "migrateLegacyPayload",
+      "recoveryNotice",
+      "renderRecoveryNotice",
+      "save-recovery",
+      "activeAnchorPathByScene",
+      "findAnchorPath",
+      "activeGuidance",
+      "renderGuidance",
+      "newly-unlocked",
+      "renderChapterReview",
+      "renderChapterFlow",
+      "buildActionBranchState",
+      "describeRequirement",
+      "syncPathPanelAccessibility",
+      "aria-expanded",
+      "inert",
+      "dataset.anchorId",
+      "dataset.actionId",
+      "continue-review",
+      "未解锁：",
+      "chapter-flow-node",
+      "renderStateEchoes",
+      "buildStateEchoes",
+      "experimental-notice",
+      "surface-fallback",
+    ):
+      self.assertIn(hook, runtime_js)
 
   def test_browser_e2e_matrix_covers_all_main_endings(self) -> None:
     from scripts.browser_e2e_matrix import PATHS

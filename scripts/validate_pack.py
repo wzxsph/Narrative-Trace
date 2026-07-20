@@ -11,6 +11,7 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 
 from gamegen.gates import GATE_IDS, run_pack_gates
+from gamegen.g5 import run_g5
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -20,14 +21,16 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--json-out", help="Optional path for the machine-readable gate report")
     args = parser.parse_args(argv)
     try:
-        results = run_pack_gates(args.pack_dir, through=args.through)
+        results = run_pack_gates(args.pack_dir, through=args.through, g5_runner=run_g5)
     except ValueError as exc:
         print(str(exc), file=sys.stderr)
         return 2
     report = {"schema_version": "narrative_gate_chain_report_v1", "results": [item.to_dict() for item in results]}
     rendered = json.dumps(report, ensure_ascii=False, indent=2)
     if args.json_out:
-        Path(args.json_out).write_text(rendered + "\n", encoding="utf-8")
+        output = Path(args.json_out)
+        output.parent.mkdir(parents=True, exist_ok=True)
+        output.write_text(rendered + "\n", encoding="utf-8")
     print(rendered)
     if any(item.status == "failed" for item in results):
         return 1

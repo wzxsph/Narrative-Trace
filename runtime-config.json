@@ -1,0 +1,5 @@
+{
+  "schema_version": "narrative_runtime_config_v1",
+  "runtime_version": "1.0.0",
+  "pack": "content_packs/missing_phone/v1"
+}

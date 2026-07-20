@@ -257,6 +257,49 @@ h2 {
   line-height: 1.55;
 }
 
+.experimental-notice,
+.surface-fallback {
+  margin-bottom: 14px;
+  padding: 14px;
+  border: 1px solid var(--seal);
+  border-left: 4px solid var(--seal);
+  border-radius: 6px;
+  background: var(--seal-soft);
+}
+
+.experimental-notice h2 {
+  margin-bottom: 8px;
+  color: var(--seal);
+  font-size: 1rem;
+}
+
+.experimental-notice p,
+.surface-fallback-body {
+  margin-bottom: 0;
+  color: var(--ink-soft);
+  line-height: 1.6;
+}
+
+.surface-fallback-label {
+  margin-bottom: 6px;
+  color: var(--seal);
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+}
+
+.fallback-anchors {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.fragment-surface {
+  margin-bottom: 10px;
+  line-height: 1.72;
+}
+
 .anchor-button {
   display: inline;
   min-height: 28px;

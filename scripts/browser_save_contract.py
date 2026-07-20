@@ -10,6 +10,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 from gamegen.save_contract import DEFAULT_SAVE_CONTRACT, load_save_contract
 from scripts.browser_smoke import (
+    LEGACY_SAVE_KEY,
     SAVE_KEY,
     ROOT,
     assert_condition,
@@ -63,8 +64,12 @@ def run_case(page: object, base_url: str, case: dict[str, Any], current_version:
         else:
             raise AssertionError(f"{case['id']}: unsupported expected screen {screen!r}")
         assert_condition(page.locator('[data-notice="save-recovery"]').count() == 0, f"{case['id']}: unexpected recovery notice")
-        saved_version = page.evaluate(f"JSON.parse(window.localStorage.getItem('{SAVE_KEY}')).version")
-        assert_condition(saved_version == current_version, f"{case['id']}: save was not persisted as current version")
+        saved_schema = page.evaluate(f"JSON.parse(window.localStorage.getItem('{SAVE_KEY}')).schema_version")
+        assert_condition(saved_schema == "narrative_save_v1", f"{case['id']}: namespaced V1 save was not persisted")
+        assert_condition(
+            page.evaluate("(key) => window.localStorage.getItem(key)", LEGACY_SAVE_KEY) is None,
+            f"{case['id']}: legacy key remained after successful migration",
+        )
         assert_no_horizontal_overflow(page)
         return {"id": case["id"], "screen": screen, "restored": True}
 
@@ -82,11 +87,11 @@ def run_case(page: object, base_url: str, case: dict[str, Any], current_version:
 def write_save_case(page: object, case: dict[str, Any]) -> None:
     if "raw_save" in case:
         raw_save = case["raw_save"]
-        page.evaluate("(args) => window.localStorage.setItem(args.key, args.value)", {"key": SAVE_KEY, "value": raw_save})
+        page.evaluate("(args) => window.localStorage.setItem(args.key, args.value)", {"key": LEGACY_SAVE_KEY, "value": raw_save})
         return
     page.evaluate(
         "(args) => window.localStorage.setItem(args.key, JSON.stringify(args.payload))",
-        {"key": SAVE_KEY, "payload": case["payload"]},
+        {"key": LEGACY_SAVE_KEY, "payload": case["payload"]},
     )
 
 

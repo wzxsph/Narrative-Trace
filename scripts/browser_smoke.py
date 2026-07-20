@@ -13,7 +13,8 @@ from typing import Iterator
 
 
 ROOT = Path(__file__).resolve().parents[1]
-SAVE_KEY = "game_writer_missing_phone_runtime_v1"
+LEGACY_SAVE_KEY = "game_writer_missing_phone_runtime_v1"
+SAVE_KEY = "narrative_trace.save.missing_phone.1.0.0"
 
 
 class QuietHandler(SimpleHTTPRequestHandler):
@@ -133,21 +134,52 @@ def run_browser_smoke() -> dict[str, object]:
             assert_no_horizontal_overflow(page)
 
             page.evaluate(
-                f"""
-                () => {{
-                  const payload = JSON.parse(window.localStorage.getItem('{SAVE_KEY}'));
-                  payload.version = 1;
-                  window.localStorage.setItem('{SAVE_KEY}', JSON.stringify(payload));
-                }}
                 """
+                (keys) => {
+                  const payload = JSON.parse(window.localStorage.getItem(keys.current));
+                  const legacy = {
+                    version: 1,
+                    projectId: payload.pack_id,
+                    schemaVersion: "game_writer_demo_v0_5",
+                    sceneId: payload.scene_id,
+                    state: payload.state,
+                    openedAnchors: payload.opened_anchors,
+                    activeAnchorPathByScene: payload.active_anchor_path_by_scene,
+                    unlockedChoices: payload.unlocked_actions,
+                    activeGuidance: payload.active_guidance,
+                    seenGuidance: payload.seen_guidance,
+                    highlightedChoices: payload.highlighted_actions,
+                    visitedScenes: payload.visited_scenes,
+                    chosenChoices: payload.chosen_actions,
+                    choiceOutcomes: payload.action_outcomes,
+                    endingId: payload.ending_id || "",
+                    review: payload.review ? {
+                      fromSceneId: payload.review.from_scene_id,
+                      nextSceneId: payload.review.next_scene_id,
+                      choiceId: payload.review.action_id,
+                      outcome: payload.review.outcome
+                    } : null
+                  };
+                  window.localStorage.removeItem(keys.current);
+                  window.localStorage.setItem(keys.legacy, JSON.stringify(legacy));
+                }
+                """,
+                {"current": SAVE_KEY, "legacy": LEGACY_SAVE_KEY},
             )
             page.reload(wait_until="networkidle")
             migrated_review_text = page.locator(".review-screen").inner_text()
             assert_condition("本章路径图" in migrated_review_text, "Legacy v1 save did not migrate to review state")
+            assert_condition(
+                page.evaluate("(key) => window.localStorage.getItem(key)", LEGACY_SAVE_KEY) is None,
+                "Legacy key should be cleared only after the namespaced save is written",
+            )
             assert_choices_visible_without_scroll(page)
             assert_no_horizontal_overflow(page)
 
-            page.evaluate(f"window.localStorage.setItem('{SAVE_KEY}', 'not-json')")
+            page.evaluate(
+                "(keys) => { window.localStorage.removeItem(keys.current); window.localStorage.setItem(keys.legacy, 'not-json'); }",
+                {"current": SAVE_KEY, "legacy": LEGACY_SAVE_KEY},
+            )
             page.reload(wait_until="networkidle")
             corrupt_notice = assert_start_scene_restored(
                 page,
@@ -155,7 +187,10 @@ def run_browser_smoke() -> dict[str, object]:
                 "旧进度内容损坏",
             )
 
-            page.evaluate(f"window.localStorage.setItem('{SAVE_KEY}', JSON.stringify({{'version': 999}}))")
+            page.evaluate(
+                "(keys) => { window.localStorage.removeItem(keys.current); window.localStorage.setItem(keys.legacy, JSON.stringify({version: 999})); }",
+                {"current": SAVE_KEY, "legacy": LEGACY_SAVE_KEY},
+            )
             page.reload(wait_until="networkidle")
             invalid_notice = assert_start_scene_restored(
                 page,

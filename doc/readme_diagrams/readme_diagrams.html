@@ -161,7 +161,7 @@
 
       .architecture {
         display: grid;
-        grid-template-columns: repeat(5, 1fr);
+        grid-template-columns: repeat(4, 1fr);
         gap: 14px;
       }
 
@@ -234,7 +234,7 @@
 
       .gates {
         display: grid;
-        grid-template-columns: repeat(5, 1fr);
+        grid-template-columns: repeat(6, 1fr);
         gap: 14px;
       }
 
@@ -399,14 +399,13 @@
 
       <section class="diagram" id="runtime-architecture">
         <span class="stamp">RUNTIME ARCHITECTURE</span>
-        <h1>从结构化内容到纸墨竖屏体验</h1>
-        <p class="subtitle">运行时不临场编剧情，而是稳定解释 game.json、状态、存档和 UI。</p>
+        <h1>Kernel → Loop → Content → Runtime</h1>
+        <p class="subtitle">四层单向依赖：契约稳定，玩法加严，作品装包，运行时按 Kernel 主版本解释。</p>
         <div class="architecture">
-          <div class="card"><strong>Brief</strong><span>主题、角色、章节目标、节点预算。</span></div>
-          <div class="card"><strong>Validation</strong><span>JSON schema、结构校验、内容 QA。</span></div>
-          <div class="card"><strong>Runtime</strong><span>确定性状态机、observe 解锁、choice 跳转。</span></div>
-          <div class="card"><strong>Save</strong><span>localStorage 存档、迁移、坏档恢复。</span></div>
-          <div class="card"><strong>UI</strong><span>纸墨风格、正文滚动、选项固定可见。</span></div>
+          <div class="card"><strong>L1 · Kernel</strong><span>state、surface、action、progression、save、verification 封闭契约。</span></div>
+          <div class="card"><strong>L2 · Loop</strong><span>调查规则、schema extension、G3–G5 与体验阈值。</span></div>
+          <div class="card"><strong>L3 · Content</strong><span>pack.json、game、state registry、资产与 provenance。</span></div>
+          <div class="card"><strong>L4 · Runtime</strong><span>包加载、通用引擎、存档、surface renderer 与玩法 UI adapter。</span></div>
         </div>
       </section>
 
@@ -428,14 +427,15 @@
 
       <section class="diagram" id="release-gates">
         <span class="stamp">RELEASE GATES</span>
-        <h1>从“能生成”到“能交付”的闸门</h1>
-        <p class="subtitle">Demo 不能只看跑通，还要看是否公平、可达、可复盘。</p>
+        <h1>G1–G5 工程闭环，G6 真人证据清偿债务</h1>
+        <p class="subtitle">所有门禁共享 GateResult；自动全绿允许打包，但发布仍需绑定摘要的人工批准。</p>
         <div class="gates">
-          <div class="gate"><strong>Schema</strong><span>所有字段声明完整，无未声明变量。</span></div>
-          <div class="gate"><strong>Structure</strong><span>无孤儿节点、无死 choice、结局可达。</span></div>
-          <div class="gate warning"><strong>Content QA</strong><span>重大状态变化有文本暗示，选择不是伪影响。</span></div>
-          <div class="gate"><strong>Browser E2E</strong><span>三条主结局、复盘、存档恢复可跑通。</span></div>
-          <div class="gate block"><strong>Experience Risk</strong><span>隐藏选项不得制造不公平或黑箱惩罚。</span></div>
+          <div class="gate"><strong>G1</strong><span>manifest、Kernel、玩法扩展、资产与 provenance。</span></div>
+          <div class="gate"><strong>G2</strong><span>引用、状态读写类型、公平性与结构可达。</span></div>
+          <div class="gate warning"><strong>G3</strong><span>调查玩法预算、层级、明显 anchor 与解锁契约。</span></div>
+          <div class="gate"><strong>G4</strong><span>有限状态 BFS 自动产出所有结局 witness。</span></div>
+          <div class="gate"><strong>G5</strong><span>浏览器重放、存档、fallback、标记与无障碍。</span></div>
+          <div class="gate block"><strong>G6 · Debt</strong><span>5–8 人阈值与归因凭证；未达标降级 Experimental。</span></div>
         </div>
       </section>
 

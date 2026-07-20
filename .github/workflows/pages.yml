@@ -22,13 +22,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Build minimal static artifact
-        run: |
-          mkdir -p _site/src _site/generated/missing_phone_v0
-          cp index.html _site/index.html
-          cp src/app.js src/styles.css _site/src/
-          cp generated/missing_phone_v0/game.json _site/generated/missing_phone_v0/game.json
-          touch _site/.nojekyll
+      - name: Install deterministic validator dependency
+        run: python3 -m pip install jsonschema==4.23.0
+      - name: Build one validated content pack
+        run: python3 scripts/build_static_bundle.py --pack content_packs/missing_phone/v1 --output _site
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
         with:
