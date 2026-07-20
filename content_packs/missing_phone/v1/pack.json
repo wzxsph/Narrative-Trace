@@ -1,0 +1,29 @@
+{
+  "schema_version": "narrative_content_pack_v1",
+  "pack_id": "missing_phone",
+  "title": "失踪者的手机",
+  "version": "1.0.0",
+  "kernel_version": "1.0.0",
+  "loop_package": {
+    "id": "investigation",
+    "version": "1.0.0",
+    "tier": "verified",
+    "verification_status": "debt"
+  },
+  "surfaces_used": [
+    "text"
+  ],
+  "runtime_compat": "^1.0.0",
+  "authorship": "agent_assisted",
+  "experimental_notice": false,
+  "entrypoints": {
+    "game": "game.json",
+    "state_registry": "state_registry.json",
+    "provenance": "provenance/manifest.json"
+  },
+  "extensions": {
+    "investigation": {
+      "source_prd": "PRD_V0"
+    }
+  }
+}

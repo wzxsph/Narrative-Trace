@@ -1,0 +1,14 @@
+{
+  "schema_version": "investigation_experience_metrics_v1",
+  "batch_size": {"min": 5, "max": 8},
+  "metrics": [
+    {"field": "completed_first_run", "threshold": 0.8, "comparison": "ratio_gte"},
+    {"field": "first_minute_understood_expandable_text", "threshold": 0.8, "comparison": "ratio_gte"},
+    {"field": "chapter1_key_anchor_found_ratio", "participant_floor": 0.6, "threshold": 0.7, "comparison": "qualified_ratio_gte"},
+    {"field": "can_name_observe_unlock_action", "threshold": 0.7, "comparison": "ratio_gte"},
+    {"field": "can_name_action_echo", "threshold": 0.6, "comparison": "ratio_gte"},
+    {"field": "wants_replay_after_path_review", "threshold": 0.5, "comparison": "ratio_gte"},
+    {"field": "willing_to_pay_or_recommend", "threshold": 0.5, "comparison": "ratio_gte"},
+    {"field": "blocked_by_hidden_key_anchor", "threshold": 0, "comparison": "count_eq"}
+  ]
+}

@@ -1,0 +1,27 @@
+{
+  "schema_version": "narrative_provenance_v1",
+  "authorship": "agent_assisted",
+  "prompt_set": "demo_agent_v0_15",
+  "provider": "offline",
+  "model": "deterministic_demo_v0",
+  "schema_versions": {
+    "kernel": "1.0.0",
+    "game": "narrative_game_v1",
+    "state": "narrative_state_registry_v1"
+  },
+  "trace_version": "narrative_generation_trace_v1",
+  "artifacts": [
+    {
+      "path": "game.json",
+      "sha256": "99302e7cc886ff624dd2fe8e9088038ee00dfb975ed7b4b358f8c13bd98f8ea6"
+    },
+    {
+      "path": "state_registry.json",
+      "sha256": "397f70699e3c4a5ebac695be1d996cb1a946bd77c185e9c6ceaede9f0b500f8a"
+    },
+    {
+      "path": "provenance/generation_trace.jsonl",
+      "sha256": "ca89987f67e0a9a842a0476538adcf302478ba72daebf151b61b3c9f4e933929"
+    }
+  ]
+}

@@ -1,0 +1,89 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://narrative-trace.dev/schemas/loop-package.schema.json",
+  "title": "Narrative Trace Loop Package V1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "id",
+    "version",
+    "kernel_compat",
+    "tier",
+    "verification",
+    "loop_definition",
+    "entrypoints"
+  ],
+  "properties": {
+    "schema_version": {"const": "narrative_loop_package_v1"},
+    "id": {"type": "string", "pattern": "^[a-z][a-z0-9_.-]*$"},
+    "version": {"type": "string", "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$"},
+    "kernel_compat": {"type": "string", "pattern": "^\\^1\\.[0-9]+\\.[0-9]+$"},
+    "tier": {"enum": ["verified", "experimental"]},
+    "verification": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["status", "evidence"],
+      "properties": {
+        "status": {"enum": ["verified", "debt", "experimental"]},
+        "evidence": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["batch_id", "digest", "result"],
+            "properties": {
+              "batch_id": {"type": "string", "minLength": 1},
+              "digest": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+              "result": {"enum": ["passed", "failed"]}
+            }
+          }
+        }
+      }
+    },
+    "loop_definition": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["core_verbs", "loop", "pacing_seconds", "boundary"],
+      "properties": {
+        "core_verbs": {"type": "array", "minItems": 1, "items": {"type": "string", "minLength": 1}},
+        "loop": {"type": "string", "minLength": 1},
+        "pacing_seconds": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["orient", "explore_min", "explore_max", "decide_min", "decide_max", "feedback"],
+          "properties": {
+            "orient": {"type": "integer", "minimum": 1},
+            "explore_min": {"type": "integer", "minimum": 1},
+            "explore_max": {"type": "integer", "minimum": 1},
+            "decide_min": {"type": "integer", "minimum": 1},
+            "decide_max": {"type": "integer", "minimum": 1},
+            "feedback": {"type": "integer", "minimum": 1}
+          }
+        },
+        "boundary": {"type": "array", "items": {"type": "string", "minLength": 1}}
+      }
+    },
+    "entrypoints": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["schema_extension", "acceptance_rules", "experience_metrics", "playtest_template"],
+      "properties": {
+        "schema_extension": {"type": "string", "minLength": 1},
+        "acceptance_rules": {"type": "string", "minLength": 1},
+        "experience_metrics": {"type": "string", "minLength": 1},
+        "playtest_template": {"type": "string", "minLength": 1}
+      }
+    }
+  },
+  "allOf": [
+    {
+      "if": {"properties": {"tier": {"const": "verified"}}},
+      "then": {"properties": {"verification": {"properties": {"status": {"enum": ["verified", "debt"]}}}}}
+    },
+    {
+      "if": {"properties": {"tier": {"const": "experimental"}}},
+      "then": {"properties": {"verification": {"properties": {"status": {"const": "experimental"}}}}}
+    }
+  ]
+}

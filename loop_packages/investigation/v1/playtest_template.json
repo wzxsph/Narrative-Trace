@@ -1,0 +1,9 @@
+{
+  "schema_version": "investigation_playtest_batch_v1",
+  "loop_package": {"id": "investigation", "version": "1.0.0"},
+  "pack_id": "",
+  "pack_version": "",
+  "session_date": "YYYY-MM-DD",
+  "facilitator_alias": "",
+  "participants": []
+}
