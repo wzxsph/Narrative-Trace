@@ -1,0 +1,60 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://narrative-trace.dev/loop/investigation/v1/playtest-record.schema.json",
+  "title": "Investigation Anonymous Playtest Record V1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["participant_id", "consent", "trace_summary", "interview"],
+  "properties": {
+    "participant_id": {
+      "type": "string",
+      "pattern": "^p_[a-z0-9][a-z0-9_-]{1,31}$"
+    },
+    "consent": {"const": true},
+    "trace_summary": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "duration_seconds",
+        "completed_first_run",
+        "chapter1_critical_anchors_found",
+        "chapter1_critical_anchors_total",
+        "blocked_by_hidden_key_anchor",
+        "path_review_opened",
+        "ending_id"
+      ],
+      "properties": {
+        "duration_seconds": {"type": "integer", "minimum": 0},
+        "completed_first_run": {"type": "boolean"},
+        "chapter1_critical_anchors_found": {"type": "integer", "minimum": 0},
+        "chapter1_critical_anchors_total": {"type": "integer", "minimum": 1},
+        "blocked_by_hidden_key_anchor": {"type": "boolean"},
+        "path_review_opened": {"type": "boolean"},
+        "ending_id": {
+          "anyOf": [
+            {"type": "string", "pattern": "^[a-z][a-z0-9_.-]*$"},
+            {"type": "null"}
+          ]
+        }
+      }
+    },
+    "interview": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "first_minute_understood_expandable_text",
+        "can_name_observe_unlock_action",
+        "can_name_action_echo",
+        "wants_replay_after_path_review",
+        "willing_to_pay_or_recommend"
+      ],
+      "properties": {
+        "first_minute_understood_expandable_text": {"type": "boolean"},
+        "can_name_observe_unlock_action": {"type": "boolean"},
+        "can_name_action_echo": {"type": "boolean"},
+        "wants_replay_after_path_review": {"type": "boolean"},
+        "willing_to_pay_or_recommend": {"type": "boolean"}
+      }
+    }
+  }
+}

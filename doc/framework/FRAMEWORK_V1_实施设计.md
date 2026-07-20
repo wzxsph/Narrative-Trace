@@ -53,3 +53,5 @@ L4 Runtime      index.html + src/runtime + src/surfaces + src/loops
 ## 7. G6 债务边界
 
 G1–G5 全绿与 G6 工具包就绪定义为本轮工程完成。调查玩法包在收到 5–8 人同意的真人原始记录、全部指标达标并写入 evidence digest 之前，仍保持 `tier=verified` + `verification.status=debt`。
+
+G6 输入使用玩法包内的封闭 schema，只保存匿名 participant ID、同意状态、必要行为痕迹摘要和布尔访谈结果。`evaluate` 输出统一 `GateResult`；无效数据只会阻断评估。有效批次达标后，`apply` 写入 evidence digest 并清除债务；未达标时必须先用摘要绑定的 playtest attribution receipt 记录内容问题、玩法问题或不确定，然后将玩法包与依赖内容包降为 Experimental 并打开玩家可见标记。

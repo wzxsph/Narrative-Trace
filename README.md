@@ -156,6 +156,17 @@ scripts/build_game_worker_bundle.sh \
   --pack content_packs/missing_phone/v1
 ```
 
+G6 只读取本地、匿名且已同意的 5–8 人逐人记录，并从原始记录复算全部指标：
+
+```bash
+python3 scripts/evaluate_g6.py evaluate \
+  --pack content_packs/missing_phone/v1 \
+  --batch path/to/real-playtest-batch.json \
+  --out path/to/g6-result.json
+```
+
+达标结果可用 `evaluate_g6.py apply` 清除债务；未达标结果必须先用 `attribute` 生成与报告摘要绑定的 `content_issue | loop_issue | inconclusive` 归因凭证，再 `apply --attribution-receipt ...`。无效记录不会触发分级变化。仓库中的调查玩法包仍是 `Verified (debt)`，模板或测试夹具不能作为真人证据。
+
 ## Project Map
 
 <table>

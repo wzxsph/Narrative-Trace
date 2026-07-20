@@ -35,7 +35,9 @@
             "properties": {
               "batch_id": {"type": "string", "minLength": 1},
               "digest": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
-              "result": {"enum": ["passed", "failed"]}
+              "result": {"enum": ["passed", "failed"]},
+              "attribution": {"enum": ["content_issue", "loop_issue", "inconclusive"]},
+              "attribution_digest": {"type": "string", "pattern": "^[a-f0-9]{64}$"}
             }
           }
         }
@@ -72,7 +74,9 @@
         "schema_extension": {"type": "string", "minLength": 1},
         "acceptance_rules": {"type": "string", "minLength": 1},
         "experience_metrics": {"type": "string", "minLength": 1},
-        "playtest_template": {"type": "string", "minLength": 1}
+        "playtest_template": {"type": "string", "minLength": 1},
+        "playtest_record_schema": {"type": "string", "minLength": 1},
+        "playtest_batch_schema": {"type": "string", "minLength": 1}
       }
     }
   },

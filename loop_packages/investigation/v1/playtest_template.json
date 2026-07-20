@@ -1,9 +1,11 @@
 {
   "schema_version": "investigation_playtest_batch_v1",
+  "batch_id": "replace_with_anonymous_batch_id",
   "loop_package": {"id": "investigation", "version": "1.0.0"},
   "pack_id": "",
   "pack_version": "",
+  "pack_input_digest": "0000000000000000000000000000000000000000000000000000000000000000",
   "session_date": "YYYY-MM-DD",
-  "facilitator_alias": "",
+  "collection_mode": "local_manual",
   "participants": []
 }

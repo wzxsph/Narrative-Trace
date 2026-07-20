@@ -29,6 +29,8 @@
     "schema_extension": "schema-extension.schema.json",
     "acceptance_rules": "acceptance_rules.json",
     "experience_metrics": "experience_metrics.json",
-    "playtest_template": "playtest_template.json"
+    "playtest_template": "playtest_template.json",
+    "playtest_record_schema": "playtest-record.schema.json",
+    "playtest_batch_schema": "playtest-batch.schema.json"
   }
 }
