@@ -1,0 +1,42 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://narrative-trace.dev/loop/investigation/v1/playtest-batch.schema.json",
+  "title": "Investigation Playtest Batch V1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "batch_id",
+    "loop_package",
+    "pack_id",
+    "pack_version",
+    "pack_input_digest",
+    "session_date",
+    "collection_mode",
+    "participants"
+  ],
+  "properties": {
+    "schema_version": {"const": "investigation_playtest_batch_v1"},
+    "batch_id": {"type": "string", "pattern": "^[a-z][a-z0-9_.-]{2,63}$"},
+    "loop_package": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "version"],
+      "properties": {
+        "id": {"const": "investigation"},
+        "version": {"const": "1.0.0"}
+      }
+    },
+    "pack_id": {"type": "string", "pattern": "^[a-z][a-z0-9_.-]*$"},
+    "pack_version": {"type": "string", "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$"},
+    "pack_input_digest": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+    "session_date": {"type": "string", "format": "date"},
+    "collection_mode": {"const": "local_manual"},
+    "participants": {
+      "type": "array",
+      "minItems": 5,
+      "maxItems": 8,
+      "items": {"$ref": "playtest-record.schema.json"}
+    }
+  }
+}

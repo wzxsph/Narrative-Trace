@@ -1,0 +1,1 @@
+{"event": "migrated_v0_content", "kernel_version": "1.0.0", "model": "deterministic_demo_v0", "prompt_set": "demo_agent_v0_15", "provider": "offline", "source_schema": "game_writer_demo_v0_5", "trace_schema_version": "narrative_generation_trace_v1"}

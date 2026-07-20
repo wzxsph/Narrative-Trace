@@ -1,0 +1,13 @@
+{
+  "schema_version": "narrative_state_registry_v1",
+  "states": [
+    {
+      "key": "clues.drawer_open",
+      "family": "clue",
+      "type": "boolean",
+      "initial": false,
+      "label": "半开的抽屉",
+      "purpose": "解锁检查抽屉的行动。"
+    }
+  ]
+}

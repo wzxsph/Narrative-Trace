@@ -1,0 +1,198 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://narrative-trace.dev/schemas/kernel/v1/surface.schema.json",
+  "title": "Narrative Trace Kernel V1 Surface Contract",
+  "$defs": {
+    "text_locator": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "exact", "occurrence"],
+      "properties": {
+        "kind": {"const": "text"},
+        "exact": {"type": "string", "minLength": 1},
+        "occurrence": {"type": "integer", "minimum": 1}
+      }
+    },
+    "point": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["x", "y"],
+      "properties": {
+        "x": {"type": "number", "minimum": 0, "maximum": 1},
+        "y": {"type": "number", "minimum": 0, "maximum": 1}
+      }
+    },
+    "region_locator": {
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["kind", "shape", "x", "y", "width", "height"],
+          "properties": {
+            "kind": {"const": "region"},
+            "shape": {"const": "rect"},
+            "x": {"type": "number", "minimum": 0, "maximum": 1},
+            "y": {"type": "number", "minimum": 0, "maximum": 1},
+            "width": {"type": "number", "exclusiveMinimum": 0, "maximum": 1},
+            "height": {"type": "number", "exclusiveMinimum": 0, "maximum": 1}
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["kind", "shape", "points"],
+          "properties": {
+            "kind": {"const": "region"},
+            "shape": {"const": "polygon"},
+            "points": {
+              "type": "array",
+              "minItems": 3,
+              "items": {"$ref": "#/$defs/point"}
+            }
+          }
+        }
+      ]
+    },
+    "selector_locator": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "selector"],
+      "properties": {
+        "kind": {"const": "selector"},
+        "selector": {"type": "string", "minLength": 1, "maxLength": 200}
+      }
+    },
+    "anchor": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "label",
+        "discoverability",
+        "locator",
+        "effects",
+        "unlocks_actions",
+        "fragment",
+        "extensions"
+      ],
+      "properties": {
+        "id": {"$ref": "common.schema.json#/$defs/id"},
+        "label": {"type": "string", "minLength": 1},
+        "discoverability": {"enum": ["obvious", "subtle", "hidden_optional"]},
+        "locator": {
+          "oneOf": [
+            {"$ref": "#/$defs/text_locator"},
+            {"$ref": "#/$defs/region_locator"},
+            {"$ref": "#/$defs/selector_locator"}
+          ]
+        },
+        "effects": {
+          "type": "array",
+          "items": {"$ref": "common.schema.json#/$defs/effect"}
+        },
+        "unlocks_actions": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {"$ref": "common.schema.json#/$defs/id"}
+        },
+        "guidance": {"$ref": "common.schema.json#/$defs/guidance"},
+        "unlock_guidance": {"$ref": "common.schema.json#/$defs/guidance"},
+        "fragment": {"$ref": "#/$defs/fragment"},
+        "extensions": {"$ref": "common.schema.json#/$defs/extensions"}
+      }
+    },
+    "fallback": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["text"],
+      "properties": {
+        "text": {"type": "string", "minLength": 1}
+      }
+    },
+    "surface": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "type", "content", "anchors", "extensions"],
+      "properties": {
+        "id": {"$ref": "common.schema.json#/$defs/id"},
+        "type": {"enum": ["text", "image", "html"]},
+        "content": {"type": "object"},
+        "anchors": {
+          "type": "array",
+          "items": {"$ref": "#/$defs/anchor"}
+        },
+        "fallback": {"$ref": "#/$defs/fallback"},
+        "extensions": {"$ref": "common.schema.json#/$defs/extensions"}
+      },
+      "allOf": [
+        {
+          "if": {"properties": {"type": {"const": "text"}}, "required": ["type"]},
+          "then": {
+            "properties": {
+              "content": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": ["text"],
+                "properties": {"text": {"type": "string", "minLength": 1}}
+              }
+            }
+          }
+        },
+        {
+          "if": {"properties": {"type": {"const": "image"}}, "required": ["type"]},
+          "then": {
+            "required": ["fallback"],
+            "properties": {
+              "content": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": ["asset", "alt"],
+                "properties": {
+                  "asset": {"$ref": "common.schema.json#/$defs/relative_path"},
+                  "alt": {"type": "string", "minLength": 1}
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {"properties": {"type": {"const": "html"}}, "required": ["type"]},
+          "then": {
+            "required": ["fallback"],
+            "properties": {
+              "content": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": ["asset", "accessible_name", "security_profile"],
+                "properties": {
+                  "asset": {"$ref": "common.schema.json#/$defs/relative_path"},
+                  "accessible_name": {"type": "string", "minLength": 1},
+                  "security_profile": {"const": "static_sanitized_v1"}
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "fragment": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "title", "surfaces", "evidence_tags", "extensions"],
+      "properties": {
+        "id": {"$ref": "common.schema.json#/$defs/id"},
+        "title": {"type": "string", "minLength": 1},
+        "surfaces": {
+          "type": "array",
+          "minItems": 1,
+          "items": {"$ref": "#/$defs/surface"}
+        },
+        "evidence_tags": {
+          "type": "array",
+          "items": {"type": "string", "minLength": 1}
+        },
+        "extensions": {"$ref": "common.schema.json#/$defs/extensions"}
+      }
+    }
+  }
+}

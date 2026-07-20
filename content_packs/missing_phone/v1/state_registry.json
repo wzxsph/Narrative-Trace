@@ -1,0 +1,237 @@
+{
+  "schema_version": "narrative_state_registry_v1",
+  "states": [
+    {
+      "key": "clues.archive_ready",
+      "family": "clue",
+      "type": "boolean",
+      "initial": false,
+      "label": "归档包",
+      "purpose": "供行动条件或叙事回声读取，并由玩家观察或行动写入。"
+    },
+    {
+      "key": "clues.backup_copy",
+      "family": "clue",
+      "type": "boolean",
+      "initial": false,
+      "label": "备份副本",
+      "purpose": "供行动条件或叙事回声读取，并由玩家观察或行动写入。"
+    },
+    {
+      "key": "clues.chen_casefile",
+      "family": "clue",
+      "type": "boolean",
+      "initial": false,
+      "label": "陈的旧案卷",
+      "purpose": "供行动条件或叙事回声读取，并由玩家观察或行动写入。"
+    },
+    {
+      "key": "clues.chen_message_ready",
+      "family": "clue",
+      "type": "boolean",
+      "initial": false,
+      "label": "给陈的草稿",
+      "purpose": "供行动条件或叙事回声读取，并由玩家观察或行动写入。"
+    },
+    {
+      "key": "clues.chen_motive",
+      "family": "clue",
+      "type": "boolean",
+      "initial": false,
+      "label": "陈的动机",
+      "purpose": "供行动条件或叙事回声读取，并由玩家观察或行动写入。"
+    },
+    {
+      "key": "clues.chen_trimmed_location",
+      "family": "clue",
+      "type": "boolean",
+      "initial": false,
+      "label": "定位截断记录",
+      "purpose": "供行动条件或叙事回声读取，并由玩家观察或行动写入。"
+    },
+    {
+      "key": "clues.cloud_admin",
+      "family": "clue",
+      "type": "boolean",
+      "initial": false,
+      "label": "云端管理员来源",
+      "purpose": "供行动条件或叙事回声读取，并由玩家观察或行动写入。"
+    },
+    {
+      "key": "clues.edited_recording",
+      "family": "clue",
+      "type": "boolean",
+      "initial": false,
+      "label": "剪辑录音",
+      "purpose": "供行动条件或叙事回声读取，并由玩家观察或行动写入。"
+    },
+    {
+      "key": "clues.final_message",
+      "family": "clue",
+      "type": "boolean",
+      "initial": false,
+      "label": "最后留言",
+      "purpose": "供行动条件或叙事回声读取，并由玩家观察或行动写入。"
+    },
+    {
+      "key": "clues.freeze_token",
+      "family": "clue",
+      "type": "boolean",
+      "initial": false,
+      "label": "冻结令牌",
+      "purpose": "供行动条件或叙事回声读取，并由玩家观察或行动写入。"
+    },
+    {
+      "key": "clues.hidden_camera",
+      "family": "clue",
+      "type": "boolean",
+      "initial": false,
+      "label": "隐藏摄像头",
+      "purpose": "供行动条件或叙事回声读取，并由玩家观察或行动写入。"
+    },
+    {
+      "key": "clues.lin_confession",
+      "family": "clue",
+      "type": "boolean",
+      "initial": false,
+      "label": "林的自述",
+      "purpose": "供行动条件或叙事回声读取，并由玩家观察或行动写入。"
+    },
+    {
+      "key": "clues.locker_a17",
+      "family": "clue",
+      "type": "boolean",
+      "initial": false,
+      "label": "A17 储物柜",
+      "purpose": "供行动条件或叙事回声读取，并由玩家观察或行动写入。"
+    },
+    {
+      "key": "clues.public_packet_ready",
+      "family": "clue",
+      "type": "boolean",
+      "initial": false,
+      "label": "公开包",
+      "purpose": "供行动条件或叙事回声读取，并由玩家观察或行动写入。"
+    },
+    {
+      "key": "clues.raw_recording",
+      "family": "clue",
+      "type": "boolean",
+      "initial": false,
+      "label": "原始录音",
+      "purpose": "供行动条件或叙事回声读取，并由玩家观察或行动写入。"
+    },
+    {
+      "key": "clues.screen_recording",
+      "family": "clue",
+      "type": "boolean",
+      "initial": false,
+      "label": "屏幕录制会话",
+      "purpose": "供行动条件或叙事回声读取，并由玩家观察或行动写入。"
+    },
+    {
+      "key": "clues.security_booth",
+      "family": "clue",
+      "type": "boolean",
+      "initial": false,
+      "label": "保安岗亭",
+      "purpose": "供行动条件或叙事回声读取，并由玩家观察或行动写入。"
+    },
+    {
+      "key": "clues.station_entry_code",
+      "family": "clue",
+      "type": "boolean",
+      "initial": false,
+      "label": "旧员工入口码",
+      "purpose": "供行动条件或叙事回声读取，并由玩家观察或行动写入。"
+    },
+    {
+      "key": "clues.station_location",
+      "family": "clue",
+      "type": "boolean",
+      "initial": false,
+      "label": "废弃地铁站定位",
+      "purpose": "供行动条件或叙事回声读取，并由玩家观察或行动写入。"
+    },
+    {
+      "key": "clues.station_route_confirmed",
+      "family": "clue",
+      "type": "boolean",
+      "initial": false,
+      "label": "订单路线",
+      "purpose": "供行动条件或叙事回声读取，并由玩家观察或行动写入。"
+    },
+    {
+      "key": "clues.victim_list",
+      "family": "clue",
+      "type": "boolean",
+      "initial": false,
+      "label": "受害者名单",
+      "purpose": "供行动条件或叙事回声读取，并由玩家观察或行动写入。"
+    },
+    {
+      "key": "clues.voice_note",
+      "family": "clue",
+      "type": "boolean",
+      "initial": false,
+      "label": "语音便签",
+      "purpose": "供行动条件或叙事回声读取，并由玩家观察或行动写入。"
+    },
+    {
+      "key": "clues.wipe_pause_window",
+      "family": "clue",
+      "type": "boolean",
+      "initial": false,
+      "label": "远程清除暂停窗口",
+      "purpose": "供行动条件或叙事回声读取，并由玩家观察或行动写入。"
+    },
+    {
+      "key": "pressure.company_alert",
+      "family": "pressure",
+      "type": "number",
+      "initial": 0,
+      "label": "公司警觉",
+      "purpose": "供行动条件或叙事回声读取，并由玩家观察或行动写入。"
+    },
+    {
+      "key": "relationships.chen.suspicion",
+      "family": "relationship",
+      "type": "number",
+      "initial": 0,
+      "label": "陈的怀疑",
+      "purpose": "供行动条件或叙事回声读取，并由玩家观察或行动写入。"
+    },
+    {
+      "key": "relationships.chen.trust",
+      "family": "relationship",
+      "type": "number",
+      "initial": 0,
+      "label": "陈的信任",
+      "purpose": "供行动条件或叙事回声读取，并由玩家观察或行动写入。"
+    },
+    {
+      "key": "relationships.lin.bond",
+      "family": "relationship",
+      "type": "number",
+      "initial": 0,
+      "label": "与林的关联",
+      "purpose": "供行动条件或叙事回声读取，并由玩家观察或行动写入。"
+    },
+    {
+      "key": "stance.protect_person",
+      "family": "stance",
+      "type": "number",
+      "initial": 0,
+      "label": "保护具体的人",
+      "purpose": "供行动条件或叙事回声读取，并由玩家观察或行动写入。"
+    },
+    {
+      "key": "stance.truth_first",
+      "family": "stance",
+      "type": "number",
+      "initial": 0,
+      "label": "真相优先",
+      "purpose": "供行动条件或叙事回声读取，并由玩家观察或行动写入。"
+    }
+  ]
+}

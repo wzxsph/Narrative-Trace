@@ -161,7 +161,7 @@
 
       .architecture {
         display: grid;
-        grid-template-columns: repeat(5, 1fr);
+        grid-template-columns: repeat(4, 1fr);
         gap: 14px;
       }
 
@@ -234,7 +234,7 @@
 
       .gates {
         display: grid;
-        grid-template-columns: repeat(5, 1fr);
+        grid-template-columns: repeat(6, 1fr);
         gap: 14px;
       }
 
@@ -399,43 +399,43 @@
 
       <section class="diagram" id="runtime-architecture">
         <span class="stamp">RUNTIME ARCHITECTURE</span>
-        <h1>从结构化内容到纸墨竖屏体验</h1>
-        <p class="subtitle">运行时不临场编剧情，而是稳定解释 game.json、状态、存档和 UI。</p>
+        <h1>Kernel → Loop → Content → Runtime</h1>
+        <p class="subtitle">四层单向依赖：契约稳定，玩法加严，作品装包，运行时按 Kernel 主版本解释。</p>
         <div class="architecture">
-          <div class="card"><strong>Brief</strong><span>主题、角色、章节目标、节点预算。</span></div>
-          <div class="card"><strong>Validation</strong><span>JSON schema、结构校验、内容 QA。</span></div>
-          <div class="card"><strong>Runtime</strong><span>确定性状态机、observe 解锁、choice 跳转。</span></div>
-          <div class="card"><strong>Save</strong><span>localStorage 存档、迁移、坏档恢复。</span></div>
-          <div class="card"><strong>UI</strong><span>纸墨风格、正文滚动、选项固定可见。</span></div>
+          <div class="card"><strong>L1 · Kernel</strong><span>state、surface、action、progression、save、verification 封闭契约。</span></div>
+          <div class="card"><strong>L2 · Loop</strong><span>调查规则、schema extension、G3–G5 与体验阈值。</span></div>
+          <div class="card"><strong>L3 · Content</strong><span>pack.json、game、state registry、资产与 provenance。</span></div>
+          <div class="card"><strong>L4 · Runtime</strong><span>包加载、通用引擎、存档、surface renderer 与玩法 UI adapter。</span></div>
         </div>
       </section>
 
       <section class="diagram" id="ai-pipeline">
         <span class="stamp">AI GENERATION PIPELINE</span>
-        <h1>Agent 生成的是可审查 artifact，不是不可控正文洪流</h1>
-        <p class="subtitle">每一步都产出结构化文件，并经过校验与人工可读的 trace。</p>
+        <h1>Agent 用摘要绑定的人工节点控制生成与发布</h1>
+        <p class="subtitle">LLM 只处理小型创意 artifact；ID、结构、组装、repair 和门禁保持确定性。</p>
         <div class="serpentine">
-          <div class="step"><span class="index">1</span><strong>Load Brief</strong><span>读取题材、主题问题和创作约束。</span></div>
-          <div class="step"><span class="index">2</span><strong>Plan Story</strong><span>规划章节问题、主路径和结局覆盖。</span></div>
-          <div class="step"><span class="index">3</span><strong>State Schema</strong><span>设计 flags、clues、relationships。</span></div>
-          <div class="step"><span class="index">4</span><strong>Scene Blueprint</strong><span>锁定场景预算、入口和关键行动。</span></div>
-          <div class="step"><span class="index">8</span><strong>Write Trace</strong><span>保存每步输入、输出和验证结果。</span></div>
-          <div class="step"><span class="index">7</span><strong>Export Game</strong><span>导出可运行 game.json 和报告。</span></div>
-          <div class="step"><span class="index">6</span><strong>Validate / Repair</strong><span>校验结构、内容 QA、必要时修复。</span></div>
-          <div class="step"><span class="index">5</span><strong>Scene Artifacts</strong><span>生成 observe、choice、effects 草案。</span></div>
+          <div class="step"><span class="index">1</span><strong>Brief Artifact</strong><span>锁定题材、边界、玩法包和 Experimental opt-in。</span></div>
+          <div class="step"><span class="index">2</span><strong>Brief Receipt</strong><span>摘要过期或未批准时立即停顿。</span></div>
+          <div class="step"><span class="index">3</span><strong>State + Blueprint</strong><span>确定性规划状态、场景预算与结局覆盖。</span></div>
+          <div class="step"><span class="index">4</span><strong>Blueprint Receipt</strong><span>未批准不批量生成 scene artifacts。</span></div>
+          <div class="step"><span class="index">8</span><strong>Release Bundle</strong><span>重算 G1–G5 后只构建选定内容包，不部署。</span></div>
+          <div class="step"><span class="index">7</span><strong>Release Receipt</strong><span>与 release candidate 摘要绑定。</span></div>
+          <div class="step"><span class="index">6</span><strong>G1–G5</strong><span>Kernel、玩法、BFS witness 与浏览器重放全绿。</span></div>
+          <div class="step"><span class="index">5</span><strong>Pack + Provenance</strong><span>组装 V1 内容包、脱敏 trace 与 V0 投影。</span></div>
         </div>
       </section>
 
       <section class="diagram" id="release-gates">
         <span class="stamp">RELEASE GATES</span>
-        <h1>从“能生成”到“能交付”的闸门</h1>
-        <p class="subtitle">Demo 不能只看跑通，还要看是否公平、可达、可复盘。</p>
+        <h1>G1–G5 工程闭环，G6 真人证据清偿债务</h1>
+        <p class="subtitle">所有门禁共享 GateResult；自动全绿允许打包，但发布仍需绑定摘要的人工批准。</p>
         <div class="gates">
-          <div class="gate"><strong>Schema</strong><span>所有字段声明完整，无未声明变量。</span></div>
-          <div class="gate"><strong>Structure</strong><span>无孤儿节点、无死 choice、结局可达。</span></div>
-          <div class="gate warning"><strong>Content QA</strong><span>重大状态变化有文本暗示，选择不是伪影响。</span></div>
-          <div class="gate"><strong>Browser E2E</strong><span>三条主结局、复盘、存档恢复可跑通。</span></div>
-          <div class="gate block"><strong>Experience Risk</strong><span>隐藏选项不得制造不公平或黑箱惩罚。</span></div>
+          <div class="gate"><strong>G1</strong><span>manifest、Kernel、玩法扩展、资产与 provenance。</span></div>
+          <div class="gate"><strong>G2</strong><span>引用、状态读写类型、公平性与结构可达。</span></div>
+          <div class="gate warning"><strong>G3</strong><span>调查玩法预算、层级、明显 anchor 与解锁契约。</span></div>
+          <div class="gate"><strong>G4</strong><span>有限状态 BFS 自动产出所有结局 witness。</span></div>
+          <div class="gate"><strong>G5</strong><span>浏览器重放、存档、fallback、标记与无障碍。</span></div>
+          <div class="gate block"><strong>G6 · Debt</strong><span>5–8 人阈值与归因凭证；未达标降级 Experimental。</span></div>
         </div>
       </section>
 

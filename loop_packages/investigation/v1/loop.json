@@ -1,0 +1,36 @@
+{
+  "schema_version": "narrative_loop_package_v1",
+  "id": "investigation",
+  "version": "1.0.0",
+  "kernel_compat": "^1.0.0",
+  "tier": "verified",
+  "verification": {
+    "status": "debt",
+    "evidence": []
+  },
+  "loop_definition": {
+    "core_verbs": ["observe", "choose"],
+    "loop": "观察 -> 解读 -> 行动 -> 状态 -> 回声 -> 复盘",
+    "pacing_seconds": {
+      "orient": 30,
+      "explore_min": 60,
+      "explore_max": 120,
+      "decide_min": 15,
+      "decide_max": 30,
+      "feedback": 10
+    },
+    "boundary": [
+      "不解析玩家自由文本行动",
+      "不允许 observe 直接产生未提示的重大不可逆后果",
+      "不把隐藏状态显示为数值面板"
+    ]
+  },
+  "entrypoints": {
+    "schema_extension": "schema-extension.schema.json",
+    "acceptance_rules": "acceptance_rules.json",
+    "experience_metrics": "experience_metrics.json",
+    "playtest_template": "playtest_template.json",
+    "playtest_record_schema": "playtest-record.schema.json",
+    "playtest_batch_schema": "playtest-batch.schema.json"
+  }
+}

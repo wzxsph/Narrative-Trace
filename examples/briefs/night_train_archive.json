@@ -1,0 +1,47 @@
+{
+  "project": {
+    "id": "night_train_archive",
+    "title": "末班车的离线档案",
+    "theme_question": "当一份证据既能救人也会暴露无辜者时，你愿意让谁决定它的去向？",
+    "tone": ["悬疑", "克制", "夜行压力"],
+    "target_duration_minutes": 25
+  },
+  "world": {
+    "interface": "竖屏手机",
+    "premise": "玩家在末班车上拿到一部即将被远程清除的调查手机。",
+    "pressure": "列车到站与远程清除双重倒计时"
+  },
+  "chapters": [
+    {
+      "id": "ch01",
+      "title": "锁屏留下的警告",
+      "question": "你会先信任联系人，还是先保存证据？"
+    },
+    {
+      "id": "ch02",
+      "title": "停运站台",
+      "question": "你会为了完整证据承担多大暴露风险？"
+    },
+    {
+      "id": "ch03",
+      "title": "副本的去向",
+      "question": "谁有权决定真相何时公开？"
+    }
+  ],
+  "characters": [
+    {
+      "id": "lin",
+      "name": "林",
+      "role": "失联调查者",
+      "public_face": "交通线记者",
+      "hidden_truth": "为了保护证人剪辑过一段录音"
+    },
+    {
+      "id": "chen",
+      "name": "陈警官",
+      "role": "警方联系人",
+      "public_face": "负责失联案的联络人",
+      "hidden_truth": "曾按上级命令截断定位记录"
+    }
+  ]
+}

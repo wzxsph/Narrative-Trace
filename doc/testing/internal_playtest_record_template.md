@@ -1,69 +1,41 @@
-# Internal Playtest Record Template V0.6
+# Framework V1 内部 Playtest 记录指南
 
-用途：记录 5 到 8 名内部测试用户对当前竖屏文字冒险 demo 的理解、卡点和复盘欲望。此模板直接对应 `doc/prd/PRD_V0_文字冒险游戏框架.md` 第 14 节成功标准。
+用途：为调查玩法包记录 5–8 名真人玩家的 G6 证据。实际数据必须匹配 `loop_packages/investigation/v1/playtest-batch.schema.json`；`playtest_template.json` 只是空模板，不是验证证据。
 
-## Session Metadata
+## 隐私和同意
 
-- Build schema version:
-- Test date:
-- Facilitator:
-- Participant id:
-- Device / viewport:
-- Start time:
-- End time:
-- Total duration minutes:
+- 每人只用本批次内唯一的匿名 ID，例如 `p_01`。
+- 录入前必须获得同意；未同意的记录不得进入批次。
+- 不保存姓名、邮箱、设备标识、自由文本原话或精确位置。
+- 只做本地手工归档，V1 不建立线上采集。
 
-## Rules For Facilitator
+## 主持规则
 
-- 不提前解释 observe、choice、路径图或隐藏状态。
-- 只在用户完全卡死超过 90 秒时提示“可以重新读屏幕上的异常文字”。
-- 记录用户原话，不替用户润色。
-- 用户通关后再提问，不在游玩中打断判断。
+- 不提前解释 anchor、action、章节复盘或路径图。
+- 记录是否完成首周目、第一章关键 anchor 命中数/总数、是否因关键点不可发现而卡死、是否打开路径复盘和 ending ID。
+- 通关后再记录第一分钟理解、因果理解、后果感知、重玩意愿与付费/主动传播意愿。
+- 不手写汇总数；G6 必须从逐人记录复算。
 
-## Observation Checklist
+## 固定阈值
 
-| Metric | Record |
-|---|---|
-| 第一分钟是否理解文字可以展开 | yes / no |
-| 第一章关键 observe 发现比例 | 0.0 - 1.0 |
-| 是否能说出一个 observe 解锁 choice 的例子 | yes / no |
-| 是否能说出一个选择带来的后续影响 | yes / no |
-| 是否主动查看路径图并表达重玩意愿 | yes / no |
-| 是否因关键隐藏点不可发现而卡死 | yes / no |
+| 指标 | 通过线 |
+|---|---:|
+| 完成率 | ≥ 80% |
+| 首分钟理解 | ≥ 80% |
+| 第一章关键 anchor 发现 | ≥ 70% 玩家命中 ≥ 60% |
+| 因果理解率 | ≥ 70% |
+| 后果感知率 | ≥ 60% |
+| 重玩意愿 | ≥ 50% |
+| 付费或主动传播意愿 | ≥ 50% |
+| 卡死人数 | 0 |
 
-## Required Questions After Play
+## 本地流程
 
-1. 你第一次意识到文字可以展开是在什么时候？
-2. 有没有一个选择是你觉得“因为我看到了某条线索才出现”的？
-3. 哪个选择最让你犹豫？为什么？
-4. 你有没有感觉某个角色或系统记住了你之前做过的事？
-5. 章节复盘或路径图有没有让你想重玩？
-6. 哪个隐藏内容最不公平或最像乱点找按钮？
+```bash
+python3 scripts/evaluate_g6.py evaluate \
+  --pack content_packs/missing_phone/v1 \
+  --batch path/to/batch.json \
+  --out path/to/g6-result.json
+```
 
-## Raw Quotes
-
-- Positive:
-- Confused:
-- Friction:
-- Replay interest:
-
-## Facilitator Notes
-
-- Observe discoverability:
-- Choice consequence clarity:
-- Relationship echo clarity:
-- Chapter flow review clarity:
-- Ending portrait clarity:
-
-## Batch JSON Mapping
-
-把本记录转写到 `examples/playtests/internal_playtest_batch_template.json` 时，字段对应如下：
-
-| Markdown field | JSON field |
-|---|---|
-| 第一分钟是否理解文字可以展开 | `first_minute_understood_expandable_text` |
-| 第一章关键 observe 发现比例 | `chapter1_key_observe_found_ratio` |
-| 是否能说出一个 observe 解锁 choice 的例子 | `can_name_observe_unlock_choice` |
-| 是否能说出一个选择带来的后续影响 | `can_name_choice_echo` |
-| 是否主动查看路径图并表达重玩意愿 | `opened_path_map_and_wants_replay` |
-| 是否因关键隐藏点不可发现而卡死 | `blocked_by_hidden_key_point` |
+达标批次可直接用 `apply` 清除债务。未达标批次必须先运行 `attribute`，由人类选择 `content_issue`、`loop_issue` 或 `inconclusive`，再将 receipt 传给 `apply`。两步都会重算摘要，过期报告或 receipt 不会改变分级。

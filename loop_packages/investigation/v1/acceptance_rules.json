@@ -1,0 +1,29 @@
+{
+  "schema_version": "investigation_acceptance_rules_v1",
+  "structure": {
+    "max_anchor_depth": 3,
+    "min_actions_per_main_scene": 2,
+    "max_actions_per_main_scene": 4,
+    "min_obvious_anchors_per_main_scene": 1,
+    "min_endings": 3
+  },
+  "content_qa": {
+    "require_observe_unlocked_action": true,
+    "require_unlock_contract": true,
+    "require_first_scene_guidance": true,
+    "forbid_hidden_optional_nonlocal_unlock": true,
+    "require_ending_portrait": true
+  },
+  "simulation": {
+    "all_scenes_reachable": true,
+    "all_endings_reachable": true,
+    "state_limit": 100000
+  },
+  "e2e": {
+    "replay_all_witness_paths": true,
+    "mobile_viewport": [390, 844],
+    "save_contract": true,
+    "keyboard_accessibility": true,
+    "omission_path": true
+  }
+}

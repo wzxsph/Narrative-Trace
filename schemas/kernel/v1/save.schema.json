@@ -1,0 +1,84 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://narrative-trace.dev/schemas/kernel/v1/save.schema.json",
+  "title": "Narrative Trace Save Payload V1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "pack_id",
+    "pack_version",
+    "kernel_version",
+    "scene_id",
+    "state",
+    "opened_anchors",
+    "active_anchor_path_by_scene",
+    "unlocked_actions",
+    "active_guidance",
+    "seen_guidance",
+    "highlighted_actions",
+    "visited_scenes",
+    "chosen_actions",
+    "action_outcomes",
+    "ending_id",
+    "review"
+  ],
+  "properties": {
+    "schema_version": {"const": "narrative_save_v1"},
+    "pack_id": {"$ref": "common.schema.json#/$defs/id"},
+    "pack_version": {"$ref": "common.schema.json#/$defs/version"},
+    "kernel_version": {"const": "1.0.0"},
+    "scene_id": {"$ref": "common.schema.json#/$defs/id"},
+    "state": {
+      "type": "object",
+      "propertyNames": {"$ref": "common.schema.json#/$defs/id"},
+      "additionalProperties": {"$ref": "common.schema.json#/$defs/scalar"}
+    },
+    "opened_anchors": {"$ref": "#/$defs/id_array"},
+    "active_anchor_path_by_scene": {
+      "type": "object",
+      "additionalProperties": {"$ref": "#/$defs/id_array"}
+    },
+    "unlocked_actions": {"$ref": "#/$defs/id_array"},
+    "active_guidance": {
+      "oneOf": [
+        {"type": "null"},
+        {"$ref": "common.schema.json#/$defs/guidance"}
+      ]
+    },
+    "seen_guidance": {"$ref": "#/$defs/id_array"},
+    "highlighted_actions": {"$ref": "#/$defs/id_array"},
+    "visited_scenes": {"$ref": "#/$defs/id_array"},
+    "chosen_actions": {"$ref": "#/$defs/id_array"},
+    "action_outcomes": {"type": "array", "items": {"type": "string"}},
+    "ending_id": {
+      "oneOf": [
+        {"type": "null"},
+        {"$ref": "common.schema.json#/$defs/id"}
+      ]
+    },
+    "review": {
+      "oneOf": [
+        {"type": "null"},
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["from_scene_id", "next_scene_id", "action_id", "outcome"],
+          "properties": {
+            "from_scene_id": {"$ref": "common.schema.json#/$defs/id"},
+            "next_scene_id": {"$ref": "common.schema.json#/$defs/id"},
+            "action_id": {"$ref": "common.schema.json#/$defs/id"},
+            "outcome": {"type": "string"}
+          }
+        }
+      ]
+    }
+  },
+  "$defs": {
+    "id_array": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {"$ref": "common.schema.json#/$defs/id"}
+    }
+  }
+}
